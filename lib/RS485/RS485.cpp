@@ -3,7 +3,7 @@
 // Author : JongOh Kim + ChatGPT
 // Date : 2026-07-03
 // Project : SVEMS
-// Version : 0.1.3
+// Version : 0.1.4
 // Descripton : RS485 통신을 위한 클래스 구현
 //-------------------------------------------------------------
 
