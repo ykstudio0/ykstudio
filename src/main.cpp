@@ -4,6 +4,7 @@ constexpr const char* SVEMS_VERSION = "0.1.3";
 #include "StatusLED.h"
 #include "Logger.h"
 #include "RS485.h"
+#include "CRC16.h"
 
 void setup()
 {
@@ -11,10 +12,23 @@ void setup()
   delay(5000);
   
   Logger::Begin();
-  Logger::Info("SVEMS v0.1.3");
-  Logger::Info("Logger OK");
+  Logger::Info("SYSTEM","SVEMS v0.1.3");
+  Logger::Info("LOGGER", "Logger OK");
   RS485::Begin();
-  Logger::Info("RS485 Ready");
+  Logger::Info("RS485","RS485 Ready");
+
+  uint8_t frame[] =
+  {
+    0x01,
+    0x03,
+    0x31,
+    0x00,
+    0x00,
+    0x02
+  };
+
+  uint16_t crc = CRC16::Calculate(frame, sizeof(frame));
+  Serial.printf("CRC = %04X\r\n", crc);
 }
 
 void loop()

@@ -1,18 +1,27 @@
+//-------------------------------------------------------------
+// File : RS485.cpp
+// Author : JongOh Kim + ChatGPT
+// Date : 2026-07-03
+// Project : SVEMS
+// Version : 0.1.3
+// Descripton : RS485 통신을 위한 클래스 구현
+//-------------------------------------------------------------
+
 #include "RS485.h"
 
 HardwareSerial RS485Serial(1);
 
 bool RS485::Begin()
 {
-    pinMode(DIR_PIN, OUTPUT);
+    pinMode(PIN_RS485_DIR, OUTPUT);
 
     RxMode();
 
     RS485Serial.begin(
         115200,
         SERIAL_8N1,
-        RX_PIN,
-        TX_PIN
+        PIN_RS485_RX,
+        PIN_RS485_TX
     );
 
     return true;
@@ -20,12 +29,12 @@ bool RS485::Begin()
 
 void RS485::TxMode()
 {
-    digitalWrite(DIR_PIN, HIGH);
+    digitalWrite(PIN_RS485_DIR, HIGH);
 }
 
 void RS485::RxMode()
 {
-    digitalWrite(DIR_PIN, LOW);
+    digitalWrite(PIN_RS485_DIR, LOW);
 }
 
 void RS485::Send(const uint8_t* data, size_t length)

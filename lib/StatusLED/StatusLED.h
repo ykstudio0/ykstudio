@@ -2,6 +2,7 @@
 #define STATUS_LED_H
 
 #include <Arduino.h>
+#include <Pins.h>
 
 enum class LedState
 {

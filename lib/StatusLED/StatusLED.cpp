@@ -4,14 +4,12 @@
 
 namespace
 {
-    constexpr uint8_t STATUS_LED_PIN = 38;
     constexpr uint8_t STATUS_LED_COUNT = 1;
-
     constexpr uint8_t LED_BRIGHTNESS = 30;
 
     Adafruit_NeoPixel pixel(
         STATUS_LED_COUNT,
-        STATUS_LED_PIN,
+        PIN_RGB_LED,
         NEO_GRB + NEO_KHZ800);
 }
 

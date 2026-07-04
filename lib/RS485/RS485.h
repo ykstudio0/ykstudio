@@ -2,6 +2,7 @@
 #define RS485_H
 
 #include <Arduino.h>
+#include "Pins.h"
 
 class RS485
 {
@@ -14,9 +15,7 @@ public:
     static uint8_t Read();
 
 private:
-    static const uint8_t TX_PIN = 17;
-    static const uint8_t RX_PIN = 18;
-    static const uint8_t DIR_PIN = 16;
+
 };
 
 #endif
