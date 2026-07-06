@@ -1,0 +1,1 @@
+constexpr uint8_t MODBUS_READ_HOLDING_REGISTERS = 0x03;

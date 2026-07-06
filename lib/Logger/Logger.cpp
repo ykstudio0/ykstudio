@@ -37,3 +37,21 @@ void Logger::Debug(const String& module, const String& msg)
     Serial.print("] ");
     Serial.println(msg);
 }
+
+void Logger::Hex(const String& tag, const uint8_t* data, size_t length)
+{
+    Serial.print("[");
+    Serial.print(tag);
+    Serial.print("] ");
+
+    for (size_t i = 0; i < length; i++)
+    {
+        if (data[i] < 0x10)
+            Serial.print("0");
+        
+        Serial.print(data[i], HEX);
+        Serial.print(" ");
+        
+    }
+    Serial.println();
+}

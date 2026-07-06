@@ -19,6 +19,10 @@ public:
     static void Debug(
         const String& module,
         const String& msg);
+    static void Hex(
+        const String& tag,
+        const uint8_t* data,
+        size_t length);
 };
 
 #endif

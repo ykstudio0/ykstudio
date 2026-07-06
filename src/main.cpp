@@ -5,6 +5,7 @@ constexpr const char* SVEMS_VERSION = "0.1.3";
 #include "Logger.h"
 #include "RS485.h"
 #include "CRC16.h"
+#include "ModbusRTU.h"
 
 void setup()
 {
@@ -29,6 +30,14 @@ void setup()
 
   uint16_t crc = CRC16::Calculate(frame, sizeof(frame));
   Serial.printf("CRC = %04X\r\n", crc);
+
+  ModbusRTU::Begin();
+  delay(1000);
+
+  ModbusRTU::ReadHoldingRegisters(
+    0x01,
+    0x3100,
+    2);
 }
 
 void loop()

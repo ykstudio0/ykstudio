@@ -37,7 +37,9 @@ void RS485::RxMode()
     digitalWrite(PIN_RS485_DIR, LOW);
 }
 
-void RS485::Send(const uint8_t* data, size_t length)
+void RS485::Send(
+    const uint8_t* data, 
+    size_t length)
 {
     TxMode();
     delayMicroseconds(100);
