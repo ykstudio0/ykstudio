@@ -1,3 +1,10 @@
+//-----------------------------------------------------
+//File    : Logger.cpp
+//Project : SVEMS
+//Author  : JongOh Kim + ChatGPT
+//Created : 2026-07-04
+//-----------------------------------------------------
+
 #include "Logger.h"
 
 void Logger::Begin()
@@ -6,40 +13,34 @@ void Logger::Begin()
     Serial.println("========== LOGGER READY ==========");
 }
 
-void Logger::Info(const String& module, const String& msg)
+void Logger::Info(const String& tag, const String& message)
 {
-    Serial.print("[INFO ] [");
-    Serial.print(module);
-    Serial.print("] ");
-    Serial.println(msg);
+    PrintHeader("INFO", tag);
+    Serial.println(message);
 }
 
-void Logger::Warn(const String& module, const String& msg)
+void Logger::Warning(const String& tag, const String& message)
 {
-    Serial.print("[WARN ] [");
-    Serial.print(module);
-    Serial.print("] ");
-    Serial.println(msg);
+    PrintHeader("WARN", tag);
+    Serial.println(message);
 }
 
-void Logger::Error(const String& module, const String& msg)
+void Logger::Error(const String& tag, const String& message)
 {
-    Serial.print("[ERROR] [");
-    Serial.print(module);
-    Serial.print("] ");
-    Serial.println(msg);
+    PrintHeader("ERROR", tag);
+    Serial.println(message);
 }
 
-void Logger::Debug(const String& module, const String& msg)
+void Logger::Debug(const String& tag, const String& message)
 {
-    Serial.print("[DEBUG] [");
-    Serial.print(module);
-    Serial.print("] ");
-    Serial.println(msg);
+    PrintHeader("DEBUG", tag);
+    Serial.println(message);
 }
 
 void Logger::Hex(const String& tag, const uint8_t* data, size_t length)
 {
+    Serial.printf("[%08lu] ", millis());
+
     Serial.print("[");
     Serial.print(tag);
     Serial.print("] ");
@@ -54,4 +55,11 @@ void Logger::Hex(const String& tag, const uint8_t* data, size_t length)
         
     }
     Serial.println();
+}
+
+void Logger::PrintHeader(
+    const String& level,
+    const String& tag)
+{
+    Serial.printf("[%08lu] [%-5s] [%-8s] ", millis(), level.c_str(), tag.c_str());
 }

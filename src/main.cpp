@@ -13,10 +13,10 @@ void setup()
   delay(5000);
   
   Logger::Begin();
-  Logger::Info("SYSTEM","SVEMS v0.1.3");
-  Logger::Info("LOGGER", "Logger OK");
+  Logger::Info("SYSTEM","SVEMS v0.1.5a");
+  Logger::Info("LOGGER","Logger OK");
   RS485::Begin();
-  Logger::Info("RS485","RS485 Ready");
+  Logger::Info("RS485", "Ready");
 
   uint8_t frame[] =
   {
@@ -29,7 +29,7 @@ void setup()
   };
 
   uint16_t crc = CRC16::Calculate(frame, sizeof(frame));
-  Serial.printf("CRC = %04X\r\n", crc);
+  Logger::Debug("CRC", String(crc, HEX));
 
   ModbusRTU::Begin();
   delay(1000);
