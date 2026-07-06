@@ -28,8 +28,11 @@ void setup()
     0x02
   };
 
+  
   uint16_t crc = CRC16::Calculate(frame, sizeof(frame));
-  Logger::Debug("CRC", String(crc, HEX));
+  char buffer[8];
+  sprintf(buffer, "%04X", crc);
+  Logger::Debug("CRC", buffer);
 
   ModbusRTU::Begin();
   delay(1000);
@@ -42,58 +45,5 @@ void setup()
 
 void loop()
 {
-  // StatusLED::Task();
 
-  // static uint32_t lastTick = 0;
-  // static uint8_t state = 0;
-
-  // if (millis() - lastTick >= 2000)
-  // {
-  //   lastTick = millis();
-
-  //   switch(state)
-  //   {
-  //     case 0:
-  //       StatusLED::SetState(LedState::Boot);
-  //       Serial.println("Boot");
-  //       break;
-
-  //     case 1:
-  //       StatusLED::SetState(LedState::Ready);
-  //       Serial.println("Ready");
-  //       break;
-
-  //     case 2:
-  //       StatusLED::SetState(LedState::Charging);
-  //       Serial.println("Charging");
-  //       break;
-
-  //     case 3:
-  //       StatusLED::SetState(LedState::WiFiConnecting);
-  //       Serial.println("WiFiConnecting");
-  //       break;
-
-  //     case 4:
-  //       StatusLED::SetState(LedState::RS485);
-  //       Serial.println("RS485");
-  //       break;
-
-  //     case 5:
-  //       StatusLED::SetState(LedState::Warning);
-  //       Serial.println("Warning");
-  //       break;
-
-  //     case 6:
-  //       StatusLED::SetState(LedState::Error);
-  //       Serial.println("Error");
-  //       break;
-  //   }
-
-  //   state++;
-
-  //   if(state > 6)
-  //   {
-  //     state = 0;
-  //   }
-  // }
 }
