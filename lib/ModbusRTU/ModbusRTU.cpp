@@ -7,14 +7,14 @@
 
 #include "ModbusRTU.h"
 #include "Modbus.h"
-
+#include "Config.h"
 #include "CRC16.h"
 #include "RS485.h"
 #include "Logger.h"
 
 bool ModbusRTU::Begin()
 {
-    Logger::Info("MODBUS", "Ready");
+    Logger::Info("RS485", "Ready (" + String(MODBUS_BAUDRATE) + "bps)");
     
     return true;
 }

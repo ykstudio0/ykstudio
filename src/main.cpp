@@ -15,11 +15,12 @@
 #include "ModbusRTU.h"
 #include "Config.h"
 #include "EpeverRegisters.h"
+#include "Epever.h"
 
 void setup()
 {
   Serial.begin(MODBUS_BAUDRATE);
-  delay(5000);
+  delay(BOOT_DELAY_MS);
   
   Logger::Begin();
   Logger::Info("SYSTEM", SVEMS_VERSION);
@@ -47,10 +48,11 @@ void setup()
   delay(1000);
 
   ModbusRTU::ReadHoldingRegisters(
-    0x01,
-    // MODBUS_SLAVE_ID,
-    0x3100,
+    MODBUS_SLAVE_ID,
+    EpeverRegister::PV_ARRAY_VOLTAGE,
     2);
+
+    Epever::Begin();
 }
 
 void loop()
