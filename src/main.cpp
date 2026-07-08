@@ -1,4 +1,11 @@
-constexpr const char* SVEMS_VERSION = "0.1.3";
+//-------------------------------------------------------------
+// File : main.cpp
+// Author : JongOh Kim + ChatGPT
+// Date : 2026-07-01
+// Project : SVEMS
+// Version : 0.1.6
+// Descripton : Solar Vehicle Energy Management System(SVEMS) Main Application
+//-------------------------------------------------------------
 
 #include <Arduino.h>
 #include "StatusLED.h"
@@ -6,14 +13,16 @@ constexpr const char* SVEMS_VERSION = "0.1.3";
 #include "RS485.h"
 #include "CRC16.h"
 #include "ModbusRTU.h"
+#include "Config.h"
+#include "EpeverRegisters.h"
 
 void setup()
 {
-  Serial.begin(115200);
+  Serial.begin(MODBUS_BAUDRATE);
   delay(5000);
   
   Logger::Begin();
-  Logger::Info("SYSTEM","SVEMS v0.1.5a");
+  Logger::Info("SYSTEM", SVEMS_VERSION);
   Logger::Info("LOGGER","Logger OK");
   RS485::Begin();
   Logger::Info("RS485", "Ready");
@@ -39,6 +48,7 @@ void setup()
 
   ModbusRTU::ReadHoldingRegisters(
     0x01,
+    // MODBUS_SLAVE_ID,
     0x3100,
     2);
 }

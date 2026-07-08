@@ -8,17 +8,18 @@
 //-------------------------------------------------------------
 
 #include "RS485.h"
+#include "Config.h"
 
 HardwareSerial RS485Serial(1);
 
 bool RS485::Begin()
 {
-    pinMode(PIN_RS485_DIR, OUTPUT);
+    pinMode(PIN_RS485_DE, OUTPUT);
 
     RxMode();
 
     RS485Serial.begin(
-        115200,
+        MODBUS_BAUDRATE,
         SERIAL_8N1,
         PIN_RS485_RX,
         PIN_RS485_TX
@@ -29,12 +30,12 @@ bool RS485::Begin()
 
 void RS485::TxMode()
 {
-    digitalWrite(PIN_RS485_DIR, HIGH);
+    digitalWrite(PIN_RS485_DE, HIGH);
 }
 
 void RS485::RxMode()
 {
-    digitalWrite(PIN_RS485_DIR, LOW);
+    digitalWrite(PIN_RS485_DE, LOW);
 }
 
 void RS485::Send(

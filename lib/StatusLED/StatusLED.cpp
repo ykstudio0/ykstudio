@@ -1,15 +1,14 @@
 #include "StatusLED.h"
-
+#include "Config.h"
 #include <Adafruit_NeoPixel.h>
 
 namespace
 {
-    constexpr uint8_t STATUS_LED_COUNT = 1;
-    constexpr uint8_t LED_BRIGHTNESS = 30;
+    
 
     Adafruit_NeoPixel pixel(
         STATUS_LED_COUNT,
-        PIN_RGB_LED,
+        PIN_STATUS_LED,
         NEO_GRB + NEO_KHZ800);
 }
 
@@ -18,7 +17,7 @@ LedState StatusLED::currentState = LedState::Off;
 void StatusLED::Begin()
 {
     pixel.begin();
-    pixel.setBrightness(LED_BRIGHTNESS);
+    pixel.setBrightness(STATUS_LED_BRIGHTNESS);
     pixel.clear();
     pixel.show();
     SetState(LedState::Boot);
