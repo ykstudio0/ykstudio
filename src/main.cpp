@@ -49,10 +49,8 @@ void setup()
 
   ModbusRTU::ReadHoldingRegisters(
     MODBUS_SLAVE_ID,
-    EpeverRegister::PV_ARRAY_VOLTAGE,
+    EpeverRegister::BATTERY_VOLTAGE,
     2);
-
-    Epever::Begin();
 }
 
 void loop()

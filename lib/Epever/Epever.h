@@ -17,12 +17,34 @@ class Epever
 public:
     static void Begin();
     static bool Update();
+
     static float GetPVVoltage();
     static float GetPVCurrent();
+
     static float GetBatteryVoltage();
     static float GetBatteryCurrent();
+    
     static float GetLoadVoltage();
     static float GetLoadCurrent();
+
+private:
+    //-----------------------------------------
+    // Cache
+    //-----------------------------------------
+    static float m_PVVoltage;
+    static float m_PVCurrent;
+
+    static float m_BattreryVoltage;
+    static float m_BatreryCurrent;
+
+    static float m_LoadVoltage;
+    static float m_LoadCurrrent;
+
+    //-----------------------------------------
+    // Status
+    //-----------------------------------------
+    static bool m_Connected;
+    static uint32_t m_LastUpdate;
 };
 
 #endif

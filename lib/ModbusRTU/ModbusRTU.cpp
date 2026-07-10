@@ -27,7 +27,7 @@ bool ModbusRTU::ReadHoldingRegisters(
     uint8_t frame[8];
 
     frame[0] = slave;
-    frame[1] = MODBUS_READ_HOLDING_REGISTERS;
+    frame[1] = MODBUS_READ_INPUT_REGISTERS;
     
     frame[2] = address >> 8;
     frame[3] = address & 0xFF;
@@ -43,6 +43,20 @@ bool ModbusRTU::ReadHoldingRegisters(
     Logger::Hex("TX", frame, sizeof(frame));
 
     RS485::Send(frame, sizeof(frame));
+    
+    uint8_t rx[64];
+
+    size_t len = RS485::Receive(rx, sizeof(rx));
+
+    if (len > 0)
+    {
+        Serial.printf("LEN = %u\r\n", len);
+        Logger::Hex("RX", rx, len);
+    }
+    else
+    {
+        Logger::Warning("MODBUS", "No Response");
+    }
 
     return true;
 }

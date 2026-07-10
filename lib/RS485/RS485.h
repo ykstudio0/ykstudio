@@ -21,7 +21,11 @@ public:
     static void RxMode();
     static void Send(const uint8_t* data, size_t length);
     static bool Available();
-    static uint8_t Read();
+    // static uint8_t Read();
+    static size_t Receive(
+        uint8_t* buffer,
+        size_t maxLength,
+        uint32_t timeout = 100);
 
 private:
 

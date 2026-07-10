@@ -50,12 +50,34 @@ void RS485::Send(
     RxMode();
 }
 
+size_t RS485::Receive(
+    uint8_t* buffer,
+    size_t maxLength,
+    uint32_t timeout)
+{
+    size_t length = 0;
+    uint32_t start = millis();
+
+    while ((millis() - start) < timeout)
+    {
+        while (RS485Serial.available())
+        {
+            if (length < maxLength)
+            {
+                buffer[length++] = RS485Serial.read();
+            }
+            start = millis();
+        }
+    }
+    return length;
+}
+
 bool RS485::Available()
 {
     return RS485Serial.available();
 }
 
-uint8_t RS485::Read()
-{
-    return RS485Serial.read();
-}
+// uint8_t RS485::Read()
+// {
+//     return RS485Serial.read();
+// }
