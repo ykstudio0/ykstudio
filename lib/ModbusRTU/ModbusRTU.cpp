@@ -14,15 +14,17 @@
 
 bool ModbusRTU::Begin()
 {
-    Logger::Info("RS485", "Ready (" + String(MODBUS_BAUDRATE) + "bps)");
+    Logger::Info("MODBUS", "Ready (" + String(MODBUS_BAUDRATE) + "bps)");
     
     return true;
 }
 
-bool ModbusRTU::ReadHoldingRegisters(
+bool ModbusRTU::ReadInputRegisters(
     uint8_t slave,
     uint16_t address,
-    uint16_t count)
+    uint16_t count,
+    uint8_t* response,
+    size_t responseSize)
 {
     uint8_t frame[8];
 
@@ -46,12 +48,12 @@ bool ModbusRTU::ReadHoldingRegisters(
     
     uint8_t rx[64];
 
-    size_t len = RS485::Receive(rx, sizeof(rx));
+    size_t len = RS485::Receive(response, responseSize);
 
     if (len > 0)
     {
         // Serial.printf("LEN = %u\r\n", len);
-        Logger::Hex("RX", rx, len);
+        Logger::Hex("RX", response, len);
     }
     else
     {

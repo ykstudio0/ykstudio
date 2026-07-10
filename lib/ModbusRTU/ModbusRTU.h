@@ -15,10 +15,12 @@ class ModbusRTU
 public:
     static bool Begin();
 
-    static bool ReadHoldingRegisters(
+    static bool ReadInputRegisters(
         uint8_t slave,
         uint16_t address,
-        uint16_t count);
+        uint16_t count,
+        uint8_t* response,
+        size_t responseSize);
 };
 
 #endif

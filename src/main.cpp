@@ -27,6 +27,8 @@ void setup()
   Logger::Info("LOGGER","Logger OK");
   RS485::Begin();
   Logger::Info("RS485", "Ready");
+  ModbusRTU::Begin();
+  delay(1000);
 
   uint8_t frame[] =
   {
@@ -42,25 +44,21 @@ void setup()
   uint16_t crc = CRC16::Calculate(frame, sizeof(frame));
   char buffer[8];
   sprintf(buffer, "%04X", crc);
-  Logger::Debug("CRC", buffer);
 
-  ModbusRTU::Begin();
-  delay(1000);
-
-  Epever::Begin();
-
-  ModbusRTU::ReadHoldingRegisters(
-    MODBUS_SLAVE_ID,
-    EpeverRegister::PV_ARRAY_VOLTAGE,
-    2);
-    
-  ModbusRTU::ReadHoldingRegisters(
-    MODBUS_SLAVE_ID,
-    EpeverRegister::BATTERY_VOLTAGE,
-    2);
+  // Logger::Debug("CRC", buffer);
 }
 
 void loop()
 {
+  if (Epever::Update())
+  {
+    Logger::Info(
+      "BATTERY",
+      String(Epever::Data.batteryVoltage, 2) + " V");
 
+    Logger::Info(
+      "PV",
+      String(Epever::Data.pvVoltage, 2) + " V");
+  }
+  delay(1000);
 }

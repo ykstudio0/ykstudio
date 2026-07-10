@@ -12,39 +12,58 @@
 
 #include <Arduino.h>
 
+struct EpeverData
+{
+    //-----------------------------------------
+    // Solar
+    //-----------------------------------------
+    float pvVoltage = 0.0f;
+    float pvCurrent = 0.0f;
+    float pvPower = 0.0f;
+
+    //-----------------------------------------
+    // Battery
+    //-----------------------------------------
+    float batteryVoltage = 0.0f;
+    float batteryCurrent = 0.0f;
+    float batteryPower = 0.0f;
+
+    uint8_t batterySOC = 0;
+
+    //-----------------------------------------
+    // Load
+    //-----------------------------------------
+    float loadVoltage = 0.0f;
+    float loadCurrent = 0.0f;
+    float loadPower = 0.0f;
+
+    //-----------------------------------------
+    // Temperature
+    //-----------------------------------------
+    float batteryTemperature = 0.0f;
+    float controllerTemperature = 0.0f;
+};
+
 class Epever
 {
 public:
-    static void Begin();
+    static bool Begin();
     static bool Update();
-
-    static float GetPVVoltage();
-    static float GetPVCurrent();
-
-    static float GetBatteryVoltage();
-    static float GetBatteryCurrent();
-    
-    static float GetLoadVoltage();
-    static float GetLoadCurrent();
+    static EpeverData Data;
 
 private:
-    //-----------------------------------------
-    // Cache
-    //-----------------------------------------
-    static float m_PVVoltage;
-    static float m_PVCurrent;
+    static uint16_t Buffer[32];    
+    static bool ReadSolar();
+    static bool ReadBattery();
+    static bool ReadLoad();
+    static bool ReadTemperature();
+    static bool ReadSOC();
 
-    static float m_BattreryVoltage;
-    static float m_BatreryCurrent;
-
-    static float m_LoadVoltage;
-    static float m_LoadCurrrent;
-
-    //-----------------------------------------
-    // Status
-    //-----------------------------------------
-    static bool m_Connected;
-    static uint32_t m_LastUpdate;
+    static bool ReadRegisters(
+        uint16_t address,
+        uint16_t count,
+        uint16_t* values
+    );
 };
 
 #endif
