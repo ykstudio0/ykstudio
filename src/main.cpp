@@ -47,6 +47,13 @@ void setup()
   ModbusRTU::Begin();
   delay(1000);
 
+  Epever::Begin();
+
+  ModbusRTU::ReadHoldingRegisters(
+    MODBUS_SLAVE_ID,
+    EpeverRegister::PV_ARRAY_VOLTAGE,
+    2);
+    
   ModbusRTU::ReadHoldingRegisters(
     MODBUS_SLAVE_ID,
     EpeverRegister::BATTERY_VOLTAGE,

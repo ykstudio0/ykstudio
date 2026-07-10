@@ -50,7 +50,7 @@ bool ModbusRTU::ReadHoldingRegisters(
 
     if (len > 0)
     {
-        Serial.printf("LEN = %u\r\n", len);
+        // Serial.printf("LEN = %u\r\n", len);
         Logger::Hex("RX", rx, len);
     }
     else
