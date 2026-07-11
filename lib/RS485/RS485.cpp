@@ -42,15 +42,23 @@ void RS485::Send(
     const uint8_t* data, 
     size_t length)
 {
+    // RX 버퍼 비우기
+    while (RS485Serial.available())
+    {
+        RS485Serial.read();
+    }
+
     TxMode();
-    delayMicroseconds(100);
+    // delayMicroseconds(500);
+    delay(1);
     RS485Serial.write(data, length);
     RS485Serial.flush();
-    delayMicroseconds(100);
+    // delayMicroseconds(500);
+    delay(1);
     RxMode();
 }
 
-size_t RS485::Receive(
+    size_t RS485::Receive(
     uint8_t* buffer,
     size_t maxLength,
     uint32_t timeout)
@@ -69,6 +77,7 @@ size_t RS485::Receive(
             start = millis();
         }
     }
+
     return length;
 }
 

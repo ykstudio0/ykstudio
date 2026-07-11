@@ -50,15 +50,45 @@ bool ModbusRTU::ReadInputRegisters(
 
     size_t len = RS485::Receive(response, responseSize);
 
+    if (len == 0)
+    {
+        Logger::Warning("MODBUS", "No Response");
+        return false;
+    }
+
+    // Logger::Hex("RX", response, len);
+
+    // 최소 프레임 확인
+    if (len < 5)
+    {
+        Logger::Error("MODBUS", "Frame Too Short");
+        return false;
+    }
+
+    // 기대 길이 계산
+    size_t expectedLength = 3 + response[2] + 2;
+
+    if (len != expectedLength)
+    {
+        Logger::Error(
+            "MODBUS",
+            "Invalid Length (" +
+            String(len) +
+            "/" +
+            String(expectedLength) +
+            ")");
+        return false;
+    }
+
     if (len > 0)
     {
         // Serial.printf("LEN = %u\r\n", len);
         Logger::Hex("RX", response, len);
     }
-    else
-    {
-        Logger::Warning("MODBUS", "No Response");
-    }
+    // else
+    // {
+    //     Logger::Warning("MODBUS", "No Response");
+    // }
 
     return true;
 }

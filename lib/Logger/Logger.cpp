@@ -45,6 +45,8 @@ void Logger::Hex(const String& tag, const uint8_t* data, size_t length)
     Serial.print(tag);
     Serial.print("] ");
 
+    Serial.printf("LEN = %u\n", length);
+
     for (size_t i = 0; i < length; i++)
     {
         if (data[i] < 0x10)

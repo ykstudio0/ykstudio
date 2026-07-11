@@ -25,15 +25,44 @@ bool Epever::Update()
 
     success &= ReadSolar();
     success &= ReadBattery();
-    success &= ReadLoad();
-    success &= ReadTemperature();
-    success &= ReadSOC();
+    // success &= ReadLoad();
+    // success &= ReadTemperature();
+    // success &= ReadSOC();
     
     return success;
 }
 
 bool Epever::ReadSolar()
 {
+    uint16_t reg[4];
+
+    if (!ReadRegisters(
+        EpeverRegister::PV_ARRAY_VOLTAGE,
+        4,
+        reg))
+    {
+        return false;
+    }
+
+    //--------------------------------------
+    // PV Voltage
+    //--------------------------------------
+    Data.pvVoltage = ToVoltage(reg[0]);
+
+    //--------------------------------------
+    // PV Current
+    //--------------------------------------
+    Data.pvCurrent = ToCurrent(reg[1]);
+
+    //--------------------------------------
+    // PV Power (32bit)
+    //--------------------------------------
+    uint32_t power =
+        ((uint32_t)reg[3] << 16) |
+        reg[2];
+    
+    Data.pvPower = ToPower(power);
+
     return true;
 }
 
@@ -102,8 +131,17 @@ bool Epever::ReadRegisters(
 
     if (rx[0] != MODBUS_SLAVE_ID)
         return false;
+    
     if (rx[1] != MODBUS_READ_INPUT_REGISTERS)
         return false;
+    
+    if (rx[2] != count * 2)
+    {
+        Logger::Error(
+            "MODBUS",
+            "Byte Count Error");
+        return false;
+    }
 
     for (uint16_t i = 0; i < count; i++)
     {
