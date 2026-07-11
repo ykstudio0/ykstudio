@@ -49,12 +49,11 @@ void RS485::Send(
     }
 
     TxMode();
-    // delayMicroseconds(500);
-    delay(1);
+    delayMicroseconds(100);
     RS485Serial.write(data, length);
     RS485Serial.flush();
-    // delayMicroseconds(500);
-    delay(1);
+    delayMicroseconds(100);
+    // delay(1);
     RxMode();
 }
 
