@@ -12,6 +12,7 @@
 
 #include <Arduino.h>
 #include "Pins.h"
+#include "Config.h"
 
 class RS485
 {
@@ -25,7 +26,12 @@ public:
     static size_t Receive(
         uint8_t* buffer,
         size_t maxLength,
-        uint32_t timeout = 100);
+        uint32_t timeout = MODBUS_TIMEOUT);
+    static bool ReceiveFrame(
+        uint8_t* buffer,
+        size_t& length,
+        size_t maxLength,
+        uint32_t timeout = MODBUS_TIMEOUT);
 
 private:
 

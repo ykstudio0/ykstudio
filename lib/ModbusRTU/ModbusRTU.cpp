@@ -48,13 +48,25 @@ bool ModbusRTU::ReadInputRegisters(
     
     uint8_t rx[64];
 
-    size_t len = RS485::Receive(response, responseSize);
+    size_t len;
 
-    if (len == 0)
+    if (!RS485::ReceiveFrame(
+        response,
+        len,
+        responseSize))
     {
-        Logger::Warning("MODBUS", "No Response");
+        Logger::Warning("MODBUS", "NO Response");
         return false;
     }
+
+    
+    // size_t len = RS485::Receive(response, responseSize);
+
+    // if (len == 0)
+    // {
+    //     Logger::Warning("MODBUS", "No Response");
+    //     return false;
+    // }
 
     // Logger::Hex("RX", response, len);
 
@@ -65,6 +77,27 @@ bool ModbusRTU::ReadInputRegisters(
         return false;
     }
 
+    uint16_t crcCalc = 
+        CRC16::Calculate(response, len - 2);
+
+    uint16_t crcRecv =
+        (uint16_t)response[len - 2] |
+        ((uint16_t)response[len - 1] << 8);
+
+    if (crcCalc != crcRecv)
+    {
+        char msg[40];
+
+        sprintf(
+            msg,
+            "CRC Error (%04X/%04X)",
+            crcRecv,
+            crcCalc);
+        Logger::Error("MODBUS", msg);
+
+        return false;
+    }
+        
     // 기대 길이 계산
     size_t expectedLength = 3 + response[2] + 2;
 
@@ -90,5 +123,21 @@ bool ModbusRTU::ReadInputRegisters(
     //     Logger::Warning("MODBUS", "No Response");
     // }
 
+    if (response[1] & 0x80)
+    {
+        char msg[32];
+
+        sprintf(
+            msg,
+            "Exception %02X",
+            response[2]);
+
+        Logger::Error(
+            "MODBUS",
+            msg);
+
+        return false;
+    }
+    
     return true;
 }

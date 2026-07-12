@@ -57,6 +57,30 @@ void RS485::Send(
     RxMode();
 }
 
+static bool ReceiveFrame(
+    uint8_t* buffer,
+    size_t& length,
+    size_t maxLength,
+    uint32_t timeout = MODBUS_TIMEOUT);
+
+bool RS485::ReceiveFrame(
+    uint8_t* buffer,
+    size_t& length,
+    size_t maxLength,
+    uint32_t timeout)
+{
+    length = Receive(
+        buffer,
+        maxLength,
+        timeout);
+    
+    if (length == 0)
+    {
+        return false;
+    }
+    return true;
+}
+    
     size_t RS485::Receive(
     uint8_t* buffer,
     size_t maxLength,
