@@ -108,8 +108,3 @@ bool RS485::Available()
 {
     return RS485Serial.available();
 }
-
-// uint8_t RS485::Read()
-// {
-//     return RS485Serial.read();
-// }

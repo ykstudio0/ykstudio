@@ -8,6 +8,7 @@
 //-------------------------------------------------------------
 
 #include <Arduino.h>
+#include "Version.h"
 #include "StatusLED.h"
 #include "Logger.h"
 #include "RS485.h"
@@ -16,6 +17,7 @@
 #include "Config.h"
 #include "EpeverRegisters.h"
 #include "Epever.h"
+#include "DeviceManager.h"
 
 void setup()
 {
@@ -23,17 +25,19 @@ void setup()
   delay(BOOT_DELAY_MS);
   
   Logger::Begin();
-  Logger::Info("SYSTEM", SVEMS_VERSION);
+  Logger::Info(DEVICE_NAME, SVEMS_VERSION_STRING);
   Logger::Info("LOGGER","Logger OK");
   RS485::Begin();
   Logger::Info("RS485", "Ready");
   ModbusRTU::Begin();
+  DeviceManager::Begin();
+  Logger::Info("DEVICES", "Ready");
   delay(1000);
 }
 
 void loop()
 {
-  if (Epever::Update())
+  if (DeviceManager::Update())
   {
     Logger::Info(
       "PV",

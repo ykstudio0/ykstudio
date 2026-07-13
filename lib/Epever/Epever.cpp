@@ -15,21 +15,29 @@
 #include "Config.h"
 #include "Units.h"
 
-EpeverData Epever::Data;
+// Epever::DataType Epever::Data =
+// {
+//     0
+// };
 
-uint16_t Epever::Buffer[32];
+EpeverData Epever::Data;
 
 bool Epever::Update()
 {
-    bool success = true;
+    bool ok = true;
 
-    success &= ReadSolar();
-    success &= ReadBattery();
-    // success &= ReadLoad();
-    // success &= ReadTemperature();
-    // success &= ReadSOC();
-    
-    return success;
+    ok &= ReadSolar();
+    ok &= ReadBattery();
+    // ok &= ReadLoad();
+    // ok &= ReadTemperature();
+    // ok &= ReadSOC();
+    Data.online = ok;
+    if (ok)
+    {
+        Data.lastUpdate = millis();
+    }
+
+    return ok;
 }
 
 bool Epever::ReadSolar()
@@ -44,19 +52,13 @@ bool Epever::ReadSolar()
         return false;
     }
 
-    //--------------------------------------
     // PV Voltage
-    //--------------------------------------
     Data.pvVoltage = ToVoltage(reg[0]);
 
-    //--------------------------------------
     // PV Current
-    //--------------------------------------
     Data.pvCurrent = ToCurrent(reg[1]);
 
-    //--------------------------------------
     // PV Power (32bit)
-    //--------------------------------------
     uint32_t power =
         ((uint32_t)reg[3] << 16) |
         reg[2];
@@ -66,16 +68,12 @@ bool Epever::ReadSolar()
     return true;
 }
 
-//------------------------------------------
 // Read Battery Information
-//------------------------------------------
 bool Epever::ReadBattery()
 {
     uint16_t reg[2];
 
-    //----------------------------------
     // Read Battery Voltage / Current
-    //----------------------------------
     if (!ReadRegisters(
         EpeverRegister::EPEVER_BATTERY_VOLTAGE,
         2,
@@ -84,16 +82,17 @@ bool Epever::ReadBattery()
         return false;
     }
     
-    //------------------------------------
     // Battery Voltage
-    //------------------------------------
     Data.batteryVoltage = ToVoltage(reg[0]);
 
-    //------------------------------------
     // Battery Current
-    //------------------------------------
     Data.batteryCurrent = ToCurrent(reg[1]);
 
+    return true;
+}
+
+bool Epever::Begin()
+{
     return true;
 }
 
