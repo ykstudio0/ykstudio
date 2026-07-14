@@ -14,6 +14,7 @@
 #include "ModbusRTU.h"
 #include "Config.h"
 #include "Units.h"
+#include "EpeverMaps.h"
 
 // Epever::DataType Epever::Data =
 // {
@@ -42,26 +43,27 @@ bool Epever::Update()
 
 bool Epever::ReadSolar()
 {
-    uint16_t reg[4];
+    // uint16_t reg[4];
+    EpeverMap::Solar solar;
 
     if (!ReadRegisters(
         EpeverRegister::PV_ARRAY_VOLTAGE,
-        4,
-        reg))
+        sizeof(solar) / 2,
+        (uint16_t*)&solar))
     {
         return false;
     }
 
     // PV Voltage
-    Data.pvVoltage = ToVoltage(reg[0]);
+    Data.pvVoltage = ToVoltage(solar.voltage);
 
     // PV Current
-    Data.pvCurrent = ToCurrent(reg[1]);
+    Data.pvCurrent = ToCurrent(solar.current);
 
     // PV Power (32bit)
     uint32_t power =
-        ((uint32_t)reg[3] << 16) |
-        reg[2];
+        ((uint32_t)solar.powerHigh << 16) |
+        solar.powerLow;
     
     Data.pvPower = ToPower(power);
 
@@ -71,22 +73,23 @@ bool Epever::ReadSolar()
 // Read Battery Information
 bool Epever::ReadBattery()
 {
-    uint16_t reg[2];
-
+    // uint16_t reg[2];
+    EpeverMap::Battery battery;
+    
     // Read Battery Voltage / Current
     if (!ReadRegisters(
         EpeverRegister::EPEVER_BATTERY_VOLTAGE,
-        2,
-        reg))
+        sizeof(battery) / 2,
+        (uint16_t*)&battery))
     {
         return false;
     }
     
     // Battery Voltage
-    Data.batteryVoltage = ToVoltage(reg[0]);
+    Data.batteryVoltage = ToVoltage(battery.voltage);
 
     // Battery Current
-    Data.batteryCurrent = ToCurrent(reg[1]);
+    Data.batteryCurrent = ToCurrent(battery.current);
 
     return true;
 }
