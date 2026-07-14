@@ -29,9 +29,9 @@ bool Epever::Update()
 
     ok &= ReadSolar();
     ok &= ReadBattery();
-    // ok &= ReadLoad();
-    // ok &= ReadTemperature();
-    // ok &= ReadSOC();
+    ok &= ReadLoad();
+    ok &= ReadTemperature();
+    ok &= ReadSOC();
     Data.online = ok;
     if (ok)
     {
@@ -43,7 +43,6 @@ bool Epever::Update()
 
 bool Epever::ReadSolar()
 {
-    // uint16_t reg[4];
     EpeverMap::Solar solar;
 
     if (!ReadRegisters(
@@ -73,7 +72,6 @@ bool Epever::ReadSolar()
 // Read Battery Information
 bool Epever::ReadBattery()
 {
-    // uint16_t reg[2];
     EpeverMap::Battery battery;
     
     // Read Battery Voltage / Current
