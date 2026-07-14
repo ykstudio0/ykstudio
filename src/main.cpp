@@ -31,7 +31,7 @@ void setup()
   Logger::Info("RS485", "Ready");
   ModbusRTU::Begin();
   DeviceManager::Begin();
-  Logger::Info("DEVICES", "Ready");
+  // Logger::Info("DEVICES", "Ready");
   delay(1000);
 }
 
