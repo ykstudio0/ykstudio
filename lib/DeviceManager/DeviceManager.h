@@ -15,6 +15,10 @@ class DeviceManager
 public:
     static bool Begin();
     static bool Update();
+    static bool IsReady();
+
+private:
+    static bool Ready;
 };
 
 #endif

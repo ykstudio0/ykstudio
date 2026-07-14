@@ -8,20 +8,37 @@
 //-------------------------------------------------------------
 
 #include "DeviceManager.h"
+#include "Logger.h"
 #include "Epever.h"
+#include "Scheduler.h"
+
+bool DeviceManager::Ready = false;
 
 bool DeviceManager::Begin()
 {
     bool ok = true;
-    ok &= Epever::Begin();
 
+    ok &= Epever::Begin();
+    ok &= Scheduler::Begin();
+
+    Ready = ok;
+
+    if (ok)
+        Logger::Info("DEVICES", "Ready");
+    else
+        Logger::Error("DEVICES", "Init Failed");
+        
     return ok;
 }
 
 bool DeviceManager::Update()
 {
-    bool ok = true;
-    ok &= Epever::Update();
+    Scheduler::Run();
 
-    return ok;
+    return true;
+}
+
+bool DeviceManager::IsReady()
+{
+    return Ready;
 }
