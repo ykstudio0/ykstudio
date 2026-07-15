@@ -66,27 +66,74 @@ void Scheduler::Run()
     }
 }
 
+//------------------------------
+// 0.1 Second Tasks
+//------------------------------
 void Scheduler::Run100ms()
 {
 
 }
 
+//------------------------------
+// 1 Second Tasks
+//------------------------------
 void Scheduler::Run1sec()
 {
-    Epever::ReadSolar();
+    PollSolar();
 }
 
+//------------------------------
+// 5 Second Tasks
+//------------------------------
 void Scheduler::Run5sec()
 {
-    Epever::ReadBattery();
+    PollBattery();
 }
 
+//------------------------------
+// 30 Second Tasks
+//------------------------------
 void Scheduler::Run30sec()
 {
     // Epever::ReadTemperature();
 }
 
+//------------------------------
+// 60 Second Tasks
+//------------------------------
 void Scheduler::Run60sec()
+{
+    // Epever::ReadSOC();
+}
+
+//------------------------------
+// Poll Solar Information
+//------------------------------
+void Scheduler::PollSolar()
+{
+    Epever::ReadSolar();
+}
+
+//------------------------------
+// Poll Battery Information
+//------------------------------
+void Scheduler::PollBattery()
+{
+    Epever::ReadBattery();
+}
+
+//------------------------------
+// Poll Temperature Information
+//------------------------------
+void Scheduler::PollTemperature()
+{
+    // Epever::ReadTemperature();
+}
+
+//------------------------------
+// Poll SOC Information
+//------------------------------
+void Scheduler::PollSOC()
 {
     // Epever::ReadSOC();
 }

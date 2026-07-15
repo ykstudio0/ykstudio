@@ -24,6 +24,11 @@ private:
     static void Run5sec();
     static void Run30sec();
     static void Run60sec();
+
+    static void PollSolar();
+    static void PollBattery();
+    static void PollTemperature();
+    static void PollSOC();
 };
 
 #endif
