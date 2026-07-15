@@ -10,11 +10,20 @@
 #ifndef SCHEDULER_H
 #define SCHEDULER_H
 
+# include <Arduino.h>
+
 class Scheduler
 {
 public:
     static bool Begin();
     static void Run();
+
+private:
+    static void Run100ms();
+    static void Run1sec();
+    static void Run5sec();
+    static void Run30sec();
+    static void Run60sec();
 };
 
 #endif

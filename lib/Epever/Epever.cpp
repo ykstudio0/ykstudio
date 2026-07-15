@@ -27,16 +27,16 @@ bool Epever::Update()
 {
     bool ok = true;
 
-    ok &= ReadSolar();
-    ok &= ReadBattery();
-    ok &= ReadLoad();
-    ok &= ReadTemperature();
-    ok &= ReadSOC();
-    Data.online = ok;
-    if (ok)
-    {
-        Data.lastUpdate = millis();
-    }
+    // ok &= ReadSolar();
+    // ok &= ReadBattery();
+    // ok &= ReadLoad();
+    // ok &= ReadTemperature();
+    // ok &= ReadSOC();
+    // Data.online = ok;
+    // if (ok)
+    // {
+    //     Data.lastUpdate = millis();
+    // }
 
     return ok;
 }

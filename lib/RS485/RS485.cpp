@@ -9,6 +9,7 @@
 
 #include "RS485.h"
 #include "Config.h"
+#include "Logger.h"
 
 HardwareSerial RS485Serial(1);
 
@@ -24,6 +25,8 @@ bool RS485::Begin()
         PIN_RS485_RX,
         PIN_RS485_TX
     );
+
+    Logger::Info("RS485", "Ready");
 
     return true;
 }

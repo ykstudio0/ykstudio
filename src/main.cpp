@@ -26,12 +26,11 @@ void setup()
   
   Logger::Begin();
   Logger::Info(DEVICE_NAME, SVEMS_VERSION_STRING);
-  Logger::Info("LOGGER","Logger OK");
+  // Logger::Info("LOGGER","Logger OK");
   RS485::Begin();
-  Logger::Info("RS485", "Ready");
+  // Logger::Info("RS485", "Ready");
   ModbusRTU::Begin();
   DeviceManager::Begin();
-  // Logger::Info("DEVICES", "Ready");
   delay(1000);
 }
 
