@@ -11,7 +11,6 @@ void Logger::Begin()
 {
     Serial.println();
     Serial.println("========== LOGGER READY ==========");
-    // Logger::Info("LOGGER","Logger OK");
 }
 
 void Logger::Info(const String& tag, const String& message)

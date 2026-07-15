@@ -16,27 +16,11 @@
 #include "Units.h"
 #include "EpeverMaps.h"
 
-// Epever::DataType Epever::Data =
-// {
-//     0
-// };
-
 EpeverData Epever::Data;
 
 bool Epever::Update()
 {
     bool ok = true;
-
-    // ok &= ReadSolar();
-    // ok &= ReadBattery();
-    // ok &= ReadLoad();
-    // ok &= ReadTemperature();
-    // ok &= ReadSOC();
-    // Data.online = ok;
-    // if (ok)
-    // {
-    //     Data.lastUpdate = millis();
-    // }
 
     return ok;
 }

@@ -10,8 +10,6 @@
 #include "Scheduler.h"
 #include "Epever.h"
 
-// static uint32_t LastPoll = 0;
-
 namespace
 {
     uint32_t Timer100ms = 0;
