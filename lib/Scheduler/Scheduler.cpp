@@ -9,6 +9,7 @@
 
 #include "Scheduler.h"
 #include "Epever.h"
+#include "Logger.h"
 
 namespace
 {
@@ -64,6 +65,8 @@ void Scheduler::Run()
         Timer60sec = now;
         Run60sec();
     }
+
+    Service();
 }
 
 //------------------------------
@@ -136,4 +139,41 @@ void Scheduler::PollTemperature()
 void Scheduler::PollSOC()
 {
     // Epever::ReadSOC();
+}
+
+void Scheduler::Service()
+{
+    ServiceLogger();
+}
+
+void Scheduler::ServiceLogger()
+{
+    if (Epever::Data.updated.solar)
+    {
+        char buffer[32];
+        sprintf(buffer, "%.2f V", Epever::Data.pvVoltage);
+        Logger::Info("PV", buffer);
+        
+        sprintf(buffer, "%.2f A", Epever::Data.pvCurrent);
+        Logger::Info("PV", buffer);
+
+        sprintf(buffer, "%.1f W", Epever::Data.pvPower);
+        Logger::Info("PV", buffer);
+
+        Epever::Data.updated.solar = false;
+    }
+
+    if (Epever::Data.updated.battery)
+    {
+        char buffer[32];
+
+        sprintf(buffer, "%.2f V", Epever::Data.batteryVoltage);
+        Logger::Info("BATTERY", buffer);
+
+        sprintf(buffer, "%.2f A", Epever::Data.batteryCurrent);
+        Logger::Info("BATTERY", buffer);
+
+        Epever::Data.updated.battery = false;
+    }
+    Epever::ClearUpdates();
 }

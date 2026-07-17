@@ -71,6 +71,8 @@ bool Epever::ReadSolar()
     }
 
     Data.updated.solar = updated;
+
+    return true;
 }
 
 // Read Battery Information
@@ -108,6 +110,8 @@ bool Epever::ReadBattery()
     }
 
     Data.updated.battery = updated;
+
+    return true;
 }
 
 bool Epever::Begin()
@@ -168,4 +172,13 @@ bool Epever::ReadRegisters(
             rx[4 + i * 2];
     }
     return true;
+}
+
+void Epever::ClearUpdates()
+{
+    Data.updated.solar = false;
+    Data.updated.battery = false;
+    Data.updated.load = false;
+    Data.updated.temperature = false;
+    Data.updated.soc = false;
 }

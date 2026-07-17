@@ -34,26 +34,7 @@ void setup()
 
 void loop()
 {
-  if (DeviceManager::Update())
-  {
-    Logger::Info(
-      "PV",
-      String(Epever::Data.pvVoltage, 2) + " V");
-
-    Logger::Info(
-      "PV",
-      String(Epever::Data.pvCurrent, 2) + " A");
-
-    Logger::Info(
-      "PV",
-      String(Epever::Data.pvPower, 1) + " W");
-
-    Logger::Info(
-      "BATTERY",
-      String(Epever::Data.batteryVoltage, 2) + " V");
-    Logger::Info(
-      "BATTERY",
-      String(Epever::Data.batteryCurrent, 2) + " A");
-  }
-  delay(1000);
+  DeviceManager::Update();
+  
+  delay(1);
 }

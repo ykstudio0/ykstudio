@@ -12,6 +12,15 @@
 
 #include <Arduino.h>
 
+struct EpeverUpdateFlags
+{
+    bool solar = false;
+    bool battery = false;
+    bool load = false;
+    bool temperature = false;
+    bool soc = false;
+};
+
 struct EpeverData
 {
     // Solar
@@ -40,14 +49,17 @@ struct EpeverData
     uint32_t lastUpdate = 0;
 
     // Updata Event
-    struct
-    {
-        bool solar       = false;
-        bool battery     = false;
-        bool load        = false;
-        bool temperature = false;
-        bool soc         = false;
-    } updated;
+    // struct
+    // {
+    //     bool solar       = false;
+    //     bool battery     = false;
+    //     bool load        = false;
+    //     bool temperature = false;
+    //     bool soc         = false;
+    // } updated;
+
+    // Update Flags
+    EpeverUpdateFlags updated;
 };
 
 class Epever
@@ -63,7 +75,7 @@ public:
     static bool ReadLoad();
     static bool ReadTemperature();
     static bool ReadSOC();
-    // static EpeverData Data;
+    static void ClearUpdates();
 
 private:
     static bool ReadRegisters(

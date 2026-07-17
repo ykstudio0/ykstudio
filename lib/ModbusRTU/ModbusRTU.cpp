@@ -56,6 +56,7 @@ bool ModbusRTU::ReadInputRegisters(
         responseSize))
     {
         Logger::Warning("MODBUS", "NO Response");
+
         return false;
     }
 

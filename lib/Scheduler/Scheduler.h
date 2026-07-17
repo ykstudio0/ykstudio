@@ -29,6 +29,9 @@ private:
     static void PollBattery();
     static void PollTemperature();
     static void PollSOC();
+
+    static void Service();
+    static void ServiceLogger();
 };
 
 #endif
