@@ -47,7 +47,6 @@ bool Epever::ReadSolar()
         Data.pvVoltage = voltage;
         updated = true;
     }
-    // Data.pvVoltage = ToVoltage(solar.voltage);
 
     // PV Current
     float current = ToCurrent(solar.current);
@@ -57,7 +56,6 @@ bool Epever::ReadSolar()
         Data.pvCurrent = current;
         updated = true;
     }
-    // Data.pvCurrent = ToCurrent(solar.current);
 
     // PV Power (32bit)
     uint32_t rawPower =
@@ -71,10 +69,8 @@ bool Epever::ReadSolar()
         Data.pvPower = power;
         updated = true;
     }
-    // Data.pvPower = ToPower(power);
 
     Data.updated.solar = updated;
-    // return true;
 }
 
 // Read Battery Information
@@ -101,7 +97,6 @@ bool Epever::ReadBattery()
         Data.batteryVoltage = voltage;
         updated = true;
     }
-    // Data.batteryVoltage = ToVoltage(battery.voltage);
 
     // Battery Current
     float current = ToCurrent(battery.current);
@@ -111,10 +106,8 @@ bool Epever::ReadBattery()
         Data.batteryCurrent = current;
         updated = true;
     }
-    // Data.batteryCurrent = ToCurrent(battery.current);
 
     Data.updated.battery = updated;
-    // return true;
 }
 
 bool Epever::Begin()
