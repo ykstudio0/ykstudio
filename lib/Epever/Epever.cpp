@@ -29,6 +29,8 @@ bool Epever::ReadSolar()
 {
     EpeverMap::Solar solar;
 
+    bool updated = false;
+
     if (!ReadRegisters(
         EpeverRegister::PV_ARRAY_VOLTAGE,
         sizeof(solar) / 2,
@@ -38,19 +40,41 @@ bool Epever::ReadSolar()
     }
 
     // PV Voltage
-    Data.pvVoltage = ToVoltage(solar.voltage);
+    float voltage = ToVoltage(solar.voltage);
+
+    if (voltage != Data.pvVoltage)
+    {
+        Data.pvVoltage = voltage;
+        updated = true;
+    }
+    // Data.pvVoltage = ToVoltage(solar.voltage);
 
     // PV Current
-    Data.pvCurrent = ToCurrent(solar.current);
+    float current = ToCurrent(solar.current);
+
+    if (current != Data.pvCurrent)
+    {
+        Data.pvCurrent = current;
+        updated = true;
+    }
+    // Data.pvCurrent = ToCurrent(solar.current);
 
     // PV Power (32bit)
-    uint32_t power =
+    uint32_t rawPower =
         ((uint32_t)solar.powerHigh << 16) |
         solar.powerLow;
     
-    Data.pvPower = ToPower(power);
+    float power = ToPower(rawPower);
 
-    return true;
+    if (power != Data.pvPower)
+    {
+        Data.pvPower = power;
+        updated = true;
+    }
+    // Data.pvPower = ToPower(power);
+
+    Data.updated.solar = updated;
+    // return true;
 }
 
 // Read Battery Information
@@ -67,13 +91,30 @@ bool Epever::ReadBattery()
         return false;
     }
     
+    bool updated = false;
+
     // Battery Voltage
-    Data.batteryVoltage = ToVoltage(battery.voltage);
+    float voltage = ToVoltage(battery.voltage);
+
+    if (voltage != Data.batteryVoltage)
+    {
+        Data.batteryVoltage = voltage;
+        updated = true;
+    }
+    // Data.batteryVoltage = ToVoltage(battery.voltage);
 
     // Battery Current
-    Data.batteryCurrent = ToCurrent(battery.current);
+    float current = ToCurrent(battery.current);
 
-    return true;
+    if (current != Data.batteryCurrent)
+    {
+        Data.batteryCurrent = current;
+        updated = true;
+    }
+    // Data.batteryCurrent = ToCurrent(battery.current);
+
+    Data.updated.battery = updated;
+    // return true;
 }
 
 bool Epever::Begin()
