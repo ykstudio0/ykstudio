@@ -17,9 +17,9 @@ DataManager::SOCData DataManager::Soc;
 
 void DataManager::ClearUpdates()
 {
-    Solar.updated = false;
-    Battery.updated = false;
-    Load.updated = false;
-    Temperature.updated = false;
-    Soc.updated = false;
+    Solar.status.updated = false;
+    Battery.status.updated = false;
+    Load.status.updated = false;
+    Temperature.status.updated = false;
+    Soc.status.updated = false;
 }

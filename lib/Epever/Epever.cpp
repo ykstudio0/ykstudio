@@ -30,48 +30,55 @@ bool Epever::ReadSolar()
 {
     EpeverMap::Solar solar;
 
-    bool updated = false;
+    // bool updated = false;
 
     if (!ReadRegisters(
         EpeverRegister::PV_ARRAY_VOLTAGE,
         sizeof(solar) / 2,
         (uint16_t*)&solar))
     {
+        DataManager::Solar.status.online = false;
         return false;
     }
 
     // PV Voltage
-    float voltage = ToVoltage(solar.voltage);
+    DataManager::Solar.voltage = ToVoltage(solar.voltage);
+    // float voltage = ToVoltage(solar.voltage);
 
-    if (voltage != DataManager::Solar.voltage)
-    {
-        DataManager::Solar.voltage = voltage;
-        updated = true;
-    }
+    // if (voltage != DataManager::Solar.voltage)
+    // {
+    //     DataManager::Solar.voltage = voltage;
+    //     updated = true;
+    // }
 
     // PV Current
-    float current = ToCurrent(solar.current);
+    DataManager::Solar.current = ToCurrent(solar.current);
+    // float current = ToCurrent(solar.current);
 
-    if (current != DataManager::Solar.current)
-    {
-        DataManager::Solar.current = current;
-        updated = true;
-    }
+    // if (current != DataManager::Solar.current)
+    // {
+    //     DataManager::Solar.current = current;
+    //     updated = true;
+    // }
 
     // PV Power (32bit)
     uint32_t rawPower =
         ((uint32_t)solar.powerHigh << 16) |
         solar.powerLow;
     
-    float power = ToPower(rawPower);
+    DataManager::Solar.power = ToPower(rawPower);
 
-    if (power != DataManager::Solar.power)
-    {
-        DataManager::Solar.power = power;
-        updated = true;
-    }
+    // float power = ToPower(rawPower);
 
-    DataManager::Solar.updated = updated;
+    // if (power != DataManager::Solar.power)
+    // {
+    //     DataManager::Solar.power = power;
+    //     updated = true;
+    // }
+
+    DataManager::Solar.status.updated = true;
+    DataManager::Solar.status.online = true;
+    DataManager::Solar.status.lastUpdate = millis();
 
     return true;
 }
@@ -87,30 +94,35 @@ bool Epever::ReadBattery()
         sizeof(battery) / 2,
         (uint16_t*)&battery))
     {
+        DataManager::Battery.status.online = false;
         return false;
     }
     
-    bool updated = false;
+    // bool updated = false;
 
     // Battery Voltage
-    float voltage = ToVoltage(battery.voltage);
+    DataManager::Battery.voltage = ToVoltage(battery.voltage);
+    // float voltage = ToVoltage(battery.voltage);
 
-    if (voltage != DataManager::Battery.voltage)
-    {
-        DataManager::Battery.voltage = voltage;
-        updated = true;
-    }
+    // if (voltage != DataManager::Battery.voltage)
+    // {
+    //     DataManager::Battery.voltage = voltage;
+    //     updated = true;
+    // }
 
     // Battery Current
-    float current = ToCurrent(battery.current);
+    DataManager::Battery.current = ToCurrent(battery.current);
+    // float current = ToCurrent(battery.current);
 
-    if (current != DataManager::Battery.current)
-    {
-        DataManager::Battery.current = current;
-        updated = true;
-    }
+    // if (current != DataManager::Battery.current)
+    // {
+    //     DataManager::Battery.current = current;
+    //     updated = true;
+    // }
 
-    DataManager::Battery.updated = updated;
+    DataManager::Battery.status.updated = true;
+    DataManager::Battery.status.online = true;
+    DataManager::Battery.status.lastUpdate = millis();
 
     return true;
 }
@@ -177,9 +189,9 @@ bool Epever::ReadRegisters(
 
 void Epever::ClearUpdates()
 {
-    DataManager::Solar.updated = false;
-    DataManager::Battery.updated = false;
-    DataManager::Load.updated = false;
-    DataManager::Temperature.updated = false;
-    DataManager::Soc.updated = false;
+    DataManager::Solar.status.updated = false;
+    DataManager::Battery.status.updated = false;
+    DataManager::Load.status.updated = false;
+    DataManager::Temperature.status.updated = false;
+    DataManager::Soc.status.updated = false;
 }

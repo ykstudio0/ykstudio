@@ -149,7 +149,7 @@ void Scheduler::Service()
 
 void Scheduler::ServiceLogger()
 {
-    if (DataManager::Solar.updated)
+    if (DataManager::Solar.status.updated)
     {
         char buffer[32];
         sprintf(buffer, "%.2f V", DataManager::Solar.voltage);
@@ -161,10 +161,10 @@ void Scheduler::ServiceLogger()
         sprintf(buffer, "%.1f W", DataManager::Solar.power);
         Logger::Info("PV", buffer);
 
-        DataManager::Solar.updated = false;
+        DataManager::Solar.status.updated = false;
     }
 
-    if (DataManager::Battery.updated)
+    if (DataManager::Battery.status.updated)
     {
         char buffer[32];
 
@@ -174,7 +174,7 @@ void Scheduler::ServiceLogger()
         sprintf(buffer, "%.2f A", DataManager::Battery.current);
         Logger::Info("BATTERY", buffer);
 
-        DataManager::Battery.updated = false;
+        DataManager::Battery.status.updated = false;
     }
     DataManager::ClearUpdates();
 }

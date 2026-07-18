@@ -116,7 +116,14 @@ v0.2.4 : Device Health(통신 상태, 오류 횟수)
     Timeout Fixed
     Receive Engine Fixed
 v0.2.5 : Display Manager 기반 마련
-    DataManager 완성
+    DataManager 리팩터링 1단계 진행 중
+    SolarData, BatteryData, LoadData, TemperatureData 구조 분리 완료
+    DataManager.cpp에 정적 인스턴스 4개 정의 완료
+    ClearUpdates() 구현 완료
+    빌드 성공
+    ReadSolar() 데이터를 DataManager::Solar 기반으로 변경 후 정상 동작 확인
+    ReadBattery() 데이터도 DataManager로 이동 후 로그 정상 출력 확인
+    현재 로그에서 PV와 Battery 값이 정상적으로 읽히는 상태
 v0.3.0 : LCD 대시보드
 v0.4.0 : Wi-Fi 모니터링
 v1.0.0 : 차량 실사용 버전

@@ -8,17 +8,26 @@
 //-------------------------------------------------------------
 
 #pragma once
+#include <stdint.h>
 
 class DataManager
 {
 public:
+    struct Status
+    {
+        bool updated = false;
+        bool online = false;
+        uint32_t lastUpdate = 0;
+    };
+
     struct SolarData
     {
         float voltage = 0.0f;
         float current = 0.0f;
         float power   = 0.0f;
 
-        bool updated = false;
+        // bool updated = false;
+        Status status;
     };
 
     struct BatteryData
@@ -26,7 +35,8 @@ public:
         float voltage = 0.0f;
         float current = 0.0f;
 
-        bool updated = false;
+        // bool updated = false;
+        Status status;
     };
 
     struct LoadData
@@ -35,7 +45,8 @@ public:
         float current = 0.0f;
         float power   = 0.0f;
 
-        bool updated = false;
+        // bool updated = false;
+        Status status;
     };
 
     struct TemperatureData
@@ -43,14 +54,16 @@ public:
         float batteryTemperature = 0.0f;
         float controllerTemperature = 0.0f;
 
-        bool updated = false;
+        // bool updated = false;
+        Status status;
     };
 
     struct SOCData
     {
         float socPercent = 0.0f;
 
-        bool updated = false;
+        // bool updated = false;
+        Status status;
     };
 
     static SolarData Solar;

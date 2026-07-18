@@ -48,16 +48,6 @@ struct EpeverData
     bool online = false;
     uint32_t lastUpdate = 0;
 
-    // Updata Event
-    // struct
-    // {
-    //     bool solar       = false;
-    //     bool battery     = false;
-    //     bool load        = false;
-    //     bool temperature = false;
-    //     bool soc         = false;
-    // } updated;
-
     // Update Flags
     EpeverUpdateFlags updated;
 };
