@@ -6,11 +6,14 @@
 //-----------------------------------------------------
 
 #include "Logger.h"
+#include "Config.h"
+#include "Version.h"
 
 void Logger::Begin()
 {
     Serial.println();
     Serial.println("========== LOGGER READY ==========");
+    Logger::Info(DEVICE_NAME, SVEMS_VERSION_STRING);
 }
 
 void Logger::Info(const String& tag, const String& message)

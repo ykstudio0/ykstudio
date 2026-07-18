@@ -8,15 +8,11 @@
 //-------------------------------------------------------------
 
 #include <Arduino.h>
-#include "Version.h"
 #include "StatusLED.h"
 #include "Logger.h"
 #include "RS485.h"
-#include "CRC16.h"
 #include "ModbusRTU.h"
 #include "Config.h"
-#include "EpeverRegisters.h"
-#include "Epever.h"
 #include "DeviceManager.h"
 
 void setup()
@@ -25,7 +21,6 @@ void setup()
   delay(BOOT_DELAY_MS);
   
   Logger::Begin();
-  Logger::Info(DEVICE_NAME, SVEMS_VERSION_STRING);
   RS485::Begin();
   ModbusRTU::Begin();
   DeviceManager::Begin();
