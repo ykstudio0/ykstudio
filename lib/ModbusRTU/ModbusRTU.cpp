@@ -45,15 +45,31 @@ bool ModbusRTU::ReadInputRegisters(
     Logger::Hex("TX", frame, sizeof(frame));
 
     RS485::Send(frame, sizeof(frame));
+
+    size_t len = 0;
+
+    for (uint8_t retry = 0;
+        retry <= MODBUS_RETRY;
+        retry++)
+    {
+        Logger::Hex("TX", frame, sizeof(frame));
+
+        RS485::Send(frame, sizeof(frame));
     
-    uint8_t rx[64];
+        if (!RS485::ReceiveFrame(
+            response,
+            len,
+            responseSize))
+        {
+            Logger::Info("MODBUS", "Retry #" + String(retry + 1));
+            
+            continue;
+        }
 
-    size_t len;
+        break;
+    }
 
-    if (!RS485::ReceiveFrame(
-        response,
-        len,
-        responseSize))
+    if (len == 0)
     {
         Logger::Warning("MODBUS", "NO Response");
 
