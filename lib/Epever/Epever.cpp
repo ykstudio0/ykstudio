@@ -30,8 +30,6 @@ bool Epever::ReadSolar()
 {
     EpeverMap::Solar solar;
 
-    // bool updated = false;
-
     if (!ReadRegisters(
         EpeverRegister::PV_ARRAY_VOLTAGE,
         sizeof(solar) / 2,
@@ -43,23 +41,9 @@ bool Epever::ReadSolar()
 
     // PV Voltage
     DataManager::Solar.voltage = ToVoltage(solar.voltage);
-    // float voltage = ToVoltage(solar.voltage);
-
-    // if (voltage != DataManager::Solar.voltage)
-    // {
-    //     DataManager::Solar.voltage = voltage;
-    //     updated = true;
-    // }
 
     // PV Current
     DataManager::Solar.current = ToCurrent(solar.current);
-    // float current = ToCurrent(solar.current);
-
-    // if (current != DataManager::Solar.current)
-    // {
-    //     DataManager::Solar.current = current;
-    //     updated = true;
-    // }
 
     // PV Power (32bit)
     uint32_t rawPower =
@@ -68,14 +52,7 @@ bool Epever::ReadSolar()
     
     DataManager::Solar.power = ToPower(rawPower);
 
-    // float power = ToPower(rawPower);
-
-    // if (power != DataManager::Solar.power)
-    // {
-    //     DataManager::Solar.power = power;
-    //     updated = true;
-    // }
-
+    // Solar Status
     DataManager::Solar.status.updated = true;
     DataManager::Solar.status.online = true;
     DataManager::Solar.status.lastUpdate = millis();
@@ -98,28 +75,13 @@ bool Epever::ReadBattery()
         return false;
     }
     
-    // bool updated = false;
-
     // Battery Voltage
     DataManager::Battery.voltage = ToVoltage(battery.voltage);
-    // float voltage = ToVoltage(battery.voltage);
-
-    // if (voltage != DataManager::Battery.voltage)
-    // {
-    //     DataManager::Battery.voltage = voltage;
-    //     updated = true;
-    // }
 
     // Battery Current
     DataManager::Battery.current = ToCurrent(battery.current);
-    // float current = ToCurrent(battery.current);
 
-    // if (current != DataManager::Battery.current)
-    // {
-    //     DataManager::Battery.current = current;
-    //     updated = true;
-    // }
-
+    // Battery Status
     DataManager::Battery.status.updated = true;
     DataManager::Battery.status.online = true;
     DataManager::Battery.status.lastUpdate = millis();
