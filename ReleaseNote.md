@@ -109,7 +109,14 @@ v0.2.4 : Device Health(통신 상태, 오류 횟수)
     Retry 제거
     CRC 안정
     통신 속도 안정
+    SVEMS v0.2.4
+    RS485 Driver Stable
+    Modbus RTU Stable
+    PV/Battery Read Stable
+    Timeout Fixed
+    Receive Engine Fixed
 v0.2.5 : Display Manager 기반 마련
+    DataManager 완성
 v0.3.0 : LCD 대시보드
 v0.4.0 : Wi-Fi 모니터링
 v1.0.0 : 차량 실사용 버전

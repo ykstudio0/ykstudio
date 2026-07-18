@@ -15,6 +15,7 @@
 #include "Config.h"
 #include "Units.h"
 #include "EpeverMaps.h"
+#include "DataManager.h"
 
 EpeverData Epever::Data;
 
@@ -42,18 +43,18 @@ bool Epever::ReadSolar()
     // PV Voltage
     float voltage = ToVoltage(solar.voltage);
 
-    if (voltage != Data.pvVoltage)
+    if (voltage != DataManager::Solar.voltage)
     {
-        Data.pvVoltage = voltage;
+        DataManager::Solar.voltage = voltage;
         updated = true;
     }
 
     // PV Current
     float current = ToCurrent(solar.current);
 
-    if (current != Data.pvCurrent)
+    if (current != DataManager::Solar.current)
     {
-        Data.pvCurrent = current;
+        DataManager::Solar.current = current;
         updated = true;
     }
 
@@ -64,13 +65,13 @@ bool Epever::ReadSolar()
     
     float power = ToPower(rawPower);
 
-    if (power != Data.pvPower)
+    if (power != DataManager::Solar.power)
     {
-        Data.pvPower = power;
+        DataManager::Solar.power = power;
         updated = true;
     }
 
-    Data.updated.solar = updated;
+    DataManager::Solar.updated = updated;
 
     return true;
 }
@@ -94,22 +95,22 @@ bool Epever::ReadBattery()
     // Battery Voltage
     float voltage = ToVoltage(battery.voltage);
 
-    if (voltage != Data.batteryVoltage)
+    if (voltage != DataManager::Battery.voltage)
     {
-        Data.batteryVoltage = voltage;
+        DataManager::Battery.voltage = voltage;
         updated = true;
     }
 
     // Battery Current
     float current = ToCurrent(battery.current);
 
-    if (current != Data.batteryCurrent)
+    if (current != DataManager::Battery.current)
     {
-        Data.batteryCurrent = current;
+        DataManager::Battery.current = current;
         updated = true;
     }
 
-    Data.updated.battery = updated;
+    DataManager::Battery.updated = updated;
 
     return true;
 }
@@ -176,9 +177,9 @@ bool Epever::ReadRegisters(
 
 void Epever::ClearUpdates()
 {
-    Data.updated.solar = false;
-    Data.updated.battery = false;
-    Data.updated.load = false;
-    Data.updated.temperature = false;
-    Data.updated.soc = false;
+    DataManager::Solar.updated = false;
+    DataManager::Battery.updated = false;
+    DataManager::Load.updated = false;
+    DataManager::Temperature.updated = false;
+    DataManager::Soc.updated = false;
 }

@@ -10,6 +10,7 @@
 #include "Scheduler.h"
 #include "Epever.h"
 #include "Logger.h"
+#include "DataManager.h"
 
 namespace
 {
@@ -148,32 +149,32 @@ void Scheduler::Service()
 
 void Scheduler::ServiceLogger()
 {
-    if (Epever::Data.updated.solar)
+    if (DataManager::Solar.updated)
     {
         char buffer[32];
-        sprintf(buffer, "%.2f V", Epever::Data.pvVoltage);
+        sprintf(buffer, "%.2f V", DataManager::Solar.voltage);
         Logger::Info("PV", buffer);
         
-        sprintf(buffer, "%.2f A", Epever::Data.pvCurrent);
+        sprintf(buffer, "%.2f A", DataManager::Solar.current);
         Logger::Info("PV", buffer);
 
-        sprintf(buffer, "%.1f W", Epever::Data.pvPower);
+        sprintf(buffer, "%.1f W", DataManager::Solar.power);
         Logger::Info("PV", buffer);
 
-        Epever::Data.updated.solar = false;
+        DataManager::Solar.updated = false;
     }
 
-    if (Epever::Data.updated.battery)
+    if (DataManager::Battery.updated)
     {
         char buffer[32];
 
-        sprintf(buffer, "%.2f V", Epever::Data.batteryVoltage);
+        sprintf(buffer, "%.2f V", DataManager::Battery.voltage);
         Logger::Info("BATTERY", buffer);
 
-        sprintf(buffer, "%.2f A", Epever::Data.batteryCurrent);
+        sprintf(buffer, "%.2f A", DataManager::Battery.current);
         Logger::Info("BATTERY", buffer);
 
-        Epever::Data.updated.battery = false;
+        DataManager::Battery.updated = false;
     }
-    Epever::ClearUpdates();
+    DataManager::ClearUpdates();
 }
