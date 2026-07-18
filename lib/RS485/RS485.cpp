@@ -45,6 +45,8 @@ void RS485::Send(
     const uint8_t* data, 
     size_t length)
 {
+    Logger::Info("RS485","SEND");
+    
     // RX 버퍼 비우기
     while (RS485Serial.available())
     {
@@ -91,19 +93,52 @@ bool RS485::ReceiveFrame(
     size_t length = 0;
     uint32_t start = millis();
 
-    while ((millis() - start) < timeout)
+    while (!RS485Serial.available())
+    {
+        if (millis() - start > timeout)
+            return 0;
+    }
+
+    uint32_t lastByte = micros();
+
+    while (true)
     {
         while (RS485Serial.available())
         {
-            if (length < maxLength)
-            {
-                buffer[length++] = RS485Serial.read();
-            }
-            start = millis();
+            buffer[length++] = RS485Serial.read();
+            lastByte = micros();
         }
+
+        if ((micros() - lastByte)> 2500)
+            break;
     }
 
     return length;
+    // while ((millis() - start) < timeout)
+    // {
+    //     if (RS485Serial.available())
+    //     {
+    //         break;
+    //     }
+    // }
+
+    // if (!RS485Serial.available())
+    // {
+    //     return 0;
+    // }
+
+    // delay(3);   // 프레임 수신 완료 대기
+
+    // while (RS485Serial.available())
+    // {
+    //     if (length < maxLength)
+    //     {
+    //         buffer[length++] = RS485Serial.read();
+    //     }
+    //     start = millis();
+    // }
+
+    // return length;
 }
 
 bool RS485::Available()

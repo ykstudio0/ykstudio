@@ -26,6 +26,11 @@ bool ModbusRTU::ReadInputRegisters(
     uint8_t* response,
     size_t responseSize)
 {
+    static uint32_t seq = 0;
+
+    seq++;
+    Logger::Info("MODBUS", "Read #" + String(seq));
+
     uint8_t frame[8];
 
     frame[0] = slave;
@@ -41,10 +46,6 @@ bool ModbusRTU::ReadInputRegisters(
 
     frame[6] = crc & 0xFF;
     frame[7] = crc >> 8;
-
-    Logger::Hex("TX", frame, sizeof(frame));
-
-    RS485::Send(frame, sizeof(frame));
 
     size_t len = 0;
 
