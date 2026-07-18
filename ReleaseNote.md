@@ -105,6 +105,10 @@ v0.2.4 : Device Health(통신 상태, 오류 횟수)
     Logger를 Service Layer로 이동
     Poll과 Service의 역할을 분리하기 시작
     ClearUpdates()를 통해 이벤트 소비 모델의 기반 마련
+    NO Response 해결
+    Retry 제거
+    CRC 안정
+    통신 속도 안정
 v0.2.5 : Display Manager 기반 마련
 v0.3.0 : LCD 대시보드
 v0.4.0 : Wi-Fi 모니터링

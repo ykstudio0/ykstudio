@@ -36,33 +36,33 @@ void Scheduler::Run()
 {
     uint32_t now = millis();
 
-    if (now - Timer100ms >= 100)
+    while (now - Timer100ms >= 100)
     {
-        Timer100ms = now;
+        Timer100ms += 100;
         Run100ms();
     }
 
-    if (now - Timer1sec >= 1000)
+    while (now - Timer1sec >= 1000)
     {
-        Timer1sec = now;
+        Timer1sec += 1000;
         Run1sec();
     }
 
-    if (now - Timer5sec >= 5000)
+    while (now - Timer5sec >= 5000)
     {
-        Timer5sec = now;
+        Timer5sec += 5000;
         Run5sec();
     }
 
-    if (now - Timer30sec >= 30000)
+    while (now - Timer30sec >= 30000)
     {
-        Timer30sec = now;
+        Timer30sec += 30000;
         Run30sec();
     }
 
-    if (now - Timer60sec >= 60000)
+    while (now - Timer60sec >= 60000)
     {
-        Timer60sec = now;
+        Timer60sec += 60000;
         Run60sec();
     }
 

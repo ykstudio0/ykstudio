@@ -42,7 +42,6 @@ void Logger::Debug(const String& tag, const String& message)
 
 void Logger::Hex(const String& tag, const uint8_t* data, size_t length)
 {
-    Serial.printf("HEX FUNC\r\n");
     Serial.printf("[%08lu] ", millis());
 
     Serial.print("[");
