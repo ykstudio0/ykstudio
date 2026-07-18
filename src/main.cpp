@@ -29,6 +29,5 @@ void setup()
 void loop()
 {
   DeviceManager::Update();
-  
   delay(1);
 }
