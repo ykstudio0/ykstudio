@@ -73,4 +73,6 @@ public:
     static SOCData Soc;
 
     static void ClearUpdates();
+    static void UpdateOnlineStatus(uint32_t now);
 };
+

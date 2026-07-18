@@ -142,9 +142,20 @@ void Scheduler::PollSOC()
     // Epever::ReadSOC();
 }
 
+// void Scheduler::UpdateDisplay()
+// {
+
+// }
+
 void Scheduler::Service()
 {
+    DataManager::UpdateOnlineStatus(millis());
+    
     ServiceLogger();
+    ServiceDisplay();
+    ServiceIoT();
+
+    DataManager::ClearUpdates();
 }
 
 void Scheduler::ServiceLogger()
@@ -161,7 +172,7 @@ void Scheduler::ServiceLogger()
         sprintf(buffer, "%.1f W", DataManager::Solar.power);
         Logger::Info("PV", buffer);
 
-        DataManager::Solar.status.updated = false;
+        // DataManager::Solar.status.updated = false;
     }
 
     if (DataManager::Battery.status.updated)
@@ -174,7 +185,17 @@ void Scheduler::ServiceLogger()
         sprintf(buffer, "%.1f A", DataManager::Battery.current);
         Logger::Info("BATTERY", buffer);
 
-        DataManager::Battery.status.updated = false;
+        // DataManager::Battery.status.updated = false;
     }
-    DataManager::ClearUpdates();
+    // DataManager::ClearUpdates();
+}
+
+void Scheduler::ServiceDisplay()
+{
+    // Display 모듈 구현 후 연결
+}
+
+void Scheduler::ServiceIoT()
+{
+    // Wi-Fi / MQTT / Web 모듈 구현 후 연결
 }

@@ -114,31 +114,6 @@ bool RS485::ReceiveFrame(
     }
 
     return length;
-    // while ((millis() - start) < timeout)
-    // {
-    //     if (RS485Serial.available())
-    //     {
-    //         break;
-    //     }
-    // }
-
-    // if (!RS485Serial.available())
-    // {
-    //     return 0;
-    // }
-
-    // delay(3);   // 프레임 수신 완료 대기
-
-    // while (RS485Serial.available())
-    // {
-    //     if (length < maxLength)
-    //     {
-    //         buffer[length++] = RS485Serial.read();
-    //     }
-    //     start = millis();
-    // }
-
-    // return length;
 }
 
 bool RS485::Available()

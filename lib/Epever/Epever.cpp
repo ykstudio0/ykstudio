@@ -35,6 +35,7 @@ bool Epever::ReadSolar()
         sizeof(solar) / 2,
         (uint16_t*)&solar))
     {
+        DataManager::Solar.status.updated = false;
         DataManager::Solar.status.online = false;
         return false;
     }
@@ -54,7 +55,7 @@ bool Epever::ReadSolar()
 
     // Solar Status
     DataManager::Solar.status.updated = true;
-    DataManager::Solar.status.online = true;
+    // DataManager::Solar.status.online = true;
     DataManager::Solar.status.lastUpdate = millis();
 
     return true;
@@ -71,7 +72,8 @@ bool Epever::ReadBattery()
         sizeof(battery) / 2,
         (uint16_t*)&battery))
     {
-        DataManager::Battery.status.online = false;
+        DataManager::Battery.status.updated = false;
+        // DataManager::Battery.status.online = false;
         return false;
     }
     

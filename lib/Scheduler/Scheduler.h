@@ -32,6 +32,8 @@ private:
 
     static void Service();
     static void ServiceLogger();
+    static void ServiceDisplay();
+    static void ServiceIoT();
 };
 
 #endif
