@@ -87,19 +87,19 @@ void Scheduler::Run5sec()
 {
     PollBattery();
     PollLoad();
-    PollSOC();
 }
 
 // 30 Second Tasks
 void Scheduler::Run30sec()
 {
     PollTemperature();
+    PollSOC();
 }
 
 // 60 Second Tasks
 void Scheduler::Run60sec()
 {
-    // PollSOC();
+    
 }
 
 // Poll Solar Information
