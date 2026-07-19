@@ -27,6 +27,7 @@ private:
 
     static void PollSolar();
     static void PollBattery();
+    static void PollLoad();
     static void PollTemperature();
     static void PollSOC();
 

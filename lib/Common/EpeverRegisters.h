@@ -16,18 +16,23 @@ namespace EpeverRegister
     //-------------------------------------------------
     // Realtime Data (Input Registers)
     //-------------------------------------------------
-    constexpr uint16_t PV_ARRAY_VOLTAGE       = 0x3100;
-    constexpr uint16_t PV_ARRAY_CURRENT       = 0x3101;
-    constexpr uint16_t PV_ARRAY_POWER_L       = 0x3102;
-    constexpr uint16_t PV_ARRAY_POWER_H       = 0x3103;
+    constexpr uint16_t PV_ARRAY_VOLTAGE           = 0x3100;
+    constexpr uint16_t PV_ARRAY_CURRENT           = 0x3101;
+    constexpr uint16_t PV_ARRAY_POWER_L           = 0x3102;
+    constexpr uint16_t PV_ARRAY_POWER_H           = 0x3103;
 
-    constexpr uint16_t EPEVER_BATTERY_VOLTAGE = 0x3104;
-    constexpr uint16_t EPEVER_BATTERY_CURRENT = 0x3105;
+    constexpr uint16_t EPEVER_BATTERY_VOLTAGE     = 0x3104;
+    constexpr uint16_t EPEVER_BATTERY_CURRENT     = 0x3105;
+    constexpr uint16_t EPEVER_BATTERY_POWER_L     = 0x3106;
+    constexpr uint16_t EPEVER_BATTERY_POWER_H     = 0x3107;
 
-    constexpr uint16_t EPEVER_LOAD_VOLTAGE    = 0x310C;
-    constexpr uint16_t EPEVER_LOAD_CURRENT    = 0x310D;
-    constexpr uint16_t EPEVER_LOAD_POWER_L    = 0x310E;
-    constexpr uint16_t EPEVER_LOAD_POWER_H    = 0x310F;
+    constexpr uint16_t EPEVER_LOAD_VOLTAGE        = 0x310C;
+    constexpr uint16_t EPEVER_LOAD_CURRENT        = 0x310D;
+    constexpr uint16_t EPEVER_LOAD_POWER_L        = 0x310E;
+    constexpr uint16_t EPEVER_LOAD_POWER_H        = 0x310F;
+
+    constexpr uint16_t EPEVER_BATTERY_TEMPERATURE = 0x3110;
+    constexpr uint16_t EPEVER_DEVICE_TEMPERATURE  = 0x3111;
 }
 
 #endif

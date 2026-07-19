@@ -70,73 +70,61 @@ void Scheduler::Run()
     Service();
 }
 
-//------------------------------
 // 0.1 Second Tasks
-//------------------------------
 void Scheduler::Run100ms()
 {
 
 }
 
-//------------------------------
 // 1 Second Tasks
-//------------------------------
 void Scheduler::Run1sec()
 {
     PollSolar();
 }
 
-//------------------------------
 // 5 Second Tasks
-//------------------------------
 void Scheduler::Run5sec()
 {
     PollBattery();
+    PollLoad();
 }
 
-//------------------------------
 // 30 Second Tasks
-//------------------------------
 void Scheduler::Run30sec()
 {
-    // Epever::ReadTemperature();
+    PollTemperature();
 }
 
-//------------------------------
 // 60 Second Tasks
-//------------------------------
 void Scheduler::Run60sec()
 {
-    // Epever::ReadSOC();
+    // PollSOC();
 }
 
-//------------------------------
 // Poll Solar Information
-//------------------------------
 void Scheduler::PollSolar()
 {
     Epever::ReadSolar();
 }
 
-//------------------------------
 // Poll Battery Information
-//------------------------------
 void Scheduler::PollBattery()
 {
     Epever::ReadBattery();
 }
 
-//------------------------------
-// Poll Temperature Information
-//------------------------------
-void Scheduler::PollTemperature()
+void Scheduler::PollLoad()
 {
-    // Epever::ReadTemperature();
+    Epever::ReadLoad();
 }
 
-//------------------------------
+// Poll Temperature Information
+void Scheduler::PollTemperature()
+{
+    Epever::ReadTemperature();
+}
+
 // Poll SOC Information
-//------------------------------
 void Scheduler::PollSOC()
 {
     // Epever::ReadSOC();
@@ -160,9 +148,10 @@ void Scheduler::Service()
 
 void Scheduler::ServiceLogger()
 {
+    char buffer[32];
+
     if (DataManager::Solar.status.updated)
     {
-        char buffer[32];
         sprintf(buffer, "%.1f V", DataManager::Solar.voltage);
         Logger::Info("PV", buffer);
         
@@ -171,23 +160,40 @@ void Scheduler::ServiceLogger()
 
         sprintf(buffer, "%.1f W", DataManager::Solar.power);
         Logger::Info("PV", buffer);
-
-        // DataManager::Solar.status.updated = false;
     }
 
     if (DataManager::Battery.status.updated)
     {
-        char buffer[32];
-
         sprintf(buffer, "%.1f V", DataManager::Battery.voltage);
         Logger::Info("BATTERY", buffer);
 
         sprintf(buffer, "%.1f A", DataManager::Battery.current);
         Logger::Info("BATTERY", buffer);
 
-        // DataManager::Battery.status.updated = false;
+        sprintf(buffer, "%.f W", DataManager::Battery.power);
+        Logger::Info("BATTERY", buffer);
     }
-    // DataManager::ClearUpdates();
+    
+    if (DataManager::Load.status.updated)
+    {
+        sprintf(buffer, "%.1f V", DataManager::Load.voltage);
+        Logger::Info("LOAD", buffer);
+
+        sprintf(buffer, "%.1f A", DataManager::Load.current);
+        Logger::Info("LOAD", buffer);
+
+        sprintf(buffer, "%.1f W", DataManager::Load.power);
+        Logger::Info("LOAD", buffer);
+    }
+
+    if (DataManager::Temperature.status.updated)
+    {
+        sprintf(buffer, "%.1f ℃", DataManager::Temperature.battery);
+        Logger::Info("BAT TEMP", buffer);
+        
+        sprintf(buffer, "%.1f ℃", DataManager::Temperature.device);
+        Logger::Info("DEV TEMP", buffer);
+    }
 }
 
 void Scheduler::ServiceDisplay()

@@ -19,6 +19,11 @@
 
 EpeverData Epever::Data;
 
+bool Epever::Begin()
+{
+    return true;
+}
+
 bool Epever::Update()
 {
     bool ok = true;
@@ -32,7 +37,7 @@ bool Epever::ReadSolar()
 
     if (!ReadRegisters(
         EpeverRegister::PV_ARRAY_VOLTAGE,
-        sizeof(solar) / 2,
+        sizeof(solar) / sizeof(uint16_t),
         (uint16_t*)&solar))
     {
         DataManager::Solar.status.updated = false;
@@ -69,11 +74,10 @@ bool Epever::ReadBattery()
     // Read Battery Voltage / Current
     if (!ReadRegisters(
         EpeverRegister::EPEVER_BATTERY_VOLTAGE,
-        sizeof(battery) / 2,
+        sizeof(battery) / sizeof(uint16_t),
         (uint16_t*)&battery))
     {
         DataManager::Battery.status.updated = false;
-        // DataManager::Battery.status.online = false;
         return false;
     }
     
@@ -83,6 +87,13 @@ bool Epever::ReadBattery()
     // Battery Current
     DataManager::Battery.current = ToCurrent(battery.current);
 
+    // Battery Power (32bit)
+    uint32_t rawPower =
+        ((uint32_t)battery.powerHigh << 16) |
+        battery.powerLow;
+    
+    DataManager::Battery.power = ToPower(rawPower);
+
     // Battery Status
     DataManager::Battery.status.updated = true;
     DataManager::Battery.status.online = true;
@@ -91,18 +102,64 @@ bool Epever::ReadBattery()
     return true;
 }
 
-bool Epever::Begin()
-{
-    return true;
-}
-
 bool Epever::ReadLoad()
 {
+    EpeverMap::Load load;
+
+    if (!ReadRegisters(
+            EpeverRegister::EPEVER_LOAD_VOLTAGE,
+            sizeof(load) / sizeof(uint16_t),
+            (uint16_t*)&load))
+    {
+        DataManager::Load.status.updated = false;
+        return false;
+    }
+
+    // Load Voltage
+    DataManager::Load.voltage = ToVoltage(load.voltage);
+
+    // Load Current
+    DataManager::Load.current = ToCurrent(load.current);
+
+    // Load Power
+    uint32_t rawPower =
+        ((uint32_t)load.powerHigh << 16) |
+        load.powerLow;
+    
+    DataManager::Load.power = 
+        ToPower(rawPower);
+
+    DataManager::Load.status.updated = true;
+    DataManager::Load.status.online = true;
+    DataManager::Load.status.lastUpdate = millis();
+
     return true;
 }
 
 bool Epever::ReadTemperature()
 {
+    EpeverMap::Temperature temp;
+
+    if (!ReadRegisters(
+            EpeverRegister::EPEVER_BATTERY_TEMPERATURE,
+            sizeof(temp) / sizeof(uint16_t),
+            (uint16_t*)&temp))
+    {
+        DataManager::Temperature.status.updated = false;
+
+        return false;
+    }
+
+    DataManager::Temperature.battery = 
+        ToTemperature((int16_t)temp.battery);
+
+    DataManager::Temperature.device = 
+        ToTemperature((int16_t)temp.battery);
+    
+    DataManager::Temperature.status.updated = true;
+    DataManager::Temperature.status.online = true;
+    DataManager::Temperature.status.lastUpdate = millis();
+
     return true;
 }
 

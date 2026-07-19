@@ -13,7 +13,7 @@ DataManager::SolarData DataManager::Solar;
 DataManager::BatteryData DataManager::Battery;
 DataManager::LoadData DataManager::Load;
 DataManager::TemperatureData DataManager::Temperature;
-DataManager::SOCData DataManager::Soc;
+DataManager::SocData DataManager::Soc;
 
 void DataManager::ClearUpdates()
 {

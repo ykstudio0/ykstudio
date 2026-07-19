@@ -26,7 +26,6 @@ public:
         float current = 0.0f;
         float power   = 0.0f;
 
-        // bool updated = false;
         Status status;
     };
 
@@ -34,8 +33,8 @@ public:
     {
         float voltage = 0.0f;
         float current = 0.0f;
+        float power   = 0.0f;
 
-        // bool updated = false;
         Status status;
     };
 
@@ -45,24 +44,21 @@ public:
         float current = 0.0f;
         float power   = 0.0f;
 
-        // bool updated = false;
         Status status;
     };
 
     struct TemperatureData
     {
-        float batteryTemperature = 0.0f;
-        float controllerTemperature = 0.0f;
+        float battery = 0.0f;
+        float device = 0.0f;
 
-        // bool updated = false;
         Status status;
     };
 
-    struct SOCData
+    struct SocData
     {
         float socPercent = 0.0f;
 
-        // bool updated = false;
         Status status;
     };
 
@@ -70,7 +66,7 @@ public:
     static BatteryData Battery;
     static LoadData Load;
     static TemperatureData Temperature;
-    static SOCData Soc;
+    static SocData Soc;
 
     static void ClearUpdates();
     static void UpdateOnlineStatus(uint32_t now);

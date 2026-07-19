@@ -15,29 +15,38 @@
 namespace EpeverMap
 {
 
-struct Solar
-{
-    uint16_t voltage;
-    uint16_t current;
+    struct Solar
+    {
+        uint16_t voltage;
+        uint16_t current;
 
-    uint16_t powerLow;
-    uint16_t powerHigh;
-};
+        uint16_t powerLow;
+        uint16_t powerHigh;
+    };
 
-struct Battery
-{
-    uint16_t voltage;
-    uint16_t current;
-};
+    struct Battery
+    {
+        uint16_t voltage;
+        uint16_t current;
 
-struct Load
-{
-    uint16_t voltage;
-    uint16_t current;
+        uint16_t powerLow;
+        uint16_t powerHigh;
+    };
 
-    uint16_t powerLow;
-    uint16_t powerHigh;
-};
+    struct Load
+    {
+        uint16_t voltage;
+        uint16_t current;
+
+        uint16_t powerLow;
+        uint16_t powerHigh;
+    };
+
+    struct Temperature
+    {
+        uint16_t battery;
+        uint16_t device;
+    };
 }
 
 #endif
