@@ -4,7 +4,7 @@
 // Date : 2026-07-08
 // Project : SVEMS
 // Version : 0.1.6
-// Descripton : 
+// Description : 
 //-------------------------------------------------------------
 #ifndef EPEVER_REGISTERS_H
 #define EPEVER_REGISTERS_H

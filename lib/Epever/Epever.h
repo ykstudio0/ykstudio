@@ -4,7 +4,7 @@
 // Date : 2026-07-08
 // Project : SVEMS
 // Version : 0.1.6
-// Descripton : Epever 장치와의 통신을 위한 클래스 구현
+// Description : Epever 장치와의 통신을 위한 클래스 구현
 //-------------------------------------------------------------
 
 #ifndef EPEVER_H

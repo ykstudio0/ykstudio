@@ -4,10 +4,11 @@
 // Date : 2026-07-18
 // Project : SVEMS
 // Version : 0.2.5
-// Descripton : Data 관리
+// Description : Data 관리
 //-------------------------------------------------------------
 
 #include "DataManager.h"
+#include "Constants.h"
 
 DataManager::SolarData DataManager::Solar;
 DataManager::BatteryData DataManager::Battery;
@@ -26,11 +27,7 @@ void DataManager::ClearUpdates()
 
 void DataManager::UpdateOnlineStatus(uint32_t now)
 {
-    constexpr uint32_t SOLAR_TIMEOUT_MS       = 3000;
-    constexpr uint32_t BATTERY_TIMEOUT_MS     = 15000;
-    constexpr uint32_t LOAD_TIMEOUT_MS        = 15000;
-    constexpr uint32_t TEMPERATURE_TIMEOUT_MS = 90000;
-    constexpr uint32_t SOC_TIMEOUT_MS         = 180000;
+    
 
     if (Solar.status.online && 
             now - Solar.status.lastUpdate > SOLAR_TIMEOUT_MS)

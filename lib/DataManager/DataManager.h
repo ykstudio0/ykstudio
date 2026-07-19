@@ -4,7 +4,7 @@
 // Date : 2026-07-18
 // Project : SVEMS
 // Version : 0.2.5
-// Descripton : Data 관리
+// Description : Data 관리
 //-------------------------------------------------------------
 
 #pragma once

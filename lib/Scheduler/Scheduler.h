@@ -4,13 +4,13 @@
 // Date : 2026-07-14
 // Project : SVEMS
 // Version : 0.2.0
-// Descripton : 시간을 관리
+// Description : 시간을 관리
 //-------------------------------------------------------------
 
 #ifndef SCHEDULER_H
 #define SCHEDULER_H
 
-# include <Arduino.h>
+#include <Arduino.h>
 
 class Scheduler
 {
@@ -20,10 +20,10 @@ public:
 
 private:
     static void Run100ms();
-    static void Run1sec();
-    static void Run5sec();
-    static void Run30sec();
-    static void Run60sec();
+    static void Run1Sec();
+    static void Run5Sec();
+    static void Run30Sec();
+    static void Run60Sec();
 
     static void PollSolar();
     static void PollBattery();

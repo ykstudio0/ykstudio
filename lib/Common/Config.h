@@ -4,7 +4,7 @@
 // Date : 2026-07-08
 // Project : SVEMS
 // Version : 0.1.6
-// Descripton : 
+// Description : 
 //-------------------------------------------------------------
 
 #ifndef CONFIG_H

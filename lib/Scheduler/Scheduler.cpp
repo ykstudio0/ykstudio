@@ -4,7 +4,7 @@
 // Date : 2026-07-14
 // Project : SVEMS
 // Version : 0.2.0
-// Descripton : 시간을 관리
+// Description : 시간을 관리
 //-------------------------------------------------------------
 
 #include "Scheduler.h"
@@ -46,25 +46,25 @@ void Scheduler::Run()
     while (now - Timer1sec >= 1000)
     {
         Timer1sec += 1000;
-        Run1sec();
+        Run1Sec();
     }
 
     while (now - Timer5sec >= 5000)
     {
         Timer5sec += 5000;
-        Run5sec();
+        Run5Sec();
     }
 
     while (now - Timer30sec >= 30000)
     {
         Timer30sec += 30000;
-        Run30sec();
+        Run30Sec();
     }
 
     while (now - Timer60sec >= 60000)
     {
         Timer60sec += 60000;
-        Run60sec();
+        Run60Sec();
     }
 
     Service();
@@ -77,27 +77,27 @@ void Scheduler::Run100ms()
 }
 
 // 1 Second Tasks
-void Scheduler::Run1sec()
+void Scheduler::Run1Sec()
 {
     PollSolar();
 }
 
 // 5 Second Tasks
-void Scheduler::Run5sec()
+void Scheduler::Run5Sec()
 {
     PollBattery();
     PollLoad();
 }
 
 // 30 Second Tasks
-void Scheduler::Run30sec()
+void Scheduler::Run30Sec()
 {
     PollTemperature();
     PollSOC();
 }
 
 // 60 Second Tasks
-void Scheduler::Run60sec()
+void Scheduler::Run60Sec()
 {
     
 }
@@ -153,52 +153,64 @@ void Scheduler::ServiceLogger()
 
     if (DataManager::Solar.status.updated)
     {
-        sprintf(buffer, "%.1f V", DataManager::Solar.voltage);
+        snprintf(buffer, sizeof(buffer), "%.1f V", 
+            DataManager::Solar.voltage);
         Logger::Info("PV", buffer);
         
-        sprintf(buffer, "%.1f A", DataManager::Solar.current);
+        snprintf(buffer, sizeof(buffer), "%.1f A", 
+            DataManager::Solar.current);
         Logger::Info("PV", buffer);
 
-        sprintf(buffer, "%.1f W", DataManager::Solar.power);
+        snprintf(buffer, sizeof(buffer), "%.1f W", 
+            DataManager::Solar.power);
         Logger::Info("PV", buffer);
     }
 
     if (DataManager::Battery.status.updated)
     {
-        sprintf(buffer, "%.1f V", DataManager::Battery.voltage);
+        snprintf(buffer, sizeof(buffer), "%.1f V", 
+            DataManager::Battery.voltage);
         Logger::Info("BATTERY", buffer);
 
-        sprintf(buffer, "%.1f A", DataManager::Battery.current);
+        snprintf(buffer, sizeof(buffer), "%.1f A", 
+            DataManager::Battery.current);
         Logger::Info("BATTERY", buffer);
 
-        sprintf(buffer, "%.f W", DataManager::Battery.power);
+        snprintf(buffer, sizeof(buffer), "%.1f W", 
+            DataManager::Battery.power);
         Logger::Info("BATTERY", buffer);
     }
     
     if (DataManager::Load.status.updated)
     {
-        sprintf(buffer, "%.1f V", DataManager::Load.voltage);
+        snprintf(buffer, sizeof(buffer), "%.1f V", 
+            DataManager::Load.voltage);
         Logger::Info("LOAD", buffer);
 
-        sprintf(buffer, "%.1f A", DataManager::Load.current);
+        snprintf(buffer, sizeof(buffer), "%.1f A", 
+            DataManager::Load.current);
         Logger::Info("LOAD", buffer);
 
-        sprintf(buffer, "%.1f W", DataManager::Load.power);
+        snprintf(buffer, sizeof(buffer), "%.1f W", 
+            DataManager::Load.power);
         Logger::Info("LOAD", buffer);
     }
 
     if (DataManager::Temperature.status.updated)
     {
-        sprintf(buffer, "%.1f ℃", DataManager::Temperature.battery);
+        snprintf(buffer, sizeof(buffer), "%.1f ℃", 
+            DataManager::Temperature.battery);
         Logger::Info("BAT TEMP", buffer);
         
-        sprintf(buffer, "%.1f ℃", DataManager::Temperature.device);
+        snprintf(buffer, sizeof(buffer), "%.1f ℃", 
+            DataManager::Temperature.device);
         Logger::Info("DEV TEMP", buffer);
     }
 
     if (DataManager::Soc.status.updated)
     {
-        sprintf(buffer, "%u %%", DataManager::Soc.value);
+        snprintf(buffer, sizeof(buffer), "%u %%", 
+            static_cast<unsigned int>(DataManager::Soc.value));
         Logger::Info("SOC", buffer);
     }
 }

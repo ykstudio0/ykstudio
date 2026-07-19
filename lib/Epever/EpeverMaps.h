@@ -4,7 +4,7 @@
 // Date : 2026-07-14
 // Project : SVEMS
 // Version : 0.2.0
-// Descripton : Epever Maps
+// Description : Epever Maps
 //-------------------------------------------------------------
 
 #ifndef EPEVER_MAPS_H

@@ -4,7 +4,7 @@
 // Date : 2026-07-13
 // Project : SVEMS
 // Version : 0.1.9
-// Descripton : Device 관리
+// Description : Device 관리
 //-------------------------------------------------------------
 
 #ifndef DEVICE_MANAGER_H

@@ -115,7 +115,7 @@ v0.2.4 : Device Health(통신 상태, 오류 횟수)
     PV/Battery Read Stable
     Timeout Fixed
     Receive Engine Fixed
-v0.2.5 : Display Manager 기반 마련
+v0.2.5 : SVEMS의 실시간 데이터 계층(Data Acquisition Layer) 완성
     DataManager 리팩터링 1단계 진행 중
     SolarData, BatteryData, LoadData, TemperatureData 구조 분리 완료
     DataManager.cpp에 정적 인스턴스 4개 정의 완료
@@ -124,7 +124,15 @@ v0.2.5 : Display Manager 기반 마련
     ReadSolar() 데이터를 DataManager::Solar 기반으로 변경 후 정상 동작 확인
     ReadBattery() 데이터도 DataManager로 이동 후 로그 정상 출력 확인
     현재 로그에서 PV와 Battery 값이 정상적으로 읽히는 상태
-v0.3.0 : LCD 대시보드
-v0.4.0 : Wi-Fi 모니터링
-v1.0.0 : 차량 실사용 버전
+    LoadData 구현
+    ReadLoad() 구현 및 검증
+    TemperatureData 구현
+    ReadTemperature() 구현 및 검증
+    Common/Units.h로 변환 함수 통합
+    실제 EPEVER Tracer3906BP에서 Load/Temperature/Soc 값 검증 완료
+    Scheduler 구조에 자연스럽게 통합 가능함을 확인
+v0.3.0 : Display/UI 계층
+v0.4.0 : Wi-Fi/MQTT/Web 계층
+v0.5.0 : 원격 제어 및 자동화
+v1.0.0 : 차량 실사용 버전(첫 번째 정식 릴리스)
 

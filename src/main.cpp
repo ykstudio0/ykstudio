@@ -4,7 +4,7 @@
 // Date : 2026-07-01
 // Project : SVEMS
 // Version : 0.1.6
-// Descripton : Solar Vehicle Energy Management System(SVEMS) Main Application
+// Description : Solar Vehicle Energy Management System(SVEMS) Main Application
 //-------------------------------------------------------------
 
 #include <Arduino.h>
