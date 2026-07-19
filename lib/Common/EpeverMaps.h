@@ -47,6 +47,11 @@ namespace EpeverMap
         uint16_t battery;
         uint16_t device;
     };
+
+    struct Soc
+    {
+        uint16_t value;
+    };
 }
 
 #endif

@@ -33,6 +33,8 @@ namespace EpeverRegister
 
     constexpr uint16_t EPEVER_BATTERY_TEMPERATURE = 0x3110;
     constexpr uint16_t EPEVER_DEVICE_TEMPERATURE  = 0x3111;
+
+    constexpr uint16_t EPEVER_BATTERY_SOC         = 0x311A;
 }
 
 #endif

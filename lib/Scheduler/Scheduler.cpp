@@ -87,6 +87,7 @@ void Scheduler::Run5sec()
 {
     PollBattery();
     PollLoad();
+    PollSOC();
 }
 
 // 30 Second Tasks
@@ -127,7 +128,7 @@ void Scheduler::PollTemperature()
 // Poll SOC Information
 void Scheduler::PollSOC()
 {
-    // Epever::ReadSOC();
+    Epever::ReadSOC();
 }
 
 // void Scheduler::UpdateDisplay()
@@ -193,6 +194,12 @@ void Scheduler::ServiceLogger()
         
         sprintf(buffer, "%.1f ℃", DataManager::Temperature.device);
         Logger::Info("DEV TEMP", buffer);
+    }
+
+    if (DataManager::Soc.status.updated)
+    {
+        sprintf(buffer, "%u %%", DataManager::Soc.value);
+        Logger::Info("SOC", buffer);
     }
 }
 

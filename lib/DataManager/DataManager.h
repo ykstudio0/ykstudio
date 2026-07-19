@@ -57,7 +57,7 @@ public:
 
     struct SocData
     {
-        float socPercent = 0.0f;
+        uint8_t value = 0;
 
         Status status;
     };
