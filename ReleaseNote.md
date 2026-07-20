@@ -132,6 +132,12 @@ v0.2.5 : SVEMS의 실시간 데이터 계층(Data Acquisition Layer) 완성
     실제 EPEVER Tracer3906BP에서 Load/Temperature/Soc 값 검증 완료
     Scheduler 구조에 자연스럽게 통합 가능함을 확인
 v0.3.0 : Display/UI 계층
+    DisplayLayout
+    DisplayTheme
+    DisplayPages
+    DisplayTypes
+    Main 화면의 구조 설계
+    각 DrawXXX() 함수의 역할 정의
 v0.4.0 : Wi-Fi/MQTT/Web 계층
 v0.5.0 : 원격 제어 및 자동화
 v1.0.0 : 차량 실사용 버전(첫 번째 정식 릴리스)

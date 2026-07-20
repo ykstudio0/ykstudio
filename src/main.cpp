@@ -14,6 +14,7 @@
 #include "ModbusRTU.h"
 #include "Config.h"
 #include "DeviceManager.h"
+#include "Display.h"
 
 void setup()
 {
@@ -23,6 +24,7 @@ void setup()
   RS485::Begin();
   ModbusRTU::Begin();
   DeviceManager::Begin();
+  Display::Begin();
   delay(1000);
 }
 

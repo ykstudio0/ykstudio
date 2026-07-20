@@ -11,6 +11,7 @@
 #include "Epever.h"
 #include "Logger.h"
 #include "DataManager.h"
+#include "Display.h"
 
 namespace
 {
@@ -217,7 +218,7 @@ void Scheduler::ServiceLogger()
 
 void Scheduler::ServiceDisplay()
 {
-    // Display 모듈 구현 후 연결
+    Display::Update();
 }
 
 void Scheduler::ServiceIoT()
