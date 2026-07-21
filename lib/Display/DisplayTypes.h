@@ -81,7 +81,7 @@
         Settings
     };
 
-    // 화념에 표시할 하나의 수치 값
+    // 화면에 표시할 하나의 수치 값
     // 값 자체뿐 아니라 표시 방식에 필요한 정보를
     // 하나의 구조체로 함께 관리한다.
     struct DisplayValue
@@ -179,35 +179,51 @@
         }
     };
 
-    // 값 타입별 기본 소소점 자리수
-    constexpr uint8_t GetDefaultDecimals(
-        ValueType type)
+    // 값 타입별 기본 소수점 자리수
+    // C++11 constexpr 규칙에 맞게 단일 return 문으로 구성한다.
+    constexpr uint8_t GetDefaultDecimals(ValueType type)
     {
-        switch (type)
-        {
-            case ValueType::Voltage:
-            case ValueType::Current:
-                return 2;
-            
-            case ValueType::Power:
-            case ValueType::Energy:
-                return 1;
-
-            case ValueType::Temperature:
-            case ValueType::Humidity:
-                return 1;
-
-            case ValueType::Percent:
-                return 0;
-
-            case ValueType::Time:
-            case ValueType::Duration:
-            case ValueType::Text:
-            case ValueType::None:
-            default:
-                return 0;
-        }
+        return
+        (type == ValueType::Voltage ||
+         type == ValueType::Current)
+           ? 2U
+           :
+        (type == ValueType::Power ||
+         type == ValueType::Energy ||
+         type == ValueType::Temperature ||
+         type == ValueType::Humidity)
+           ? 1U
+           : 0U;
     }
+    // constexpr uint8_t GetDefaultDecimals(
+    //     ValueType type)
+    // {
+    //     return
+    //     switch (type)
+    //     {
+    //         case ValueType::Voltage:
+    //         case ValueType::Current:
+    //             return 2;
+            
+    //         case ValueType::Power:
+    //         case ValueType::Energy:
+    //             return 1;
+
+    //         case ValueType::Temperature:
+    //         case ValueType::Humidity:
+    //             return 1;
+
+    //         case ValueType::Percent:
+    //             return 0;
+
+    //         case ValueType::Time:
+    //         case ValueType::Duration:
+    //         case ValueType::Text:
+    //         case ValueType::None:
+    //         default:
+    //             return 0;
+    //     }
+    // }
 
     // 값 타입별 단위 문자열
     inline const char* GetUnit(
@@ -249,7 +265,7 @@
 
     // 타입을 지정해 DisplayValue를 생성한다.
     // 소수점 자리수는 타입별 기본값을 적용한다.
-    constexpr DisplayValue AMakeValue(
+    constexpr DisplayValue MakeValue(
         float value,
         ValueType type,
         WidgetState state =
@@ -266,60 +282,3 @@
             true);
     }
 }
-//  #include <stdint.h>
-
-//  namespace DisplayTypes
-//  {
-//     // Point
-//     struct Point
-//     {
-//         int16_t x;
-//         int16_t y;
-//     };
-
-//     // size
-//     struct Size
-//     {
-//         int16_t width;
-//         int16_t height;
-//     };
-
-//     // Rectangle
-//     struct Rect
-//     {
-//         int16_t x;
-//         int16_t y;
-//         int16_t width;
-//         int16_t height;
-
-//         constexpr int16_t Left() const
-//         {
-//             return x;
-//         }
-
-//         constexpr int16_t Top() const
-//         {
-//             return y;
-//         }
-
-//         constexpr int16_t Right() const
-//         {
-//             return x + width;
-//         }
-
-//         constexpr int16_t Bottom() const
-//         {
-//             return y + height;
-//         }
-
-//         constexpr Point Position() const
-//         {
-//             return { x, y };
-//         }
-
-//         constexpr Size Dimensions() const
-//         {
-//             return { width, height };
-//         }
-//     };
-//  }

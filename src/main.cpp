@@ -15,17 +15,19 @@
 #include "Config.h"
 #include "DeviceManager.h"
 #include "Display.h"
+#include "Tests.h"
 
 void setup()
 {
   Serial.begin(MODBUS_BAUDRATE);
   delay(BOOT_DELAY_MS);
-  Logger::Begin();
-  RS485::Begin();
-  ModbusRTU::Begin();
-  DeviceManager::Begin();
-  Display::Begin();
+  // Logger::Begin();
+  // RS485::Begin();
+  // ModbusRTU::Begin();
+  // DeviceManager::Begin();
+  // Display::Begin();
   delay(1000);
+  Tests::RunDisplayTests();
 }
 
 void loop()

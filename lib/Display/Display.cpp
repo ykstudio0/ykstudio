@@ -12,7 +12,6 @@
 #include "Logger.h"
 #include "DisplayTheme.h"
 
-
 namespace
 {
     bool Initialized = false;
