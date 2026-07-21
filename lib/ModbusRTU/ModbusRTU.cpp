@@ -153,21 +153,6 @@ bool ModbusRTU::ReadInputRegisters(
 
         return false;
     }
-        
-    // // 기대 길이 계산
-    // size_t expectedLength = 3 + response[2] + 2;
-
-    // if (len != expectedLength)
-    // {
-    //     Logger::Error(
-    //         "MODBUS",
-    //         "Invalid Length (" +
-    //         String(len) +
-    //         "/" +
-    //         String(expectedLength) +
-    //         ")");
-    //     return false;
-    // }
 
     if (isException)
     {
