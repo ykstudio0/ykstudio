@@ -392,7 +392,7 @@ namespace
             StringEquals(
                 DisplayTypes::GetUnit(ValueType::Percent),
                 "%"),
-            "Percent unit is percent");
+            "Percent unit is %");
 
         Check(
             StringEquals(
