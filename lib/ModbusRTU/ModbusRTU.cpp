@@ -53,17 +53,22 @@ bool ModbusRTU::ReadInputRegisters(
         retry <= MODBUS_RETRY;
         retry++)
     {
+        len = 0;
+        memset(response, 0, responseSize);
+
         Logger::Hex("TX", frame, sizeof(frame));
 
         RS485::Send(frame, sizeof(frame));
-    
+
         if (!RS485::ReceiveFrame(
             response,
             len,
             responseSize))
         {
-            Logger::Info("MODBUS", "Retry #" + String(retry + 1));
-            
+            if (retry < MODBUS_RETRY)
+            {
+                Logger::Info("MODBUS", "Retry #" + String(retry + 1));
+            }
             continue;
         }
 
@@ -77,6 +82,8 @@ bool ModbusRTU::ReadInputRegisters(
         return false;
     }
 
+    Logger::Hex("RX", response, len);
+
     // 최소 프레임 확인
     if (len < 5)
     {
@@ -84,6 +91,47 @@ bool ModbusRTU::ReadInputRegisters(
         return false;
     }
 
+    // Slave 확인
+    if (response[0] != slave)
+    {
+        Logger::Error("MODBUS", "Invalid Slave");
+        return false;
+    }
+
+    // Exception인지 먼저 구분
+    const bool isException = 
+        (response[1] & 0x80) != 0;
+
+    size_t expectedLength = 0;
+
+    if (isException)
+    {
+        expectedLength = 5;
+    }
+    else
+    {
+        if (response[1] != MODBUS_READ_INPUT_REGISTERS)
+        {
+            Logger::Error("MODBUS", "Invalid Function");
+            return false;
+        }
+
+        expectedLength =
+            5U + static_cast<size_t>(response[2]);
+    }
+
+    if (len != expectedLength)
+    {
+        Logger::Error(
+            "MODBUS",
+            "Invalid Length (" +
+            String(len) + "/" +
+            String(expectedLength) + ")");
+        
+        return false;
+    }
+
+    // CRC 검사
     uint16_t crcCalc = 
         CRC16::Calculate(response, len - 2);
 
@@ -93,37 +141,59 @@ bool ModbusRTU::ReadInputRegisters(
 
     if (crcCalc != crcRecv)
     {
-        char msg[40];
+        char msg[48];
 
         sprintf(
             msg,
-            "CRC Error (%04X/%04X)",
+            "CRC Error (Recv=%04X Calc=%04X)",
             crcRecv,
             crcCalc);
+
         Logger::Error("MODBUS", msg);
 
         return false;
     }
         
-    // 기대 길이 계산
-    size_t expectedLength = 3 + response[2] + 2;
+    // // 기대 길이 계산
+    // size_t expectedLength = 3 + response[2] + 2;
 
-    if (len != expectedLength)
+    // if (len != expectedLength)
+    // {
+    //     Logger::Error(
+    //         "MODBUS",
+    //         "Invalid Length (" +
+    //         String(len) +
+    //         "/" +
+    //         String(expectedLength) +
+    //         ")");
+    //     return false;
+    // }
+
+    if (isException)
     {
-        Logger::Error(
-            "MODBUS",
-            "Invalid Length (" +
-            String(len) +
-            "/" +
-            String(expectedLength) +
-            ")");
+        char msg[32];
+
+        sprintf(
+            msg,
+            "Exception %02X",
+            response[2]);
+
+        Logger::Error("MODBUS", msg);
         return false;
     }
 
-    if (len > 0)
+    const uint8_t requestedBytes =
+        static_cast<uint8_t>(count * 2U);
+    
+    if (response[2] != requestedBytes)
     {
-        // Serial.printf("LEN = %u\r\n", len);
-        Logger::Hex("RX", response, len);
+        Logger::Error(
+            "MODBUS",
+            "Invalid Byte Count (" +
+            String(response[2]) + "/" +
+            String(requestedBytes) + ")");
+
+        return false;
     }
     
     if (response[1] & 0x80)
