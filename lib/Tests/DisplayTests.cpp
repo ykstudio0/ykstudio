@@ -202,10 +202,7 @@ static_assert(
         DisplayTypes::TextAlign::Right,
     "Voltage default alignment must be Right");
 
-
  // Alert states
-
-
 constexpr DisplayTypes::DisplayValue WARNING_VALUE =
     DisplayTypes::MakeValue(
         11.70f,
@@ -255,7 +252,6 @@ static_assert(
 // Runtime tests
 // DisplayPages의 함수들은 현재 inline 함수이며 constexpr가 아니다.
 // GetTitle(), GetUnit(), 값 변경 함수도 실행 중 검사한다.
-
 namespace
 {
     uint16_t passedCount = 0;

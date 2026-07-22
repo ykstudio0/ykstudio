@@ -9,88 +9,214 @@
 
 #pragma once
 
-#include <stdint.h>
+#include <Arduino.h>
+// #include <stdint.h>
+#include "DisplayTypes.h"
 
-namespace Theme
+namespace DisplayTheme
 {
     // Color type
     //
-    // LCD 연결 전까지는 24-bit RGB 형식으로 관리한다.
+    // 대부분의 ESP32 TFT LCD에서 사용하는 RGB565 형식이다.
     // 실제 출력 시 LovyanGFX 색상 형식으로 변환한다.
     //
     // Format : 0xRRGGBB
 
-    using Color = uint32_t;
+    using Color = uint16_t;
 
-    // Colors
-    namespace Colors
+    constexpr Color BLACK      = 0x0000;
+    constexpr Color WHITE      = 0xFFFF;
+    
+    constexpr Color RED        = 0xF800;
+    constexpr Color GREEN      = 0x07E0;
+    constexpr Color BLUE       = 0x001F;
+
+    constexpr Color YELLOW     = 0xFFE0;
+    constexpr Color ORANGE     = 0xFD20;
+    constexpr Color CYAN       = 0x07FF;
+    constexpr Color MAGENTA    = 0xF81F;
+
+    constexpr Color DARK_GRAY  = 0x4208;
+    constexpr Color GRAY       = 0x8410;
+    constexpr Color LIGHT_GRAY = 0xC618;
+
+    //Semantic colors
+    //
+    // Renderer에서는 가능하면 기본 색상보다
+    // 아래의 의미 기반 색상을 사용한다.
+    constexpr Color COLOR_BACKGROUND =
+        BLACK;
+
+    constexpr Color COLOR_HEADER_BACKGROUND =
+        0x1082;
+
+    constexpr Color COLOR_FOOTER_BACKGROUND = 
+        0x1082;
+
+    constexpr Color COLOR_PANEL_BACKGROUND =
+        0X0841;
+
+    constexpr Color COLOR_TITLE =
+        WHITE;
+
+    constexpr Color COLOR_TEXT = 
+        WHITE;
+
+    constexpr Color COLOR_LABEL =
+        LIGHT_GRAY;
+
+    constexpr Color COLOR_VALUE =
+        WHITE;
+
+    constexpr Color COLOR_UNIT =
+        GRAY;
+
+    constexpr Color COLOR_DIVIDER =
+        DARK_GRAY;
+
+    constexpr Color COLOR_BORDER =
+        DARK_GRAY;
+
+    constexpr Color COLOR_ACTIVE =
+        GREEN;
+
+    constexpr Color COLOR_SUCCESS =
+        GREEN;
+
+    constexpr Color COLOR_WARNING =
+        ORANGE;
+
+    constexpr Color COLOR_ALARM =
+        RED;
+
+    constexpr Color COLOR_DISABLED =
+        GRAY;
+
+    constexpr Color COLOR_UNKNOWN =
+        MAGENTA;
+
+    // Font roles
+    // 실제 TFT 폰트 번호나 FreeFont 객체는
+    // 이후 DisplayRenderer에서 연결한다.
+    enum class FontRole : uint8_t
     {
-        // Base
-        constexpr Color Background = 0x101418;
-        constexpr Color Surface    = 0x1A2026;
-        constexpr Color Border     = 0x35404A;
+        Small = 0,
+        Normal,
+        Large,
+        Title,
+        Value
+    };
 
-        // Text
-        constexpr Color TextPrimary   = 0xF2F5F7;
-        constexpr Color TextSecondary = 0xAAB4BC;
-        constexpr Color TextDisabled  = 0x66717A;
+    // Text sizes
+    // 기본 내장 폰트를 사용하는 경우의 크기 배율이다.
+    // 실제 LCD 적용 시 조정할 수 있다.
+    constexpr uint8_t FONT_SIZE_SMALL  = 1U;
+    constexpr uint8_t FONT_SIZE_NORMAL = 2U;
+    constexpr uint8_t FONT_SIZE_LARGE  = 3U;
+    constexpr uint8_t FONT_SIZE_TITLE  = 2U;
+    constexpr uint8_t FONT_SIZE_VALUE  = 3U;
 
-        // Status
-        constexpr Color Online  = 0x35C759;
-        constexpr Color Warning = 0xFFB020;
-        constexpr Color Error   = 0xFF453A;
-        constexpr Color Offline = 0x66717A;
+    // Shape and spacing
+    constexpr uint8_t BORDER_WIDTH =
+        1U;
 
-        // Energy categories
-        constexpr Color Solar       = 0xFFC928;
-        constexpr Color Battery     = 0x35C759;
-        constexpr Color Load        = 0x4DA3FF;
-        constexpr Color Soc         = 0xA970FF;
-        constexpr Color Temperature = 0xFF7043;
+    constexpr uint8_t DIVIDER_WIDTH =
+        1U;
 
-        // Header / Footer
-        constexpr Color HeaderBackground = 0x182028;
-        constexpr Color FooterBackground = 0x182028;
+    constexpr uint8_t CORNER_RADIUS =
+        4U;
 
-        // Progress / Gauge
-        constexpr Color GaugeBackground = 0x2B343C;
-        constexpr Color GaugeNormal     = 0x35C759;
-        constexpr Color GaugeWarning    = 0xFFB020;
-        constexpr Color GaugeCritical   = 0xFF453A;
+    constexpr uint8_t PADDING_SMALL =
+        2U;
+
+    constexpr uint8_t PADDING_NORMAL =
+        4U;
+
+    constexpr uint8_t PADDING_LARGE =
+        8U;
+
+    constexpr uint8_t TEXT_SPACING =
+        4U;
+
+    // State color helpers
+    // C++11 constexpr 규칙에 맞도록
+    // 하나의 return 표현식으로 구성한다.
+    constexpr Color GetValueColor(
+        DisplayTypes::WidgetState state)
+    {
+        return
+            state == DisplayTypes::WidgetState::Active
+                ? COLOR_ACTIVE
+                :
+            state == DisplayTypes::WidgetState::Warning
+                ? COLOR_WARNING
+                :
+            state == DisplayTypes::WidgetState::Alarm
+                ? COLOR_ALARM
+                :
+            state == DisplayTypes::WidgetState::Disabled
+                ? COLOR_DISABLED
+                :
+            state == DisplayTypes::WidgetState::Unknown
+                ? COLOR_UNKNOWN
+                :
+                COLOR_VALUE;
     }
 
-    namespace Font
+    // 상태별 테두리 색상
+    constexpr Color GetBorderColor(
+        DisplayTypes::WidgetState state)
     {
-        constexpr uint8_t Tiny   = 1;
-        constexpr uint8_t Small  = 1;
-        constexpr uint8_t Normal = 2;
-        constexpr uint8_t Medium = 2;
-        constexpr uint8_t Large  = 3;
-        constexpr uint8_t Huge   = 4;
+        return
+            state == DisplayTypes::WidgetState::Active
+                ? COLOR_ACTIVE
+                :
+            state == DisplayTypes::WidgetState::Warning
+                ? COLOR_WARNING
+                :
+            state == DisplayTypes::WidgetState::Alarm
+                ? COLOR_ALARM
+                :
+            state == DisplayTypes::WidgetState::Disabled
+                ? COLOR_DISABLED
+                :
+            state == DisplayTypes::WidgetState::Unknown
+                ? COLOR_UNKNOWN
+                :
+                COLOR_BORDER;
     }
 
-    // Line / Border
-    namespace Line
+    // FontRole을 기본 글자 크기로 변환한다.
+    constexpr uint8_t GetFontSize(
+        FontRole role)
     {
-        constexpr uint8_t Thin   = 1;
-        constexpr uint8_t Normal = 2;
-        constexpr uint8_t Thick  = 3;
+        return
+            role == FontRole::Small
+                ? FONT_SIZE_SMALL
+                :
+            role == FontRole::Large
+                ? FONT_SIZE_LARGE
+                :
+            role == FontRole::Title
+                ? FONT_SIZE_TITLE
+                :
+            role == FontRole::Value
+                ? FONT_SIZE_VALUE
+                :
+                FONT_SIZE_NORMAL;
     }
 
-    // Corner radius
-    namespace Radius
+    constexpr bool IsValid()
     {
-        constexpr uint8_t Small  = 3;
-        constexpr uint8_t Normal = 6;
-        constexpr uint8_t Large  = 10;
-    }
-
-    // Spacing
-    namespace Spacing
-    {
-        constexpr uint8_t Tine   = 2;
-        constexpr uint8_t Small  = 4;
-        constexpr uint8_t Normal = 8;
-        constexpr uint8_t Large  = 12;
+        return
+            BORDER_WIDTH > 0U &&
+            DIVIDER_WIDTH > 0U &&
+            FONT_SIZE_SMALL > 0U &&
+            FONT_SIZE_NORMAL > 0U &&
+            FONT_SIZE_LARGE > 0U &&
+            FONT_SIZE_TITLE > 0U &&
+            FONT_SIZE_VALUE > 0U &&
+            COLOR_BACKGROUND != COLOR_TEXT &&
+            COLOR_WARNING != COLOR_ALARM;
     }
 }

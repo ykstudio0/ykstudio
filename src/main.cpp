@@ -28,6 +28,7 @@ void setup()
   Display::Begin();
   delay(1000);
   Tests::RunDisplayTests();
+  Tests::RunDisplayThemeTests();
 }
 
 void loop()

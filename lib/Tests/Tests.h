@@ -12,4 +12,6 @@
 namespace Tests
 {
     void RunDisplayTests();
+    
+    void RunDisplayThemeTests();
 }
