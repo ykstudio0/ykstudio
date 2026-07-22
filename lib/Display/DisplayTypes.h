@@ -19,6 +19,8 @@
     {
         None = 0,
 
+        Number,
+        
         Voltage,
         Current,
         Power,
@@ -195,35 +197,6 @@
            ? 1U
            : 0U;
     }
-    // constexpr uint8_t GetDefaultDecimals(
-    //     ValueType type)
-    // {
-    //     return
-    //     switch (type)
-    //     {
-    //         case ValueType::Voltage:
-    //         case ValueType::Current:
-    //             return 2;
-            
-    //         case ValueType::Power:
-    //         case ValueType::Energy:
-    //             return 1;
-
-    //         case ValueType::Temperature:
-    //         case ValueType::Humidity:
-    //             return 1;
-
-    //         case ValueType::Percent:
-    //             return 0;
-
-    //         case ValueType::Time:
-    //         case ValueType::Duration:
-    //         case ValueType::Text:
-    //         case ValueType::None:
-    //         default:
-    //             return 0;
-    //     }
-    // }
 
     // 값 타입별 단위 문자열
     inline const char* GetUnit(

@@ -15,7 +15,10 @@
 #include "Config.h"
 #include "DeviceManager.h"
 #include "Display.h"
+#include "DisplayModel.h"
 #include "Tests.h"
+
+DisplayModel::Model displayModel;
 
 void setup()
 {
@@ -29,6 +32,7 @@ void setup()
   delay(1000);
   Tests::RunDisplayTests();
   Tests::RunDisplayThemeTests();
+  Tests::RunDisplayModelTests();
 }
 
 void loop()
