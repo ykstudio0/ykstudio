@@ -16,9 +16,14 @@
 #include "DeviceManager.h"
 #include "Display.h"
 #include "DisplayModel.h"
+#include "IRenderTarget.h"
+#include "DisplayRenderer.h"
+#include "SerialRenderTarget.h"
 #include "Tests.h"
 
 DisplayModel::Model displayModel;
+SerialRenderTarget serialRenderTarget(Serial);
+DisplayRenderer::Renderer displayRenderer;
 
 void setup()
 {
@@ -33,10 +38,31 @@ void setup()
   Tests::RunDisplayTests();
   Tests::RunDisplayThemeTests();
   Tests::RunDisplayModelTests();
+  Serial.println();
+  Serial.println("SVEMS Display Test");
+
+  if (!serialRenderTarget.Begin())
+  {
+      Serial.println("SerialRenderTarget Begin failed");
+      return;
+  }
+
+  if (!displayRenderer.Begin(serialRenderTarget))
+  {
+      Serial.println("DisplayRenderer Begin failed");
+      return;
+  }
+
+  Serial.println("DisplayRenderer Ready");
 }
 
 void loop()
 {
-  DeviceManager::Update();
-  delay(1);
+  displayRenderer.RenderPage(
+    DisplayPages::Page::Overview,
+    displayModel);
+
+  delay(5000);
+  // DeviceManager::Update();
+  // delay(1);
 }

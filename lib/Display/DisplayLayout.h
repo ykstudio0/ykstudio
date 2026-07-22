@@ -31,7 +31,7 @@ namespace DisplayLayout
     constexpr int16_t DIVIDER_HEIGHT = 1;
 
     // Header 영역
-    constexpr int16_t Header_x = 
+    constexpr int16_t HEADER_X = 
         0;
     constexpr int16_t HEADER_Y = 
         0;
@@ -122,7 +122,7 @@ namespace DisplayLayout
 
     // Content 내부 공통 간격
     constexpr int16_t CONTENT_ROW_HEIGHT =
-        38;
+        28;
 
     constexpr int16_t CONTENT_LABEL_X =
         CONTENT_X;

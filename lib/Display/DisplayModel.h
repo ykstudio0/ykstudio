@@ -93,7 +93,7 @@ namespace DisplayModel
               totalEnergy(
                 DisplayTypes::MakeValue(
                     0.0f,
-                    DisplayTypes::ValueType::Power))
+                    DisplayTypes::ValueType::Energy))
         {
 
         }
