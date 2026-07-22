@@ -153,6 +153,17 @@ v0.3.1 : Display Theme
     DisplayTests        23 PASS
     DisplayThemeTests   25 PASS
     TOTAL               48 PASS
+v0.3.2 : Display Model
+    ✔ DisplayPages
+    ✔ DisplayLayout
+    ✔ DisplayTypes
+    ✔ DisplayTheme
+    ✔ DisplayModel
+    DisplayTests        23 PASS
+    DisplayThemeTests   25 PASS
+    DisplayModelTests   42 PASS
+    -----------------------------
+    TOTAL               90 PASS
 v0.4.0 : Wi-Fi/MQTT/Web 계층
 v0.5.0 : 원격 제어 및 자동화
 v1.0.0 : 차량 실사용 버전(첫 번째 정식 릴리스)
