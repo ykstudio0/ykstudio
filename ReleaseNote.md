@@ -138,6 +138,21 @@ v0.3.0 : Display/UI 계층
     DisplayTypes
     Main 화면의 구조 설계
     각 DrawXXX() 함수의 역할 정의
+v0.3.1 : Display Theme
+    ✔ DisplayTheme
+    ✔ DisplayThemeTests
+    Display Framework
+    ───────────────
+    DisplayPages        ✔
+    DisplayLayout       ✔
+    DisplayTypes        ✔
+    DisplayTheme        ✔
+
+    Tests
+    ───────────────
+    DisplayTests        23 PASS
+    DisplayThemeTests   25 PASS
+    TOTAL               48 PASS
 v0.4.0 : Wi-Fi/MQTT/Web 계층
 v0.5.0 : 원격 제어 및 자동화
 v1.0.0 : 차량 실사용 버전(첫 번째 정식 릴리스)
