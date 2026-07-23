@@ -20,10 +20,15 @@
 #include "DisplayRenderer.h"
 #include "SerialRenderTarget.h"
 #include "Tests.h"
+#include "LGFX_Config.h"
 
 DisplayModel::Model displayModel;
 SerialRenderTarget serialRenderTarget(Serial);
 DisplayRenderer::Renderer displayRenderer;
+
+LGFX_SVEMS lcd;
+
+void TestTFT();
 
 void setup()
 {
@@ -35,6 +40,7 @@ void setup()
   DeviceManager::Begin();
   Display::Begin();
   delay(1000);
+  TestTFT();
   Tests::RunDisplayTests();
   Tests::RunDisplayThemeTests();
   Tests::RunDisplayModelTests();
@@ -60,11 +66,66 @@ void setup()
 
 void loop()
 {
-  // displayRenderer.RenderPage(
-  //   DisplayPages::Page::Overview,
-  //   displayModel);
+  displayRenderer.RenderPage(
+    DisplayPages::Page::Overview,
+    displayModel);
 
   delay(5000);
   // DeviceManager::Update();
   // delay(1);
+}
+
+void TestTFT()
+{
+    Serial.println();
+    Serial.println(
+        "========== TFT TEST ==========");
+
+    lcd.init();
+
+    // 320 x 240 가로 방향
+    lcd.setRotation(3);
+
+    // PWM 백라이트
+    lcd.setBrightness(180);
+    lcd.fillScreen(TFT_BLACK);
+
+    lcd.fillRect(11, 10, 67, 40, TFT_RED);
+    lcd.fillRect(88, 10, 67, 40, TFT_GREEN);
+    lcd.fillRect(165, 10, 67, 40, TFT_BLUE);
+    lcd.fillRect(242, 10, 67, 40, TFT_WHITE);
+
+    lcd.setTextColor(TFT_WHITE, TFT_BLACK);
+    lcd.setTextSize(2);
+    lcd.setCursor(100, 100);
+    lcd.println("Hello SVEMS");
+
+    // lcd.drawRect(
+    //     10,
+    //     10,
+    //     300,
+    //     220,
+    //     TFT_GREEN);
+
+    // lcd.drawLine(
+    //     0,
+    //     120,
+    //     319,
+    //     120,
+    //     TFT_RED);
+
+    Serial.print(
+        "LCD width  : ");
+
+    Serial.println(
+        lcd.width());
+
+    Serial.print(
+        "LCD height : ");
+
+    Serial.println(
+        lcd.height());
+
+    Serial.println(
+        "========== TFT READY ==========");
 }
