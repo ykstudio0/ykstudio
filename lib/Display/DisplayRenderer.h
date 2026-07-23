@@ -40,7 +40,8 @@ namespace DisplayRenderer
     private:
         // Common
         void DrawHeader(
-            DisplayPages::Page page);
+            DisplayPages::Page page,
+            const DisplayModel::SystemData& system);
 
         void DrawFooter(
             DisplayPages::Page page);
@@ -84,6 +85,9 @@ namespace DisplayRenderer
             char* buffer,
             size_t bufferSize) const;
         
+        void DrawHeaderStatus(
+            const DisplayModel::SystemData& system);
+
         // Members
         IRenderTarget* m_target;
 

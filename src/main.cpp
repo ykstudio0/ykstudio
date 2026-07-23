@@ -38,6 +38,8 @@ void setup()
   Tests::RunDisplayTests();
   Tests::RunDisplayThemeTests();
   Tests::RunDisplayModelTests();
+  Tests::RunDisplayRendererTests();
+
   Serial.println();
   Serial.println("SVEMS Display Test");
 
@@ -58,9 +60,9 @@ void setup()
 
 void loop()
 {
-  displayRenderer.RenderPage(
-    DisplayPages::Page::Overview,
-    displayModel);
+  // displayRenderer.RenderPage(
+  //   DisplayPages::Page::Overview,
+  //   displayModel);
 
   delay(5000);
   // DeviceManager::Update();

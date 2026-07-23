@@ -1,0 +1,89 @@
+//-------------------------------------------------------------
+// File : DisplayRendererTests.cpp
+// Author : JongOh Kim + ChatGPT
+// Date : 2026-07-23
+// Project : SVEMS
+// Version : 0.3.3
+// Description : Render tests for DisplayRenderer
+//-------------------------------------------------------------
+
+#include <Arduino.h>
+
+#include "DisplayRenderer.h"
+#include "DisplayModel.h"
+#include "SerialRenderTarget.h"
+#include "Tests.h"
+
+namespace
+{
+    void TestOverviewRendering()
+    {
+        DisplayModel::Model model;
+
+        auto& system =
+            model.GetSystem();
+
+        system.currentTime.SetValue(
+            14.0f * 3600.0f +
+            25.0f * 60.0f +
+            37.0f);
+
+        system.wifiConnected = true;
+        system.rs485Ready = true;
+        system.modbusReady = true;
+        system.deviceManagerReady = true;
+
+        model.GetSolar().power.SetValue(
+            162.5f);
+
+        model.GetBattery().voltage.SetValue(
+            13.42f);
+
+        model.GetBattery().percent.SetValue(
+            84.0f);
+
+        model.GetLoad().power.SetValue(
+            7.2f);
+
+        model.GetTemperature()
+            .cabinTemperature
+            .SetValue(26.8f);
+
+        model.GetTemperature()
+            .cabinHumidity
+            .SetValue(61.0f);
+
+        model.SyncOverview();
+
+        SerialRenderTarget target(Serial);
+
+        DisplayRenderer::Renderer renderer;
+
+        if (!renderer.Begin(target))
+        {
+            Serial.println(
+                F("[FAIL] [DISPLAY RENDERER] Begin failed"));
+
+            return;
+        }
+
+        renderer.RenderPage(
+            DisplayPages::Page::Overview,
+            model);
+    }
+}
+
+namespace Tests
+{
+    void RunDisplayRendererTests()
+    {
+        Serial.println();
+        Serial.println(
+            F("========== DISPLAY RENDERER TESTS =========="));
+
+        TestOverviewRendering();
+
+        Serial.println(
+            F("============================================"));
+    }
+}

@@ -207,6 +207,7 @@ namespace DisplayModel
     // System page data
     struct SystemData
     {
+        DisplayTypes::DisplayValue currentTime;
         DisplayTypes::DisplayValue uptime;
         DisplayTypes::DisplayValue heapPercent;
         DisplayTypes::DisplayValue wifiSignal;
@@ -218,22 +219,27 @@ namespace DisplayModel
         bool deviceManagerReady;
 
         constexpr SystemData()
-            : uptime(
+            :currentTime(
+                DisplayTypes::MakeValue(
+                    0.0f,
+                    DisplayTypes::ValueType::Time)),
+
+            uptime(
                 DisplayTypes::MakeValue(
                     0.0f,
                     DisplayTypes::ValueType::Duration)),
 
-              heapPercent(
+            heapPercent(
                 DisplayTypes::MakeValue(
                     0.0f,
                     DisplayTypes::ValueType::Percent)),
 
-              wifiSignal(
+            wifiSignal(
                 DisplayTypes::MakeValue(
                     0.0f,
                     DisplayTypes::ValueType::Percent)),
 
-              deviceCount(
+            deviceCount(
                 DisplayTypes::MakeValue(
                     0.0f,
                     DisplayTypes::ValueType::Number)),
@@ -246,6 +252,8 @@ namespace DisplayModel
 
             deviceManagerReady(false)
         {
+            currentTime.decimals = 0U;
+            
             deviceCount.type =
                 DisplayTypes::ValueType::None;
 

@@ -42,7 +42,7 @@ namespace DisplayRenderer
             m_target != nullptr &&
             m_target->IsReady();
     }
-
+    
     bool Renderer::RenderPage(
         DisplayPages::Page page,
         const DisplayModel::Model& model)
@@ -62,7 +62,9 @@ namespace DisplayRenderer
         m_target->Clear(
             DisplayTheme::COLOR_BACKGROUND);
 
-        DrawHeader(page);
+        DrawHeader(
+            page,
+            model.GetSystem());
 
         DrawContent(
             page,
@@ -77,10 +79,66 @@ namespace DisplayRenderer
 
     // Common
     void Renderer::DrawHeader(
-        DisplayPages::Page page)
+        DisplayPages::Page page,
+        const DisplayModel::SystemData& system)
     {
-        // 다음 단계에서 구현한다.
-        (void)page;
+        if (!IsReady())
+        {
+            return;
+        }
+
+        // const char* title =
+        //     DisplayPages::GetTitle(page);
+
+        // Header background
+        m_target->FillRect(
+            DisplayLayout::HEADER_X,
+            DisplayLayout::HEADER_Y,
+            DisplayLayout::HEADER_WIDTH,
+            DisplayLayout::HEADER_HEIGHT,
+            DisplayTheme::COLOR_HEADER_BACKGROUND);
+
+        // Page title
+        m_target->DrawText(
+            DisplayLayout::HEADER_TITLE_X,
+            DisplayLayout::HEADER_TITLE_Y,
+            DisplayPages::GetTitle(page),
+            DisplayTheme::COLOR_TITLE,
+            DisplayTheme::GetFontSize(
+                DisplayTheme::FontRole::Title),
+            DisplayTypes::TextAlign::Left);
+
+        // Current time
+        char timeText[12];
+
+        FormatValue(
+            system.currentTime,
+            timeText,
+            sizeof(timeText));
+
+        if (timeText[0] != '\0')
+        {
+            m_target->DrawText(
+                DisplayLayout::HEADER_TIME_X,
+                DisplayLayout::HEADER_TIME_Y,
+                timeText,
+                DisplayTheme::COLOR_TEXT,
+                DisplayTheme::GetFontSize(
+                    DisplayTheme::FontRole::Small),
+                DisplayTypes::TextAlign::Right);
+        }
+
+        // System status
+        DrawHeaderStatus(system);
+        
+        // Header divider
+        m_target->DrawLine(
+            0,
+            DisplayLayout::HEADER_DIVIDER_Y,
+            DisplayLayout::SCREEN_WIDTH - 1,
+            DisplayLayout::HEADER_DIVIDER_Y,
+            DisplayTheme::COLOR_DIVIDER,
+            DisplayTheme::DIVIDER_WIDTH);
     }
 
     void Renderer::DrawFooter(
@@ -161,6 +219,50 @@ namespace DisplayRenderer
             "Humidity",
             data.humidity,
             5U);
+    }
+
+    void Renderer::DrawHeaderStatus(
+        const DisplayModel::SystemData& system)
+    {
+        if (!IsReady())
+        {
+            return;
+        }
+
+        const char* statusText = "OK";
+
+        DisplayTheme::Color statusColor =
+            DisplayTheme::COLOR_ACTIVE;
+
+        if (!system.wifiConnected)
+        {
+            statusText = "NET";
+            statusColor = DisplayTheme::COLOR_WARNING;
+        }
+        else if (!system.rs485Ready)
+        {
+            statusText = "485";
+            statusColor = DisplayTheme::COLOR_ALARM;
+        }
+        else if (!system.modbusReady)
+        {
+            statusText = "MOD";
+            statusColor = DisplayTheme::COLOR_ALARM;
+        }
+        else if (!system.deviceManagerReady)
+        {
+            statusText = "DEV";
+            statusColor = DisplayTheme::COLOR_WARNING;
+        }
+
+        m_target->DrawText(
+            DisplayLayout::HEADER_STATUS_X,
+            DisplayLayout::HEADER_STATUS_Y,
+            statusText,
+            statusColor,
+            DisplayTheme::GetFontSize(
+                DisplayTheme::FontRole::Small),
+            DisplayTypes::TextAlign::Left);
     }
 
     void Renderer::DrawSolar(
@@ -360,7 +462,7 @@ namespace DisplayRenderer
                 snprintf(
                     buffer,
                     bufferSize,
-                    "%021u:%021u:%021u",
+                    "%02u:%02u:%02u",
                     static_cast<unsigned long>(hours),
                     static_cast<unsigned long>(minutes),
                     static_cast<unsigned long>(seconds));

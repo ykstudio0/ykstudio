@@ -90,7 +90,7 @@ namespace DisplayLayout
         8;
 
     constexpr int16_t HEADER_TIME_X =
-        224;
+        286;
 
     constexpr int16_t HEADER_TIME_Y =
         8;
