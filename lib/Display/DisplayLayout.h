@@ -31,32 +31,21 @@ namespace DisplayLayout
     constexpr int16_t DIVIDER_HEIGHT = 1;
 
     // Header 영역
-    constexpr int16_t HEADER_X = 
-        0;
-    constexpr int16_t HEADER_Y = 
-        0;
-    constexpr int16_t HEADER_WIDTH = 
-        SCREEN_WIDTH;
+    constexpr int16_t HEADER_X = 0;
+    constexpr int16_t HEADER_Y = 0;
+    constexpr int16_t HEADER_WIDTH = SCREEN_WIDTH;
 
     // Header 아래 구분선
-    constexpr int16_t HEADER_DIVIDER_Y = 
-        HEADER_Y + HEADER_HEIGHT;
+    constexpr int16_t HEADER_DIVIDER_Y = HEADER_Y + HEADER_HEIGHT;
 
     // Content 영역
-    constexpr int16_t CONTENT_X = 
-        MARGIN_LEFT;
-    
+    constexpr int16_t CONTENT_X = MARGIN_LEFT;
     constexpr int16_t CONTENT_Y = 
-        HEADER_DIVIDER_Y +
-        DIVIDER_HEIGHT +
+        HEADER_DIVIDER_Y + 
+        DIVIDER_HEIGHT + 
         MARGIN_TOP;
-
-    constexpr int16_t CONTENT_WIDTH =
-        SCREEN_WIDTH -
-        MARGIN_LEFT -
-        MARGIN_RIGHT;
-
-    constexpr int16_t CONTENT_HEIGHT =
+    constexpr int16_t CONTENT_WIDTH = SCREEN_WIDTH - MARGIN_LEFT - MARGIN_RIGHT;
+    constexpr int16_t CONTENT_HEIGHT = 
         SCREEN_HEIGHT -
         HEADER_HEIGHT -
         FOOTER_HEIGHT -
@@ -72,79 +61,40 @@ namespace DisplayLayout
         DIVIDER_HEIGHT;
 
     // Footer 영역
-    constexpr int16_t FOOTER_X =
-        0;
-
+    constexpr int16_t FOOTER_X = 0;
     constexpr int16_t FOOTER_Y =
         SCREEN_HEIGHT -
         FOOTER_HEIGHT;
 
-    constexpr int16_t FOOTER_WIDTH =
-        SCREEN_WIDTH;
+    constexpr int16_t FOOTER_WIDTH = SCREEN_WIDTH;
 
     // Header 내부 좌표
-    constexpr int16_t HEADER_TITLE_X =
-        MARGIN_LEFT;
+    constexpr int16_t HEADER_TITLE_X = MARGIN_LEFT;
 
-    constexpr int16_t HEADER_TITLE_Y =
-        8;
-
-    constexpr int16_t HEADER_TIME_X =
-        286;
-
-    constexpr int16_t HEADER_TIME_Y =
-        8;
-
-    constexpr int16_t HEADER_STATUS_X =
-        292;
-
-    constexpr int16_t HEADER_STATUS_Y =
-        8;
+    constexpr int16_t HEADER_TITLE_Y  = 8;
+    constexpr int16_t HEADER_TIME_X   = 286;
+    constexpr int16_t HEADER_TIME_Y   = 8;
+    constexpr int16_t HEADER_STATUS_X = 292;
+    constexpr int16_t HEADER_STATUS_Y = 8;
 
     // Footer 내부 좌표
-    constexpr int16_t FOOTER_PREVIOUS_X =
-        MARGIN_LEFT;
-
-    constexpr int16_t FOOTER_PREVIOUS_Y =
-        FOOTER_Y + 7;
-
-    constexpr int16_t FOOTER_PAGE_X =
-        132;
-
-    constexpr int16_t FOOTER_PAGE_Y =
-        FOOTER_Y + 7;
-
-    constexpr int16_t FOOTER_NEXT_X =
-        272;
-
-    constexpr int16_t FOOTER_NEXT_Y =
-        FOOTER_Y + 7;
+    constexpr int16_t FOOTER_PREVIOUS_X = MARGIN_LEFT;
+    constexpr int16_t FOOTER_PREVIOUS_Y = FOOTER_Y + 7;
+    constexpr int16_t FOOTER_PAGE_X = 132;
+    constexpr int16_t FOOTER_PAGE_Y = FOOTER_Y + 7;
+    constexpr int16_t FOOTER_NEXT_X = 272;
+    constexpr int16_t FOOTER_NEXT_Y = FOOTER_Y + 7;
 
     // Content 내부 공통 간격
-    constexpr int16_t CONTENT_ROW_HEIGHT =
-        28;
-
-    constexpr int16_t CONTENT_LABEL_X =
-        CONTENT_X;
-
-    constexpr int16_t CONTENT_VALUE_X =
-        150;
-
-    constexpr int16_t CONTENT_UNIT_X =
-        260;
-
-    constexpr int16_t CONTENT_FIRST_ROW_Y =
-        CONTENT_Y + 4;
-
-    constexpr int16_t SCREEN_RIGHT =
-        SCREEN_WIDTH - 1;
-
-    constexpr int16_t SCREEN_BOTTOM =
-        SCREEN_HEIGHT - 1;
-
+    constexpr int16_t CONTENT_ROW_HEIGHT = 28;
+    constexpr int16_t CONTENT_LABEL_X = 40;
+    constexpr int16_t CONTENT_VALUE_X = 200;
+    constexpr int16_t CONTENT_UNIT_X = 225;
+    constexpr int16_t CONTENT_FIRST_ROW_Y = CONTENT_Y + 4;
+    constexpr int16_t SCREEN_RIGHT = SCREEN_WIDTH - 1;
+    constexpr int16_t SCREEN_BOTTOM = SCREEN_HEIGHT - 1;
     constexpr int16_t CONTENT_RIGHT =
         CONTENT_X + CONTENT_WIDTH - 1;
-
     constexpr int16_t FOOTER_RIGHT =
         FOOTER_X + FOOTER_WIDTH - 1;
 

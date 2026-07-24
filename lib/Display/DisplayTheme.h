@@ -111,10 +111,10 @@ namespace DisplayTheme
     // 기본 내장 폰트를 사용하는 경우의 크기 배율이다.
     // 실제 LCD 적용 시 조정할 수 있다.
     constexpr uint8_t FONT_SIZE_SMALL  = 1U;
-    constexpr uint8_t FONT_SIZE_NORMAL = 2U;
-    constexpr uint8_t FONT_SIZE_LARGE  = 3U;
+    constexpr uint8_t FONT_SIZE_NORMAL = 1U;
+    constexpr uint8_t FONT_SIZE_LARGE  = 2U;
     constexpr uint8_t FONT_SIZE_TITLE  = 2U;
-    constexpr uint8_t FONT_SIZE_VALUE  = 3U;
+    constexpr uint8_t FONT_SIZE_VALUE  = 2U;
 
     // Shape and spacing
     constexpr uint8_t BORDER_WIDTH =

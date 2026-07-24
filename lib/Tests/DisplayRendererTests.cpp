@@ -39,14 +39,8 @@ namespace
         model.GetBattery().voltage.SetValue(13.42f);
         model.GetBattery().percent.SetValue(84.0f);
         model.GetLoad().power.SetValue(7.2f);
-
-        model.GetTemperature()
-            .cabinTemperature
-            .SetValue(26.8f);
-
-        model.GetTemperature()
-            .cabinHumidity
-            .SetValue(61.0f);
+        model.GetTemperature().cabinTemperature.SetValue(26.8f);
+        model.GetTemperature().cabinHumidity.SetValue(61.0f);
 
         model.SyncOverview();
 

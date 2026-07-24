@@ -173,7 +173,11 @@ v0.3.3 : Display Connecting
     해상도 320×240 정상 (LCD width : 320, LCD height : 240)
     LovyanGFX 설정도 거의 맞음
 v0.3.4 : TFTRenderTarget
-    TFTRenderTarget   완료
+    TFTRenderTarget 완성
+    DisplayRenderer를 단 한 줄도 수정하지 않고 TFT 연결 성공
+    DisplayModel → DisplayRenderer → TFTRenderTarget → ILI9341 전체 파이프라인 검증
+    Header, Divider, Row Layout 정상 동작 확인
+    DrawText() / DrawValue() / FormatValue() 정상 동작 확인
 v0.4.0 : Wi-Fi/MQTT/Web 계층
 v0.5.0 : 원격 제어 및 자동화
 v1.0.0 : 차량 실사용 버전(첫 번째 정식 릴리스)

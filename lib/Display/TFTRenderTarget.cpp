@@ -80,7 +80,7 @@ void TFTRenderTarget::DrawText(
 
     m_display->drawString(
         text,
-        y,
+        x,
         y);
 }
 
