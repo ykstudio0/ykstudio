@@ -108,7 +108,7 @@ void TestTFT()
     lcd.setCursor(100, 100);
     lcd.println("Hello SVEMS");
     // lcd.setCursor(100, 130);
-    // lcd.println(SVEMS_VERSION_STRING);
+    // lcd.println(const SVEMS_VERSION_STRING);
 
     Serial.print("LCD width  : ");
 
