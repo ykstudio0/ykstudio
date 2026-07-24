@@ -49,6 +49,7 @@ void setup()
     Display::Begin();
     delay(1000);
     TestTFT();
+    delay(1000);
     Tests::RunDisplayTests();
     Tests::RunDisplayThemeTests();
     Tests::RunDisplayModelTests();
@@ -106,6 +107,8 @@ void TestTFT()
     lcd.setTextSize(2);
     lcd.setCursor(100, 100);
     lcd.println("Hello SVEMS");
+    // lcd.setCursor(100, 130);
+    // lcd.println(SVEMS_VERSION_STRING);
 
     Serial.print("LCD width  : ");
 

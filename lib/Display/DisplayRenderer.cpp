@@ -11,6 +11,9 @@
 #include <stdio.h>
 
 #include "DisplayRenderer.h"
+#include "HeaderWidget.h"
+#include "ValueWidget.h"
+#include "FooterWidget.h"
 
 namespace DisplayRenderer
 {
@@ -87,27 +90,6 @@ namespace DisplayRenderer
             return;
         }
 
-        // const char* title =
-        //     DisplayPages::GetTitle(page);
-
-        // Header background
-        m_target->FillRect(
-            DisplayLayout::HEADER_X,
-            DisplayLayout::HEADER_Y,
-            DisplayLayout::HEADER_WIDTH,
-            DisplayLayout::HEADER_HEIGHT,
-            DisplayTheme::COLOR_HEADER_BACKGROUND);
-
-        // Page title
-        m_target->DrawText(
-            DisplayLayout::HEADER_TITLE_X,
-            DisplayLayout::HEADER_TITLE_Y,
-            DisplayPages::GetTitle(page),
-            DisplayTheme::COLOR_TITLE,
-            DisplayTheme::GetFontSize(
-                DisplayTheme::FontRole::Title),
-            DisplayTypes::TextAlign::Left);
-
         // Current time
         char timeText[12];
 
@@ -116,36 +98,54 @@ namespace DisplayRenderer
             timeText,
             sizeof(timeText));
 
-        if (timeText[0] != '\0')
+        const char* statusText = "OK";
+
+        DisplayTheme::Color statusColor =
+            DisplayTheme::COLOR_ACTIVE;
+
+        if (!system.wifiConnected)
         {
-            m_target->DrawText(
-                DisplayLayout::HEADER_TIME_X,
-                DisplayLayout::HEADER_TIME_Y,
-                timeText,
-                DisplayTheme::COLOR_TEXT,
-                DisplayTheme::GetFontSize(
-                    DisplayTheme::FontRole::Small),
-                DisplayTypes::TextAlign::Right);
+            statusText = "NET";
+            statusColor = DisplayTheme::COLOR_WARNING;
+        }
+        else if (!system.rs485Ready)
+        {
+            statusText = "485";
+            statusColor = DisplayTheme::COLOR_ALARM;
+        }
+        else if (!system.modbusReady)
+        {
+            statusText = "MOD";
+            statusColor = DisplayTheme::COLOR_ALARM;
+        }
+        else if (!system.deviceManagerReady)
+        {
+            statusText = "DEV";
+            statusColor = DisplayTheme::COLOR_WARNING;
         }
 
-        // System status
-        DrawHeaderStatus(system);
-        
-        // Header divider
-        m_target->DrawLine(
-            DisplayLayout::HEADER_X,
-            DisplayLayout::HEADER_DIVIDER_Y,
-            DisplayLayout::SCREEN_RIGHT,
-            DisplayLayout::HEADER_DIVIDER_Y,
-            DisplayTheme::COLOR_DIVIDER,
-            DisplayTheme::DIVIDER_WIDTH);
+        DisplayWidgets::HeaderWidget::Draw(
+            *m_target,
+            DisplayPages::GetTitle(page),
+            timeText,
+            statusText,
+            statusColor);
     }
 
     void Renderer::DrawFooter(
         DisplayPages::Page page)
     {
-        // 다음 단계에서 구현한다.
-        (void)page;
+        const char* previousText = "< Prev";
+        const char* pageText     = "1 / 4";
+        const char* nextText     = "Next >";
+        
+        DisplayWidgets::FooterWidget::Draw(
+            *m_target,
+            previousText,
+            pageText,
+            nextText);
+            
+            (void)page;
     }
 
     void Renderer::DrawContent(
@@ -311,43 +311,38 @@ namespace DisplayRenderer
             return;
         }
 
-        // Row 위치 계산
-        const int16_t y =
-            DisplayLayout::GetRowY(row);
+        if (!value.visible)
+        {
+            return;
+        }
 
-        // Label
-        m_target->DrawText(
-            DisplayLayout::CONTENT_LABEL_X,
-            y,
-            label,
-            DisplayTheme::COLOR_LABEL,
-            DisplayTheme::GetFontSize(
-                DisplayTheme::FontRole::Normal),
-            DisplayTypes::TextAlign::Left);
-        
-        // Value
-        DrawValue(
+        char valueText[VALUE_BUFFER_SIZE];
+
+        FormatValue(
             value,
-            DisplayLayout::CONTENT_VALUE_X,
-            y);
+            valueText,
+            sizeof(valueText));
 
-        // Unit
+        if (valueText[0] == '\0')
+        {
+            return;
+        }
+
         const char* unit =
             DisplayTypes::GetUnit(
                 value.type);
 
-        if (unit != nullptr &&
-            unit[0] != '\0')
-        {
-            m_target->DrawText(
-                DisplayLayout::CONTENT_UNIT_X,
-                y,
-                unit,
-                DisplayTheme::COLOR_UNIT,
-                DisplayTheme::GetFontSize(
-                    DisplayTheme::FontRole::Normal),
-                DisplayTypes::TextAlign::Left);
-        }
+        const DisplayTheme::Color valueColor =
+            DisplayTheme::GetValueColor(
+                value.state);
+
+        DisplayWidgets::ValueWidget::Draw(
+            *m_target,
+            row,
+            label,
+            valueText,
+            unit,
+            valueColor);
     }
 
     void Renderer::DrawValue(

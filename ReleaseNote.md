@@ -178,7 +178,7 @@ v0.3.4 : TFTRenderTarget
     DisplayModel → DisplayRenderer → TFTRenderTarget → ILI9341 전체 파이프라인 검증
     Header, Divider, Row Layout 정상 동작 확인
     DrawText() / DrawValue() / FormatValue() 정상 동작 확인
-v0.4.0 : Wi-Fi/MQTT/Web 계층
+v0.4.0 : Design Rule
 v0.5.0 : 원격 제어 및 자동화
 v1.0.0 : 차량 실사용 버전(첫 번째 정식 릴리스)
 
