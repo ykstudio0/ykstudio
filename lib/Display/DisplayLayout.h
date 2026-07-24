@@ -136,6 +136,18 @@ namespace DisplayLayout
     constexpr int16_t CONTENT_FIRST_ROW_Y =
         CONTENT_Y + 4;
 
+    constexpr int16_t SCREEN_RIGHT =
+        SCREEN_WIDTH - 1;
+
+    constexpr int16_t SCREEN_BOTTOM =
+        SCREEN_HEIGHT - 1;
+
+    constexpr int16_t CONTENT_RIGHT =
+        CONTENT_X + CONTENT_WIDTH - 1;
+
+    constexpr int16_t FOOTER_RIGHT =
+        FOOTER_X + FOOTER_WIDTH - 1;
+
     // 행 번호를 실제 Y 좌표로 변환
     // row는 0부터 시작한다.
     constexpr int16_t GetRowY(uint8_t row)

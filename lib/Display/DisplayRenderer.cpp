@@ -133,9 +133,9 @@ namespace DisplayRenderer
         
         // Header divider
         m_target->DrawLine(
-            0,
+            DisplayLayout::HEADER_X,
             DisplayLayout::HEADER_DIVIDER_Y,
-            DisplayLayout::SCREEN_WIDTH - 1,
+            DisplayLayout::SCREEN_RIGHT,
             DisplayLayout::HEADER_DIVIDER_Y,
             DisplayTheme::COLOR_DIVIDER,
             DisplayTheme::DIVIDER_WIDTH);
@@ -490,7 +490,7 @@ namespace DisplayRenderer
                 snprintf(
                     buffer,
                     bufferSize,
-                    "%021u:%021u:%021u",
+                    "%02u:%02u:%02u",
                     static_cast<unsigned long>(hours),
                     static_cast<unsigned long>(minutes),
                     static_cast<unsigned long>(seconds));

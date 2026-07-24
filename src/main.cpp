@@ -8,6 +8,7 @@
 //-------------------------------------------------------------
 
 #include <Arduino.h>
+
 #include "StatusLED.h"
 #include "Logger.h"
 #include "RS485.h"
@@ -32,54 +33,53 @@ void TestTFT();
 
 void setup()
 {
-  Serial.begin(MODBUS_BAUDRATE);
-  delay(BOOT_DELAY_MS);
-  Logger::Begin();
-  RS485::Begin();
-  ModbusRTU::Begin();
-  DeviceManager::Begin();
-  Display::Begin();
-  delay(1000);
-  TestTFT();
-  Tests::RunDisplayTests();
-  Tests::RunDisplayThemeTests();
-  Tests::RunDisplayModelTests();
-  Tests::RunDisplayRendererTests();
+    Serial.begin(MODBUS_BAUDRATE);
+    delay(BOOT_DELAY_MS);
+    Logger::Begin();
+    RS485::Begin();
+    ModbusRTU::Begin();
+    DeviceManager::Begin();
+    Display::Begin();
+    delay(1000);
+    TestTFT();
+    Tests::RunDisplayTests();
+    Tests::RunDisplayThemeTests();
+    Tests::RunDisplayModelTests();
+    Tests::RunDisplayRendererTests();
 
-  Serial.println();
-  Serial.println("SVEMS Display Test");
+    Serial.println();
+    Serial.println("SVEMS Display Test");
 
-  if (!serialRenderTarget.Begin())
-  {
-      Serial.println("SerialRenderTarget Begin failed");
-      return;
-  }
+    if (!serialRenderTarget.Begin())
+    {
+        Serial.println("SerialRenderTarget Begin failed");
+        return;
+    }
 
-  if (!displayRenderer.Begin(serialRenderTarget))
-  {
-      Serial.println("DisplayRenderer Begin failed");
-      return;
-  }
+    if (!displayRenderer.Begin(serialRenderTarget))
+    {
+        Serial.println("DisplayRenderer Begin failed");
+        return;
+    }
 
-  Serial.println("DisplayRenderer Ready");
+    Serial.println("DisplayRenderer Ready");
 }
 
 void loop()
 {
-  displayRenderer.RenderPage(
-    DisplayPages::Page::Overview,
-    displayModel);
+    displayRenderer.RenderPage(
+        DisplayPages::Page::Overview,
+        displayModel);
 
-  delay(5000);
-  // DeviceManager::Update();
-  // delay(1);
+    delay(5000);
+    // DeviceManager::Update();
+    // delay(1);
 }
 
 void TestTFT()
 {
     Serial.println();
-    Serial.println(
-        "========== TFT TEST ==========");
+    Serial.println("========== TFT TEST ==========");
 
     lcd.init();
 
@@ -100,32 +100,13 @@ void TestTFT()
     lcd.setCursor(100, 100);
     lcd.println("Hello SVEMS");
 
-    // lcd.drawRect(
-    //     10,
-    //     10,
-    //     300,
-    //     220,
-    //     TFT_GREEN);
+    Serial.print("LCD width  : ");
 
-    // lcd.drawLine(
-    //     0,
-    //     120,
-    //     319,
-    //     120,
-    //     TFT_RED);
+    Serial.println(lcd.width());
 
-    Serial.print(
-        "LCD width  : ");
+    Serial.print("LCD height : ");
 
-    Serial.println(
-        lcd.width());
+    Serial.println(lcd.height());
 
-    Serial.print(
-        "LCD height : ");
-
-    Serial.println(
-        lcd.height());
-
-    Serial.println(
-        "========== TFT READY ==========");
+    Serial.println("========== TFT READY ==========");
 }

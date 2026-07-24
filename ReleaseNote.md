@@ -164,6 +164,16 @@ v0.3.2 : Display Model
     DisplayModelTests   42 PASS
     -----------------------------
     TOTAL               90 PASS
+v0.3.3 : Display Connecting
+    ILI9341V 초기화 성공
+    SPI 통신 정상
+    배선 정상
+    CS/DC/RST 모두 정상
+    백라이트 PWM 정상
+    해상도 320×240 정상 (LCD width : 320, LCD height : 240)
+    LovyanGFX 설정도 거의 맞음
+v0.3.4 : TFTRenderTarget
+    TFTRenderTarget   완료
 v0.4.0 : Wi-Fi/MQTT/Web 계층
 v0.5.0 : 원격 제어 및 자동화
 v1.0.0 : 차량 실사용 버전(첫 번째 정식 릴리스)
