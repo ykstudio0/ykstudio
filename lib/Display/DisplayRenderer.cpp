@@ -392,7 +392,7 @@ namespace DisplayRenderer
             text,
             color,
             fontSize,
-            DisplayTypes::TextAlign::Right);
+            DisplayTypes::TextAlign::Left);
     }
 
     void Renderer::FormatValue(

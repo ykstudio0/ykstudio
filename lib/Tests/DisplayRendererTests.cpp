@@ -12,11 +12,13 @@
 #include "DisplayRenderer.h"
 #include "DisplayModel.h"
 #include "SerialRenderTarget.h"
+#include "IRenderTarget.h"
 #include "Tests.h"
 
 namespace
 {
-    void TestOverviewRendering()
+    void TestOverviewRendering(
+        IRenderTarget& target)
     {
         DisplayModel::Model model;
 
@@ -33,17 +35,10 @@ namespace
         system.modbusReady = true;
         system.deviceManagerReady = true;
 
-        model.GetSolar().power.SetValue(
-            162.5f);
-
-        model.GetBattery().voltage.SetValue(
-            13.42f);
-
-        model.GetBattery().percent.SetValue(
-            84.0f);
-
-        model.GetLoad().power.SetValue(
-            7.2f);
+        model.GetSolar().power.SetValue(162.5f);
+        model.GetBattery().voltage.SetValue(13.42f);
+        model.GetBattery().percent.SetValue(84.0f);
+        model.GetLoad().power.SetValue(7.2f);
 
         model.GetTemperature()
             .cabinTemperature
@@ -55,8 +50,6 @@ namespace
 
         model.SyncOverview();
 
-        SerialRenderTarget target(Serial);
-
         DisplayRenderer::Renderer renderer;
 
         if (!renderer.Begin(target))
@@ -67,21 +60,57 @@ namespace
             return;
         }
 
-        renderer.RenderPage(
-            DisplayPages::Page::Overview,
-            model);
+        if (!renderer.RenderPage(
+                DisplayPages::Page::Overview,
+                model))
+        {
+            Serial.println(
+                F("[FAIL] [DISPLAY RENDERER] Render failed"));
+
+            return;
+        }
+
+        Serial.println(
+            F("[PASS] [DISPLAY RENDERER] Overview rendered"));
+
+        // SerialRenderTarget target(Serial);
+
+        // static LGFX display;
+
+        // TFTRenderTarget target(display);
+
+        // DisplayRenderer::Renderer renderer;
+
+        // if (!renderer.Begin(target))
+        // {
+        //     Serial.println(
+        //         F("[FAIL] TFT Begin"));
+
+        //     return;
+        // }
+
+        // Serial.println(
+        //     F("[PASS] TFT Begin"));
+
+        // renderer.RenderPage(
+        //     DisplayPages::Page::Overview,
+        //     model);
+
+        // Serial.println(
+        //     F("[PASS] Overview Rendered"));
     }
 }
 
 namespace Tests
 {
-    void RunDisplayRendererTests()
+    void RunDisplayRendererTests(
+        IRenderTarget& target)
     {
         Serial.println();
         Serial.println(
             F("========== DISPLAY RENDERER TESTS =========="));
 
-        TestOverviewRendering();
+        TestOverviewRendering(target);
 
         Serial.println(
             F("============================================"));

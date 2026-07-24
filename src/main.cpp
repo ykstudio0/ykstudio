@@ -22,6 +22,13 @@
 #include "SerialRenderTarget.h"
 #include "Tests.h"
 #include "LGFX_Config.h"
+#include "TFTRenderTarget.h"
+
+namespace
+{
+    LGFX_SVEMS display;
+    TFTRenderTarget tftTarget(display);
+}
 
 DisplayModel::Model displayModel;
 SerialRenderTarget serialRenderTarget(Serial);
@@ -45,7 +52,7 @@ void setup()
     Tests::RunDisplayTests();
     Tests::RunDisplayThemeTests();
     Tests::RunDisplayModelTests();
-    Tests::RunDisplayRendererTests();
+    Tests::RunDisplayRendererTests(tftTarget);
 
     Serial.println();
     Serial.println("SVEMS Display Test");
@@ -67,11 +74,11 @@ void setup()
 
 void loop()
 {
-    displayRenderer.RenderPage(
-        DisplayPages::Page::Overview,
-        displayModel);
+    // displayRenderer.RenderPage(
+    //     DisplayPages::Page::Overview,
+    //     displayModel);
 
-    delay(5000);
+    // delay(5000);
     // DeviceManager::Update();
     // delay(1);
 }

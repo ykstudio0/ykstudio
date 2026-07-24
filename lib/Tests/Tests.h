@@ -9,6 +9,8 @@
 
 #pragma once
 
+class IRenderTarget;
+
 namespace Tests
 {
     void RunDisplayTests();
@@ -17,5 +19,8 @@ namespace Tests
 
     void RunDisplayModelTests();
 
-    void RunDisplayRendererTests();
+    void RunDisplayRendererTests(
+        IRenderTarget& target);
+        
+    // void RunDisplayRendererTests();
 }

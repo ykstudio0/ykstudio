@@ -8,6 +8,7 @@
 //-------------------------------------------------------------
 
 #include "TFTRenderTarget.h"
+#include "DisplayLayout.h"
 
 TFTRenderTarget::TFTRenderTarget(
     lgfx::LGFX_Device& display)
@@ -28,7 +29,11 @@ bool TFTRenderTarget::Begin()
 
     m_display->init();
 
-    m_ready = true;
+    m_display->setRotation(3);
+
+    m_ready =
+        m_display->width() == DisplayLayout::SCREEN_WIDTH &&
+        m_display->height() == DisplayLayout::SCREEN_HEIGHT;
 
     return true;
 }
