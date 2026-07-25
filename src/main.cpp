@@ -23,6 +23,7 @@
 #include "Tests.h"
 #include "LGFX_Config.h"
 #include "TFTRenderTarget.h"
+#include "Scheduler.h"
 
 namespace
 {
@@ -47,6 +48,7 @@ void setup()
     ModbusRTU::Begin();
     DeviceManager::Begin();
     Display::Begin();
+    Scheduler::Begin();
     delay(1000);
     TestTFT();
     delay(5000);
@@ -75,6 +77,7 @@ void setup()
 
 void loop()
 {
+    Scheduler::Run();
     // displayRenderer.RenderPage(
     //     DisplayPages::Page::Overview,
     //     displayModel);

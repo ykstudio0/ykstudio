@@ -70,16 +70,33 @@ bool Display::InitializeLCD()
 
 void Display::Update()
 {
+    static uint32_t updateCount = 0U;
+
     if (!g_initialized)
     {
+        Serial.println("[DISPLAY] Not initialized");
         return;
     }
 
+    ++updateCount;
+
+    Serial.printf(
+        "[DISPLAY] Update #%1u - Build begin\n",
+        static_cast<unsigned long>(updateCount));
+
     DisplayModelBuilder::Build(g_model);
 
-    g_renderer.RenderPage(
-        g_pageManager.Current(),
-        g_model);
+    Serial.println(
+        "[DISPLAY] Build complete");
+    
+    const bool renderResult =
+        g_renderer.RenderPage(
+            g_pageManager.Current(),
+            g_model);
+
+    Serial.printf(
+        "[DISPLAY] Render result: %s\n",
+        renderResult ? "OK" : "FALSED");
 
     // TODO
     // 1. DataManager -> DisplayModel
