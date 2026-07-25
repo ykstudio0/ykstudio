@@ -50,6 +50,7 @@ public:
     struct TemperatureData
     {
         float battery = 0.0f;
+        float humidity = 0.0f;
         float device = 0.0f;
 
         Status status;

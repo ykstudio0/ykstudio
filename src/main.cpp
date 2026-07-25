@@ -112,8 +112,11 @@ void TestTFT()
     // lcd.setFont(&fonts::efontKR_16);
     lcd.setCursor(100, 100);
     lcd.println("Hello SVEMS");
-    lcd.setCursor(120, 130);
+    lcd.setCursor(130, 130);
     lcd.printf("v0.4.0");
+    lcd.setTextSize(1);
+    lcd.setCursor(110,220);
+    lcd.printf("ykstudio & ChatGPT");
 
     Serial.print("LCD width  : ");
 

@@ -218,6 +218,13 @@ void Scheduler::ServiceLogger()
 
 void Scheduler::ServiceDisplay()
 {
+    // static uint32_t prev = 0;
+
+    // if (millis() - prev >= 500)
+    // {
+    //     prev = millis();
+    //     Display::Update();
+    // }
     Display::Update();
 }
 
