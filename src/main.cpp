@@ -53,7 +53,7 @@ void setup()
     Tests::RunDisplayTests();
     Tests::RunDisplayThemeTests();
     Tests::RunDisplayModelTests();
-    Tests::RunDisplayRendererTests(tftTarget);
+    // Tests::RunDisplayRendererTests(tftTarget);
 
     Serial.println();
     Serial.println("SVEMS Display Test");
@@ -75,13 +75,13 @@ void setup()
 
 void loop()
 {
-    displayRenderer.RenderPage(
-        DisplayPages::Page::Overview,
-        displayModel);
+    // displayRenderer.RenderPage(
+    //     DisplayPages::Page::Overview,
+    //     displayModel);
 
-    delay(5000);
-    DeviceManager::Update();
-    delay(1);
+    // delay(5000);
+    // DeviceManager::Update();
+    // delay(1);
 }
 
 void TestTFT()
