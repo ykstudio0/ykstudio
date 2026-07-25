@@ -3,7 +3,7 @@
 // Author : JongOh Kim + ChatGPT
 // Date : 2026-07-01
 // Project : SVEMS
-// Version : 0.1.6
+// Version : 0.1.0
 // Description : Solar Vehicle Energy Management System(SVEMS) Main Application
 //-------------------------------------------------------------
 
@@ -78,6 +78,7 @@ void setup()
 void loop()
 {
     Scheduler::Run();
+    
     // displayRenderer.RenderPage(
     //     DisplayPages::Page::Overview,
     //     displayModel);
