@@ -66,32 +66,6 @@ namespace
 
         Serial.println(
             F("[PASS] [DISPLAY RENDERER] Overview rendered"));
-
-        // SerialRenderTarget target(Serial);
-
-        // static LGFX display;
-
-        // TFTRenderTarget target(display);
-
-        // DisplayRenderer::Renderer renderer;
-
-        // if (!renderer.Begin(target))
-        // {
-        //     Serial.println(
-        //         F("[FAIL] TFT Begin"));
-
-        //     return;
-        // }
-
-        // Serial.println(
-        //     F("[PASS] TFT Begin"));
-
-        // renderer.RenderPage(
-        //     DisplayPages::Page::Overview,
-        //     model);
-
-        // Serial.println(
-        //     F("[PASS] Overview Rendered"));
     }
 }
 

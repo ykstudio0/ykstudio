@@ -1,125 +1,107 @@
 //-------------------------------------------------------------
 // File : Display.cpp
 // Author : JongOh Kim + ChatGPT
-// Date : 2026-07-20
+// Date : 2026-07-25
 // Project : SVEMS
-// Version : 0.3.0
-// Description : Display Service
+// Version : 0.4.0
+// Description : Display Service implementation
 //-------------------------------------------------------------
 
 #include "Display.h"
-#include "DataManager.h"
 #include "Logger.h"
-// #include "DisplayTheme.h"
+#include "LGFX_Config.h"
+#include "TFTRenderTarget.h"
+#include "DisplayRenderer.h"
+#include "DisplayModel.h"
+#include "PageManager.h"
+#include "DisplayModelBuilder.h"
 
 namespace
 {
-    bool Initialized = false;
+    bool g_initialized = false;
+
+    // 실제 LovyanGFX 디스플레이 장치
+    LGFX_SVEMS g_displayDevice;
+
+    // LovyanGFX를 IRenderTarget으로 변환
+    TFTRenderTarget g_renderTarget(
+        g_displayDevice);
+
+    // 화면 랜더링 담당
+    DisplayRenderer::Renderer g_renderer;
+
+    // 현재 페이지 관리
+    PageManager::Manager g_pageManager;
+
+    DisplayModel::Model g_model;
 }
 
 bool Display::Begin()
 {
-    // LCD 도착 후 이곳에서 하드웨어 초기화
-    // 예:
-    // - SPI 초기화
-    // - ILI9341 초기화
-    // - 화면 방향 설정
-    // - 밝기 설정
-    // - 초기 화면 출력
+    g_initialized = false;
+
+    g_pageManager.Begin();
 
     if (!InitializeLCD())
     {
-        Initialized = false;
-
         Logger::Error("DISPLAY", "Init failed");
+            return false;
+    }
+
+    if (!g_renderer.Begin(g_renderTarget))
+    {
+        Logger::Error(
+            "DISPLAY", "Renderer init failed");
+
         return false;
     }
 
-    Initialized = true;
+    g_initialized = true;
 
-    Logger::Info("DISPLAY", "Ready");
+    Logger::Info("DISPLAY", "Redady");
 
     return true;
 }
 
 bool Display::InitializeLCD()
 {
-    // LCD 도착 후 실제 초기화 코드 추가
-    //
-    // 예정 작업:
-    //
-    // 1. SPI 버스 설정
-    // 2. ILI9341 초기화
-    // 3. 화면 방향 설정
-    // 4. 화면 배경 지우기
-    // 5. 백라이트 설정
-    //
-    // LCD가 없는 현재 개발 단계에서는 성공으로 처리
-    return true;
+    return g_renderTarget.Begin();
 }
 
 void Display::Update()
 {
-    if (!Initialized)
+    if (!g_initialized)
     {
         return;
     }
 
-    DrawMainScreen();
+    DisplayModelBuilder::Build(g_model);
+
+    g_renderer.RenderPage(
+        g_pageManager.Current(),
+        g_model);
+
+    // TODO
+    // 1. DataManager -> DisplayModel
+    // 2. 현재 페이지 랜더링
 }
 
-void Display::DrawMainScreen()
+void Display::NextPage()
 {
-    // LCD 도착 후 화면 출력 구현
-    //
-    // DataManager::Solar
-    // DataManager::Battery
-    // DataManager::Load
-    // DataManager::Temperature
-    // DataManager:: SOC
-    DrawHeader();
+    if (!g_initialized)
+    {
+        return;
+    }
 
-    DrawSolarBlock();
-    DrawBatteryBlock();
-    DrawLoadBlock();
-    DrawSocBlock();
-    DrawTemperatureBlock();
-
-    DrawFooter();
+    g_pageManager.Next();
 }
 
-void Display::DrawHeader()
+void Display::PreviousPage()
 {
-    
+    if (!g_initialized)
+    {
+        return;
+    }
+
+    g_pageManager.Previous();
 }
-
-void Display::DrawSolarBlock()
-{
-
-}
-
-void Display::DrawBatteryBlock()
-{
-
-}
-
-void Display::DrawLoadBlock()
-{
-
-}
-
-void Display::DrawSocBlock()
-{
-
-}
-
-void Display::DrawTemperatureBlock()
-{
-
-}
-
-void Display::DrawFooter()
-{
-
-}
-
