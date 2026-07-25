@@ -54,7 +54,8 @@
         Warning,
         Alarm,
         Disabled,
-        Unknown
+        NoData,
+        Offline
     };
 
     // 아이콘 종류
@@ -148,7 +149,10 @@
         // 설정되지 않은 상태로 판단한다.
         constexpr bool IsValid() const
         {
-            return type != ValueType::None;
+            return 
+                type != ValueType::None &&
+                state != WidgetState::NoData &&
+                state != WidgetState::Offline;
         }
 
         // 경고 또는 알람 상태인지 확인

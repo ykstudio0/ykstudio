@@ -157,8 +157,11 @@ namespace DisplayTheme
             state == DisplayTypes::WidgetState::Disabled
                 ? COLOR_DISABLED
                 :
-            state == DisplayTypes::WidgetState::Unknown
-                ? COLOR_UNKNOWN
+            state == DisplayTypes::WidgetState::NoData
+                ? COLOR_DISABLED
+                :
+            state == DisplayTypes::WidgetState::Offline
+                ? COLOR_DISABLED
                 :
                 COLOR_VALUE;
     }
@@ -180,8 +183,11 @@ namespace DisplayTheme
             state == DisplayTypes::WidgetState::Disabled
                 ? COLOR_DISABLED
                 :
-            state == DisplayTypes::WidgetState::Unknown
-                ? COLOR_UNKNOWN
+            state == DisplayTypes::WidgetState::NoData
+                ? COLOR_DISABLED
+                :
+            state == DisplayTypes::WidgetState::Offline
+                ? COLOR_DISABLED
                 :
                 COLOR_BORDER;
     }

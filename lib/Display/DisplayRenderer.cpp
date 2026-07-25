@@ -328,13 +328,18 @@ namespace DisplayRenderer
             return;
         }
 
-        const char* unit =
-            DisplayTypes::GetUnit(
-                value.type);
+        const bool showUnit =
+            value.state != DisplayTypes::WidgetState::NoData &&
+            value.state != DisplayTypes::WidgetState::Offline;
 
         const DisplayTheme::Color valueColor =
             DisplayTheme::GetValueColor(
                 value.state);
+
+        const char* unit =
+            showUnit
+                ? DisplayTypes::GetUnit(value.type)
+                : "";
 
         DisplayWidgets::ValueWidget::Draw(
             *m_target,
@@ -408,6 +413,28 @@ namespace DisplayRenderer
         // 표시하지 않는 값
         if (!value.visible)
         {
+            return;
+        }
+
+        // 아직 데이터를 한 번도 수신하지 않은 상태
+        if (value.state == DisplayTypes::WidgetState::NoData)
+        {
+            snprintf(
+                buffer,
+                bufferSize,
+                "--");
+
+            return;
+        }
+
+        // 장비 또는 데이터 소스가 오프라인인 상태
+        if (value.state == DisplayTypes::WidgetState::Offline)
+        {
+            snprintf(
+                buffer,
+                bufferSize,
+                "OFF");
+
             return;
         }
 

@@ -67,9 +67,15 @@ static_assert(
 
 static_assert(
     DisplayTheme::GetValueColor(
-        DisplayTypes::WidgetState::Unknown) ==
-        DisplayTheme::COLOR_UNKNOWN,
-    "Unknown state must use COLOR_UNKNOWN");
+        DisplayTypes::WidgetState::NoData) ==
+        DisplayTheme::COLOR_DISABLED,
+    "NoData state must use COLOR_DISABLED");
+
+static_assert(
+    DisplayTheme::GetValueColor(
+        DisplayTypes::WidgetState::Offline) ==
+        DisplayTheme::COLOR_DISABLED,
+    "Offline state must use COLOR_DISABLED");    
 
 static_assert(
     DisplayTheme::GetBorderColor(
@@ -224,9 +230,15 @@ namespace
 
         Check(
             DisplayTheme::GetValueColor(
-                DisplayTypes::WidgetState::Unknown) ==
-                DisplayTheme::COLOR_UNKNOWN,
-            "Unknown state uses unknown color");
+                DisplayTypes::WidgetState::NoData) ==
+                DisplayTheme::COLOR_DISABLED,
+            "NoData state uses disabled color");
+
+        Check(
+            DisplayTheme::GetValueColor(
+                DisplayTypes::WidgetState::Offline) ==
+                DisplayTheme::COLOR_DISABLED,
+            "Offline state uses disabled color");
     }
 
     // Border color tests
@@ -264,9 +276,15 @@ namespace
 
         Check(
             DisplayTheme::GetBorderColor(
-                DisplayTypes::WidgetState::Unknown) ==
-                DisplayTheme::COLOR_UNKNOWN,
-            "Unknown state uses unknown border color");
+                DisplayTypes::WidgetState::NoData) ==
+                DisplayTheme::COLOR_DISABLED,
+            "NoData state uses disabled border color");
+
+        Check(
+            DisplayTheme::GetBorderColor(
+                DisplayTypes::WidgetState::Offline) ==
+                DisplayTheme::COLOR_DISABLED,
+            "Offline state uses disable border color");
     }
 
     // Font role tests

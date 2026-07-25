@@ -26,14 +26,14 @@ namespace
                 DisplayTypes::ValueType::Voltage);
 
         solar.current =
-                DisplayTypes::MakeValue(
-                    DataManager::Solar.current,
-                    DisplayTypes::ValueType::Current);
+            DisplayTypes::MakeValue(
+                DataManager::Solar.current,
+                DisplayTypes::ValueType::Current);
 
         solar.power =
-                    DisplayTypes::MakeValue(
-                        DataManager::Solar.power,
-                        DisplayTypes::ValueType::Power);
+            DisplayTypes::MakeValue(
+                DataManager::Solar.power,
+                DisplayTypes::ValueType::Power);
 
         // DataManager 에 아직 누적 발전량 데이터가 없으므로
         // dailyEnergy와 totalEnergy는 Reset() 기본값을 유지한다.
