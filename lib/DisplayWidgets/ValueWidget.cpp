@@ -21,8 +21,17 @@ namespace DisplayWidgets
         const char* unit,
         DisplayTheme::Color valueColor)
     {
-        const int16_t y =
-            DisplayLayout::GetRowY(row);
+        const int16_t rowY =
+            DisplayLayout::CONTENT_FIRST_ROW_Y +
+            static_cast<int16_t>(row) *
+            DisplayLayout::CONTENT_ROW_HEIGHT;
+
+        target.FillRect(
+            DisplayLayout::CONTENT_X,
+            rowY,
+            DisplayLayout::CONTENT_WIDTH,
+            DisplayLayout::CONTENT_ROW_HEIGHT,
+            DisplayTheme::COLOR_BACKGROUND);
 
         // Label
         if (label != nullptr &&
@@ -30,7 +39,7 @@ namespace DisplayWidgets
         {
             target.DrawText(
                 DisplayLayout::CONTENT_LABEL_X,
-                y,
+                rowY,
                 label,
                 DisplayTheme::COLOR_LABEL,
                 DisplayTheme::GetFontSize(
@@ -44,7 +53,7 @@ namespace DisplayWidgets
         {
             target.DrawText(
                 DisplayLayout::CONTENT_VALUE_X,
-                y,
+                rowY,
                 valueText,
                 valueColor,
                 DisplayTheme::GetFontSize(
@@ -58,7 +67,7 @@ namespace DisplayWidgets
         {
             target.DrawText(
                 DisplayLayout::CONTENT_UNIT_X,
-                y,
+                rowY,
                 unit,
                 valueColor,
                 DisplayTheme::GetFontSize(

@@ -60,10 +60,74 @@ namespace DisplayRenderer
             return false;
         }
 
+        bool pageChanged =
+            m_firstRender ||
+            (page != m_lastPage);
+
+        (void)pageChanged;
+
         m_target->BeginFrame();
 
-        m_target->Clear(
-            DisplayTheme::COLOR_BACKGROUND);
+        // m_target->Clear(
+        //     DisplayTheme::COLOR_BACKGROUND);
+
+        // DrawHeader(
+        //     page,
+        //     model.GetSystem());
+
+        // DrawContent(
+        //     page,
+        //     model);
+
+        // DrawFooter(page);
+        if (pageChanged)
+        {
+            DrawStatic(page);
+        }
+
+        DrawDynamic(
+            page,
+            model);
+
+        m_target->EndFrame();
+        
+        m_lastModel = model;
+        m_lastPage = page;
+        m_firstRender = false;
+
+        return true;
+    }
+
+    void Renderer::DrawStatic(
+        DisplayPages::Page page)
+    {
+        Serial.println("DrawStatic()");
+        DrawFooter(page);
+
+        (void)page;
+    }
+
+    void Renderer::DrawDynamic(
+        DisplayPages::Page page,
+        const DisplayModel::Model& model)
+    {
+        Serial.println("DrawDynamic");
+
+        // Header 동적 영역 지우기
+        // m_target->FillRect(
+        //     DisplayLayout::HEADER_X,
+        //     DisplayLayout::HEADER_Y,
+        //     DisplayLayout::HEADER_WIDTH,
+        //     DisplayLayout::HEADER_HEIGHT,
+        //     DisplayTheme::COLOR_HEADER_BACKGROUND);
+
+        // // Content 영역 지우기
+        // m_target->FillRect(
+        //     DisplayLayout::CONTENT_X,
+        //     DisplayLayout::CONTENT_Y,
+        //     DisplayLayout::CONTENT_WIDTH,
+        //     DisplayLayout::CONTENT_HEIGHT,
+        //     DisplayTheme::COLOR_BACKGROUND);
 
         DrawHeader(
             page,
@@ -72,12 +136,6 @@ namespace DisplayRenderer
         DrawContent(
             page,
             model);
-
-        DrawFooter(page);
-
-        m_target->EndFrame();
-
-        return true;
     }
 
     // Common
@@ -135,6 +193,7 @@ namespace DisplayRenderer
     void Renderer::DrawFooter(
         DisplayPages::Page page)
     {
+        Serial.println("DrawFooter");
         const char* previousText = "< Prev";
         const char* pageText     = "1 / 4";
         const char* nextText     = "Next >";
@@ -190,35 +249,140 @@ namespace DisplayRenderer
     void Renderer::DrawOverview(
         const DisplayModel::OverviewData& data)
     {
-        DrawLabelValue(
-            "Solar",
-            data.solarPower,
-            0U);
+        const DisplayModel::OverviewData& lastData =
+        m_lastModel.GetOverview();
 
-        DrawLabelValue(
-            "Battery",
-            data.batteryVoltage,
-            1U);
+        const bool solarChanged =
+            m_firstRender ||
+            (data.solarPower.value !=
+                lastData.solarPower.value) ||
+            (data.solarPower.state !=
+                lastData.solarPower.state) ||
+            (data.solarPower.visible !=
+                lastData.solarPower.visible);
 
-        DrawLabelValue(
-            "SOC",
-            data.batteryPercent,
-            2U);
+        if (solarChanged)
+        {
+            DrawLabelValue(
+                "Solar",
+                data.solarPower,
+                0U);
+        }
 
-        DrawLabelValue(
-            "Load",
-            data.loadPower,
-            3U);
+        const bool batteryChanged =
+            m_firstRender ||
+            (data.batteryVoltage.value !=
+                lastData.batteryVoltage.value) ||
+            (data.batteryVoltage.state !=
+                lastData.batteryVoltage.state) ||
+            (data.batteryVoltage.visible !=
+                lastData.batteryVoltage.visible);
 
-        DrawLabelValue(
-            "Temp",
-            data.temperature,
-            4U);
+        if (batteryChanged)
+        {
+            DrawLabelValue(
+                "Battery",
+                data.batteryVoltage,
+                1U);
+        }
 
-        DrawLabelValue(
-            "Humidity",
-            data.humidity,
-            5U);
+        const bool socChanged =
+            m_firstRender ||
+            (data.batteryPercent.value !=
+                lastData.batteryPercent.value) ||
+            (data.batteryPercent.state !=
+                lastData.batteryPercent.state) ||
+            (data.batteryPercent.visible !=
+                lastData.batteryPercent.visible);
+
+        if (socChanged)
+        {
+            DrawLabelValue(
+                "SOC",
+                data.batteryPercent,
+                2U);
+        }
+
+        const bool loadChanged =
+            m_firstRender ||
+            (data.loadPower.value !=
+                lastData.loadPower.value) ||
+            (data.loadPower.state !=
+                lastData.loadPower.state) ||
+            (data.loadPower.visible !=
+                lastData.loadPower.visible);
+
+        if (loadChanged)
+        {
+            DrawLabelValue(
+                "Load",
+                data.loadPower,
+                3U);
+        }
+
+        const bool temperatureChanged =
+            m_firstRender ||
+            (data.temperature.value !=
+                lastData.temperature.value) ||
+            (data.temperature.state !=
+                lastData.temperature.state) ||
+            (data.temperature.visible !=
+                lastData.temperature.visible);
+
+        if (temperatureChanged)
+        {
+            DrawLabelValue(
+                "Temp",
+                data.temperature,
+                4U);
+        }
+
+        const bool humidityChanged =
+            m_firstRender ||
+            (data.humidity.value !=
+                lastData.humidity.value) ||
+            (data.humidity.state !=
+                lastData.humidity.state) ||
+            (data.humidity.visible !=
+                lastData.humidity.visible);
+
+        if (humidityChanged)
+        {
+            DrawLabelValue(
+                "Humidity",
+                data.humidity,
+                5U);
+        }
+
+        // DrawLabelValue(
+        //     "Solar",
+        //     data.solarPower,
+        //     0U);
+
+        // DrawLabelValue(
+        //     "Battery",
+        //     data.batteryVoltage,
+        //     1U);
+
+        // DrawLabelValue(
+        //     "SOC",
+        //     data.batteryPercent,
+        //     2U);
+
+        // DrawLabelValue(
+        //     "Load",
+        //     data.loadPower,
+        //     3U);
+
+        // DrawLabelValue(
+        //     "Temp",
+        //     data.temperature,
+        //     4U);
+
+        // DrawLabelValue(
+        //     "Humidity",
+        //     data.humidity,
+        //     5U);
     }
 
     void Renderer::DrawHeaderStatus(

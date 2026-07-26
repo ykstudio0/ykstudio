@@ -94,5 +94,19 @@ namespace DisplayRenderer
         bool m_ready;
 
         static constexpr size_t VALUE_BUFFER_SIZE = 32U;
+
+        DisplayModel::Model m_lastModel;
+
+        DisplayPages::Page m_lastPage =
+            DisplayPages::Page::Overview;
+
+        bool m_firstRender = true;
+
+        void DrawStatic(
+            DisplayPages::Page page);
+
+        void DrawDynamic(
+            DisplayPages::Page page,
+            const DisplayModel::Model& model);
     };
 }

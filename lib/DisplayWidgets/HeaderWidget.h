@@ -18,6 +18,10 @@ namespace DisplayWidgets
     class HeaderWidget
     {
     public:
+        static void DrawStatic(
+            IRenderTarget& target,
+            const char* title);
+
         static void Draw(
             IRenderTarget& target,
             const char* title,

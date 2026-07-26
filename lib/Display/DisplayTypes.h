@@ -104,6 +104,8 @@
 
         bool visible = true;
 
+        bool dirty = true;
+
         // 기본 생성자
         constexpr DisplayValue() = default;
 
@@ -257,5 +259,36 @@
             align,
             GetDefaultDecimals(type),
             true);
+    }
+
+    inline void UpdateValue(
+        DisplayValue& target,
+        float value,
+        ValueType type,
+        WidgetState state =
+            WidgetState::Normal,
+        TextAlign align =
+            TextAlign::Right)
+    {
+        const DisplayValue next =
+            MakeValue(
+                value,
+                type,
+                state,
+                align);
+
+        const bool changed =
+            (target.value != next.value) ||
+            (target.type != next.type) ||
+            (target.state != next.state) ||
+            (target.align != next.align) ||
+            (target.decimals != next.decimals) ||
+            (target.visible != next.visible);
+
+        const bool dirty =
+            target.dirty || changed;
+
+        target = next;
+        target.dirty = dirty;
     }
 }

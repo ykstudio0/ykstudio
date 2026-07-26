@@ -47,10 +47,14 @@ bool TFTRenderTarget::IsReady() const
 
 void TFTRenderTarget::Clear(DisplayTheme::Color color)
 {
+    Serial.println("========== CLEAR ==========");
+    
     if (!IsReady())
     {
         return;
     }
+
+    Serial.printf("[TFT] Clear called: 0x%04X\n", static_cast<unsigned int>(color));
 
     m_display->fillScreen(
         ToNativeColor(color));

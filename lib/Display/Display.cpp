@@ -70,37 +70,27 @@ bool Display::InitializeLCD()
 
 void Display::Update()
 {
-    // static uint32_t updateCount = 0U;
+    static uint32_t lastRenderMs = 0U;
 
     if (!g_initialized)
     {
-        // Serial.println("[DISPLAY] Not initialized");
         return;
     }
 
-    // ++updateCount;
+    const uint32_t now = millis();
 
-    // Serial.printf(
-    //     "[DISPLAY] Update #%1u - Build begin\n",
-    //     static_cast<unsigned long>(updateCount));
+    if (now - lastRenderMs < 1000U)
+    {
+        return;
+    }
+
+    lastRenderMs = now;
 
     DisplayModelBuilder::Build(g_model);
 
-    // Serial.println(
-        // "[DISPLAY] Build complete");
-    
-    // const bool renderResult =
     g_renderer.RenderPage(
         g_pageManager.Current(),
         g_model);
-
-    // Serial.printf(
-    //     "[DISPLAY] Render result: %s\n",
-    //     renderResult ? "OK" : "FALSED");
-
-    // TODO
-    // 1. DataManager -> DisplayModel
-    // 2. 현재 페이지 랜더링
 }
 
 void Display::NextPage()
