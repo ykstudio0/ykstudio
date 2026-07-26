@@ -58,9 +58,10 @@ namespace DisplayWidgets
         const char* statusText,
         DisplayTheme::Color statusColor)
     {
-        DrawStatic(
-            target,
-            title);
+        (void)title;
+        // DrawStatic(
+        //     target,
+        //     title);
 
         // Current time
         if (timeText != nullptr &&

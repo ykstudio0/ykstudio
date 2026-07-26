@@ -102,9 +102,12 @@ namespace DisplayRenderer
         DisplayPages::Page page)
     {
         Serial.println("DrawStatic()");
-        DrawFooter(page);
 
-        (void)page;
+        DisplayWidgets::HeaderWidget::DrawStatic(
+            *m_target,
+            DisplayPages::GetTitle(page));
+
+        DrawFooter(page);
     }
 
     void Renderer::DrawDynamic(
@@ -149,12 +152,35 @@ namespace DisplayRenderer
         }
 
         // Current time
-        char timeText[12];
+        const auto& previous =
+            m_lastModel.GetSystem();
 
-        FormatValue(
-            system.currentTime,
-            timeText,
-            sizeof(timeText));
+        const bool forceRedraw =
+            m_firstRender ||
+            (page != m_lastPage);
+
+        const bool timeChanged =
+            forceRedraw ||
+            system.currentTime.value !=
+                previous.currentTime.value ||
+            system.currentTime.state !=
+                previous.currentTime.state ||
+            system.currentTime.visible !=
+                previous.currentTime.visible ||
+            system.currentTime.type !=
+                previous.currentTime.type ||
+            system.currentTime.decimals !=
+                previous.currentTime.decimals;
+
+        char timeText[12] = {};
+
+        if (timeChanged)
+        {
+            FormatValue(
+                system.currentTime,
+                timeText,
+                sizeof(timeText));
+        }
 
         const char* statusText = "OK";
 
@@ -184,8 +210,8 @@ namespace DisplayRenderer
 
         DisplayWidgets::HeaderWidget::Draw(
             *m_target,
-            DisplayPages::GetTitle(page),
-            timeText,
+            nullptr,
+            timeChanged ? timeText : nullptr,
             statusText,
             statusColor);
     }
