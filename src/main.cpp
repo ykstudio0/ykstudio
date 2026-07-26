@@ -115,8 +115,8 @@ void TestTFT()
     lcd.setCursor(130, 130);
     lcd.printf("v0.4.0");
     lcd.setTextSize(1);
-    // lcd.setCursor(110,220);
-    // lcd.printf("ykstudio & ChatGPT");
+    lcd.setCursor(110,220);
+    lcd.printf("ykstudio & ChatGPT");
 
     Serial.print("LCD width  : ");
 
