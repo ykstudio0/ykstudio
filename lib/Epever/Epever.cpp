@@ -59,8 +59,10 @@ bool Epever::ReadSolar()
 
     // Solar Status
     DataManager::Solar.status.updated = true;
-     DataManager::Solar.status.online = true;
+    DataManager::Solar.status.online = true;
     DataManager::Solar.status.lastUpdate = millis();
+
+    Logger::Info("SOLAR", "Read OK");
 
     return true;
 }
