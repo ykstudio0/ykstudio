@@ -15,6 +15,53 @@
 
 namespace
 {
+    void ApplyCommunicationState(
+        DisplayTypes::DisplayValue& value,
+        const DataManager::Status& status)
+    {
+        if (!status.online)
+        {
+            value.state =
+                DisplayTypes::WidgetState::Offline;
+
+            return;
+        }
+
+        if (value.state ==
+            DisplayTypes::WidgetState::Offline)
+        {
+            value.state =
+                DisplayTypes::WidgetState::Normal;
+        }
+    }
+
+    void ApplyAvailabilityState(
+        DisplayTypes::DisplayValue& value)
+    {
+        (void)value;
+    }
+
+    void ApplyAlarmState(
+        DisplayTypes::DisplayValue& value)
+    {
+        (void)value;
+    }
+
+    void ApplyStatus(
+        DisplayTypes::DisplayValue& value,
+        const DataManager::Status& status)
+    {
+        ApplyCommunicationState(
+            value,
+            status);
+        
+        ApplyAvailabilityState(
+            value);
+
+        ApplyAlarmState(
+            value);
+    }
+
     void BuildSolar(DisplayModel::Model& model)
     {
         DisplayModel::SolarData& solar =
@@ -35,17 +82,18 @@ namespace
                 DataManager::Solar.power,
                 DisplayTypes::ValueType::Power);
 
-        if (!DataManager::Solar.status.online)
-        {
-            solar.voltage.state =
-                DisplayTypes::WidgetState::Offline;
+        ApplyStatus(
+            solar.voltage,
+            DataManager::Solar.status);
 
-            solar.current.state =
-                DisplayTypes::WidgetState::Offline;
+        ApplyStatus(
+            solar.current,
+            DataManager::Solar.status);
 
-            solar.power.state = 
-                DisplayTypes::WidgetState::Offline;
-        }
+        ApplyStatus(
+            solar.power,
+            DataManager::Solar.status);
+
         // DataManager 에 아직 누적 발전량 데이터가 없으므로
         // dailyEnergy와 totalEnergy는 Reset() 기본값을 유지한다.
     }
@@ -79,6 +127,26 @@ namespace
             DisplayTypes::MakeValue(
                 DataManager::Temperature.battery,
                 DisplayTypes::ValueType::Temperature);
+
+        ApplyStatus(
+            battery.voltage,
+            DataManager::Battery.status);
+
+        ApplyStatus(
+            battery.current,
+            DataManager::Battery.status);
+        
+        ApplyStatus(
+            battery.power,
+            DataManager::Battery.status);
+
+        ApplyStatus(
+            battery.percent,
+            DataManager::Battery.status);
+
+        ApplyStatus(
+            battery.temperature,
+            DataManager::Battery.status);
     }
 
     void BuildLoad(DisplayModel::Model& model)
@@ -100,6 +168,18 @@ namespace
             DisplayTypes::MakeValue(
                 DataManager::Load.power,
                 DisplayTypes::ValueType::Power);
+
+        ApplyStatus(
+            load.voltage,
+            DataManager::Load.status);
+
+        ApplyStatus(
+            load.current,
+            DataManager::Load.status);
+
+        ApplyStatus(
+            load.power,
+            DataManager::Load.status);
 
         // DataManager에 아직 일일 소비전력 데이터가 없으므로
         // dailyEnergy는 Reset() 기본값을 유지한다.
@@ -135,6 +215,22 @@ namespace
                 
         temperature.cabinHumidity.state =
                 DisplayTypes::WidgetState::NoData;
+
+        ApplyStatus(
+            temperature.controllerTemperature,
+            DataManager::Temperature.status);
+
+        ApplyStatus(
+            temperature.batteryTemperature,
+            DataManager::Temperature.status);
+
+        ApplyStatus(
+            temperature.cabinTemperature,
+            DataManager::Temperature.status);
+
+        ApplyStatus(
+            temperature.cabinHumidity,
+            DataManager::Temperature.status);
     }
 
     uint8_t CountOnlineDevices()
