@@ -109,18 +109,21 @@ namespace
                 DataManager::Temperature.battery,
                 DisplayTypes::ValueType::Temperature);
 
-        // temperature.cabinTemperature =
-        //     DisplayTypes::MakeValue(
-        //         DataManager::Temperature.battery,
-        //         DisplayTypes::ValueType::Temperature);
+        temperature.cabinTemperature =
+            DisplayTypes::MakeValue(
+                0.0f,
+                DisplayTypes::ValueType::Temperature);
 
-        // temperature.cabinHumidity =
-        //     DisplayTypes::MakeValue(
-        //         DataManager::Temperature.battery,
-        //         DisplayTypes::ValueType::Humidity);
+        temperature.cabinTemperature.state =
+                DisplayTypes::WidgetState::NoData;
 
-        // DataManager 에 아직 차량 실내 온도와 습도가 없으므로
-        // cabin Temperature와 cabinHumidity는 기본값을 유지한다.
+        temperature.cabinHumidity =
+            DisplayTypes::MakeValue(
+                0.0f,
+                DisplayTypes::ValueType::Humidity);
+                
+        temperature.cabinHumidity.state =
+                DisplayTypes::WidgetState::NoData;
     }
 
     uint8_t CountOnlineDevices()
