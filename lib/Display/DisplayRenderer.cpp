@@ -114,7 +114,7 @@ namespace DisplayRenderer
         DisplayPages::Page page,
         const DisplayModel::Model& model)
     {
-        Serial.println("DrawDynamic");
+        // Serial.println("DrawDynamic");
 
         // Header 동적 영역 지우기
         // m_target->FillRect(
@@ -379,36 +379,6 @@ namespace DisplayRenderer
                 data.humidity,
                 5U);
         }
-
-        // DrawLabelValue(
-        //     "Solar",
-        //     data.solarPower,
-        //     0U);
-
-        // DrawLabelValue(
-        //     "Battery",
-        //     data.batteryVoltage,
-        //     1U);
-
-        // DrawLabelValue(
-        //     "SOC",
-        //     data.batteryPercent,
-        //     2U);
-
-        // DrawLabelValue(
-        //     "Load",
-        //     data.loadPower,
-        //     3U);
-
-        // DrawLabelValue(
-        //     "Temp",
-        //     data.temperature,
-        //     4U);
-
-        // DrawLabelValue(
-        //     "Humidity",
-        //     data.humidity,
-        //     5U);
     }
 
     void Renderer::DrawHeaderStatus(
@@ -479,8 +449,76 @@ namespace DisplayRenderer
     void Renderer::DrawTemperature(
         const DisplayModel::TemperatureData& data)
     {
-        // 다음 단계에서 구현한다.
-        (void)data;
+        const DisplayModel::TemperatureData& lastData =
+            m_lastModel.GetTemperature();
+
+        const bool controllerChanged =
+            m_firstRender ||
+            (data.controllerTemperature.value !=
+                lastData.controllerTemperature.value) ||
+            (data.controllerTemperature.state !=
+                lastData.controllerTemperature.state) ||
+            (data.controllerTemperature.visible !=
+                lastData.controllerTemperature.visible);
+
+        if (controllerChanged)
+        {
+            DrawLabelValue(
+                "Controller",
+                data.controllerTemperature,
+                0U);
+        }
+
+        const bool batteryChanged =
+            m_firstRender ||
+            (data.batteryTemperature.value !=
+                lastData.batteryTemperature.value) ||
+            (data.batteryTemperature.state !=
+                lastData.batteryTemperature.state) ||
+            (data.batteryTemperature.visible !=
+                lastData.batteryTemperature.visible);
+
+        if (batteryChanged)
+        {
+            DrawLabelValue(
+                "Battery",
+                data.batteryTemperature,
+                1U);
+        }
+
+        const bool cabinChanged =
+            m_firstRender ||
+            (data.cabinTemperature.value !=
+                lastData.cabinTemperature.value) ||
+            (data.cabinTemperature.state !=
+                lastData.cabinTemperature.state) ||
+            (data.cabinTemperature.visible !=
+                lastData.cabinTemperature.visible);
+
+        if (cabinChanged)
+        {
+            DrawLabelValue(
+                "Temp",
+                data.cabinTemperature,
+                2U);
+        }
+
+        const bool humidityChanged =
+            m_firstRender ||
+            (data.cabinHumidity.value !=
+                lastData.cabinHumidity.value) ||
+            (data.cabinHumidity.state !=
+                lastData.cabinHumidity.state) ||
+            (data.cabinHumidity.visible !=
+                lastData.cabinHumidity.visible);
+
+        if (humidityChanged)
+        {
+            DrawLabelValue(
+                "Humidity",
+                data.cabinHumidity,
+                3U);
+        }
     }
 
     void Renderer::DrawSystem(

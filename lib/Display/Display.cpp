@@ -70,21 +70,21 @@ bool Display::InitializeLCD()
 
 void Display::Update()
 {
-    static uint32_t lastRenderMs = 0U;
+    // static uint32_t lastRenderMs = 0U;
 
     if (!g_initialized)
     {
         return;
     }
 
-    const uint32_t now = millis();
+    // const uint32_t now = millis();
 
-    if (now - lastRenderMs < 1000U)
-    {
-        return;
-    }
+    // if (now - lastRenderMs < 1000U)
+    // {
+    //     return;
+    // }
 
-    lastRenderMs = now;
+    // lastRenderMs = now;
 
     DisplayModelBuilder::Build(g_model);
 
