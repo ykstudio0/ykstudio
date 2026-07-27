@@ -27,17 +27,9 @@ bool Epever::Begin()
 
 bool Epever::Update()
 {
-    // bool ok = true;
+    bool ok = true;
 
-    // return ok;
-    
-    ReadSolar();
-    ReadBattery();
-    ReadLoad();
-
-    ReadChargingStatus();
-
-    return true;
+    return ok;
 }
 
 bool Epever::ReadSolar()
