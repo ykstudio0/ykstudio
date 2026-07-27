@@ -52,6 +52,11 @@ namespace EpeverMap
     {
         uint16_t value;
     };
+
+    struct ChargingStatus
+    {
+        uint16_t value;
+    };
 }
 
 #endif

@@ -19,6 +19,9 @@ namespace
         DisplayTypes::DisplayValue& value,
         const DataManager::Status& status)
     {
+        // Communication loss is immediately treated as Offline.
+        // Recovery is automatic when communication becomes available again.
+
         if (!status.online)
         {
             value.state =
@@ -38,12 +41,14 @@ namespace
     void ApplyAvailabilityState(
         DisplayTypes::DisplayValue& value)
     {
+        // Reserved for future device availability policies.
         (void)value;
     }
 
     void ApplyAlarmState(
         DisplayTypes::DisplayValue& value)
     {
+        // Reserved for future device-specific warning/alarm policies.
         (void)value;
     }
 

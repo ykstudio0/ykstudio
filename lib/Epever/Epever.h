@@ -66,6 +66,7 @@ public:
     static bool ReadTemperature();
     static bool ReadSOC();
     static void ClearUpdates();
+    static bool ReadChargingStatus();
 
 private:
     static bool ReadRegisters(

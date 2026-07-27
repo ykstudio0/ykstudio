@@ -26,9 +26,13 @@ bool Epever::Begin()
 
 bool Epever::Update()
 {
-    bool ok = true;
+    // bool ok = true;
 
-    return ok;
+    // return ok;
+    
+    ReadChargingStatus();
+
+    return true;
 }
 
 bool Epever::ReadSolar()
@@ -183,6 +187,31 @@ bool Epever::ReadSOC()
     DataManager::Soc.status.updated = true;
     DataManager::Soc.status.online = true;
     DataManager::Soc.status.lastUpdate = millis();
+
+    return true;
+}
+
+bool Epever::ReadChargingStatus()
+{
+    EpeverMap::ChargingStatus status;
+
+    if (!ReadRegisters(
+            EpeverRegister::CHARGING_EQUIPMENT_STATUS,
+            sizeof(status) /sizeof(uint16_t),
+            (uint16_t*)&status))
+    {
+        return false;
+    }
+
+    char msg[32];
+
+    snprintf(
+        msg,
+        sizeof(msg),
+        "Status = 0x%04X",
+        status.value);
+
+    Logger::Info("EPEVER", msg);
 
     return true;
 }
