@@ -41,7 +41,6 @@ bool Epever::ReadSolar()
         (uint16_t*)&solar))
     {
         DataManager::Solar.status.updated = false;
-        DataManager::Solar.status.online = false;
         return false;
     }
 
@@ -60,7 +59,7 @@ bool Epever::ReadSolar()
 
     // Solar Status
     DataManager::Solar.status.updated = true;
-    // DataManager::Solar.status.online = true;
+     DataManager::Solar.status.online = true;
     DataManager::Solar.status.lastUpdate = millis();
 
     return true;
@@ -154,7 +153,7 @@ bool Epever::ReadTemperature()
         ToTemperature((int16_t)temp.battery);
 
     DataManager::Temperature.device = 
-        ToTemperature((int16_t)temp.battery);
+        ToTemperature((int16_t)temp.device);
     
     DataManager::Temperature.status.updated = true;
     DataManager::Temperature.status.online = true;

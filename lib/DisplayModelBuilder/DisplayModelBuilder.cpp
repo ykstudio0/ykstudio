@@ -35,6 +35,17 @@ namespace
                 DataManager::Solar.power,
                 DisplayTypes::ValueType::Power);
 
+        if (!DataManager::Solar.status.online)
+        {
+            solar.voltage.state =
+                DisplayTypes::WidgetState::Offline;
+
+            solar.current.state =
+                DisplayTypes::WidgetState::Offline;
+
+            solar.power.state = 
+                DisplayTypes::WidgetState::Offline;
+        }
         // DataManager 에 아직 누적 발전량 데이터가 없으므로
         // dailyEnergy와 totalEnergy는 Reset() 기본값을 유지한다.
     }

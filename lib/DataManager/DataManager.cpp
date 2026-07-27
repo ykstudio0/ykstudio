@@ -33,29 +33,34 @@ void DataManager::UpdateOnlineStatus(uint32_t now)
             now - Solar.status.lastUpdate > SOLAR_TIMEOUT_MS)
     {
         Solar.status.online = false;
+        Solar.status.updated = true;
     }
 
     if (Battery.status.online && 
             now - Battery.status.lastUpdate > BATTERY_TIMEOUT_MS)
     {
         Battery.status.online = false;
+        Battery.status.updated = true;
     }
 
     if (Load.status.online && 
             now - Load.status.lastUpdate > LOAD_TIMEOUT_MS)
     {
         Load.status.online = false;
+        Load.status.updated = true;
     }
 
     if (Temperature.status.online && 
             now - Temperature.status.lastUpdate > TEMPERATURE_TIMEOUT_MS)
     {
         Temperature.status.online = false;
+        Temperature.status.updated = true;
     }
 
     if (Soc.status.online && 
             now - Soc.status.lastUpdate > SOC_TIMEOUT_MS)
     {
         Soc.status.online = false;
+        Soc.status.updated = true;
     }
 }
