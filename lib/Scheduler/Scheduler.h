@@ -35,6 +35,8 @@ private:
     static void ServiceLogger();
     static void ServiceDisplay();
     static void ServiceIoT();
+
+    static void PollChargingStatus();
 };
 
 #endif

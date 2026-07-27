@@ -16,6 +16,7 @@
 #include "Units.h"
 #include "EpeverMaps.h"
 #include "DataManager.h"
+#include "EpeverStatusParser.h"
 
 EpeverData Epever::Data;
 
@@ -30,6 +31,10 @@ bool Epever::Update()
 
     // return ok;
     
+    ReadSolar();
+    ReadBattery();
+    ReadLoad();
+
     ReadChargingStatus();
 
     return true;
@@ -203,16 +208,43 @@ bool Epever::ReadChargingStatus()
         return false;
     }
 
-    char msg[32];
+    char buffer[32];
 
     snprintf(
-        msg,
-        sizeof(msg),
+        buffer,
+        sizeof(buffer),
         "Status = 0x%04X",
         status.value);
 
-    Logger::Info("EPEVER", msg);
+    Logger::Info("EPEVER", buffer);
 
+    EpeverStatusParser::ChargingStatus parsed =
+        EpeverStatusParser::ParseChargingStatus(status.value);
+
+    snprintf(
+        buffer,
+        sizeof(buffer),
+        "Stage = %u",
+        static_cast<unsigned int>(parsed.stage));
+
+    Logger::Info("EPEVER", buffer);
+
+    snprintf(
+        buffer,
+        sizeof(buffer),
+        "Running = %s",
+        parsed.running ? "YES" : "NO");
+
+    Logger::Info("EPEVER", buffer);
+
+    snprintf(
+        buffer,
+        sizeof(buffer),
+        "Fault = %s",
+        parsed.fault ? "YES" : "NO");
+
+    Logger::Info("EPEVER", buffer);
+    
     return true;
 }
 

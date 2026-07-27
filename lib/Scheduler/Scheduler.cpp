@@ -88,6 +88,7 @@ void Scheduler::Run5Sec()
 {
     PollBattery();
     PollLoad();
+    PollChargingStatus();
 }
 
 // 30 Second Tasks
@@ -132,6 +133,10 @@ void Scheduler::PollSOC()
     Epever::ReadSOC();
 }
 
+void Scheduler::PollChargingStatus()
+{
+    Epever::ReadChargingStatus();
+}
 // void Scheduler::UpdateDisplay()
 // {
 
