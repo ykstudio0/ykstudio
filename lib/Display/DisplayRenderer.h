@@ -117,5 +117,9 @@ namespace DisplayRenderer
         bool HasValueChanged(
             const DisplayTypes::DisplayValue& current,
             const DisplayTypes::DisplayValue& previous) const;
+
+        bool HasTextChanged(
+            const char* current,
+            const char* previous) const;
     };
 }

@@ -502,10 +502,14 @@ namespace DisplayRenderer
         }
 
         const bool stageChanged =
-            m_firstRender ||
-            (m_lastPage != DisplayPages::Page::Solar) ||
-            (strcmp(data.chargingStageText,
-                lastData.chargingStageText) != 0);
+            HasTextChanged(
+                data.chargingStageText,
+                lastData.chargingStageText);
+
+            // m_firstRender ||
+            // (m_lastPage != DisplayPages::Page::Solar) ||
+            // (strcmp(data.chargingStageText,
+            //     lastData.chargingStageText) != 0);
 
         if (stageChanged)
         {
@@ -516,10 +520,14 @@ namespace DisplayRenderer
         }
 
         const bool inputChanged =
-            m_firstRender ||
-            (m_lastPage != DisplayPages::Page::Solar) ||
-            (strcmp(data.inputVoltageText,
-                lastData.inputVoltageText) != 0);
+            HasTextChanged(
+                data.inputVoltageText,
+                lastData.inputVoltageText);
+                
+            // m_firstRender ||
+            // (m_lastPage != DisplayPages::Page::Solar) ||
+            // (strcmp(data.inputVoltageText,
+            //     lastData.inputVoltageText) != 0);
 
         if (inputChanged)
         {
@@ -700,6 +708,16 @@ namespace DisplayRenderer
             (current.value != previous.value) ||
             (current.state != previous.state) ||
             (current.visible != previous.visible);
+    }
+
+    bool Renderer::HasTextChanged(
+        const char* current,
+        const char* previous) const
+    {
+        return 
+            m_firstRender ||
+            (m_lastPage != DisplayPages::Page::Solar) ||
+            (strcmp(current, previous) != 0);
     }
 
     void Renderer::DrawValue(
