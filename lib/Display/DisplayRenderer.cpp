@@ -428,8 +428,62 @@ namespace DisplayRenderer
     void Renderer::DrawSolar(
         const DisplayModel::SolarData& data)
     {
-        // 다음 단계에서 구현한다.
-        (void)data;
+        const DisplayModel::SolarData& lastData =
+            m_lastModel.GetSolar();
+
+        const bool voltageChanged =
+            m_firstRender ||
+            (m_lastPage != DisplayPages::Page::Solar) ||
+            (data.voltage.value !=
+                lastData.voltage.value) ||
+            (data.voltage.state !=
+                lastData.voltage.state) ||
+            (data.voltage.visible !=
+                lastData.voltage.visible);
+
+        if (voltageChanged)
+        {
+            DrawLabelValue(
+                "PV Voltage",
+                data.voltage,
+                0U);
+        }
+
+        const bool currentChanged =
+            m_firstRender ||
+            (m_lastPage != DisplayPages::Page::Solar) ||
+            (data.current.value !=
+                lastData.current.value) ||
+            (data.current.state !=
+                lastData.current.state) ||
+            (data.current.visible !=
+                lastData.current.visible);
+
+        if (currentChanged)
+        {
+            DrawLabelValue(
+                "PV Current",
+                data.current,
+                1U);
+        }
+
+        const bool powerChanged =
+            m_firstRender ||
+            (m_lastPage != DisplayPages::Page::Solar) ||
+            (data.power.value !=
+                lastData.power.value) ||
+            (data.power.state !=
+                lastData.power.state) ||
+            (data.power.visible !=
+                lastData.power.visible);
+
+        if (powerChanged)
+        {
+            DrawLabelValue(
+                "PV Power",
+                data.power,
+                2U);
+        }
     }
 
     void Renderer::DrawBattery(
