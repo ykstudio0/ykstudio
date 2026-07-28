@@ -441,15 +441,6 @@ namespace DisplayRenderer
                 data.voltage,
                 lastData.voltage);
 
-            // m_firstRender ||
-            // (m_lastPage != DisplayPages::Page::Solar) ||
-            // (data.voltage.value !=
-            //     lastData.voltage.value) ||
-            // (data.voltage.state !=
-            //     lastData.voltage.state) ||
-            // (data.voltage.visible !=
-            //     lastData.voltage.visible);
-
         if (voltageChanged)
         {
             DrawLabelValue(
@@ -463,15 +454,6 @@ namespace DisplayRenderer
                 data.current,
                 lastData.current);
 
-            // m_firstRender ||
-            // (m_lastPage != DisplayPages::Page::Solar) ||
-            // (data.current.value !=
-            //     lastData.current.value) ||
-            // (data.current.state !=
-            //     lastData.current.state) ||
-            // (data.current.visible !=
-            //     lastData.current.visible);
-
         if (currentChanged)
         {
             DrawLabelValue(
@@ -484,14 +466,6 @@ namespace DisplayRenderer
             HasValueChanged(
                 data.power,
                 lastData.power);
-            // m_firstRender ||
-            // (m_lastPage != DisplayPages::Page::Solar) ||
-            // (data.power.value !=
-            //     lastData.power.value) ||
-            // (data.power.state !=
-            //     lastData.power.state) ||
-            // (data.power.visible !=
-            //     lastData.power.visible);
 
         if (powerChanged)
         {
@@ -506,11 +480,6 @@ namespace DisplayRenderer
                 data.chargingStageText,
                 lastData.chargingStageText);
 
-            // m_firstRender ||
-            // (m_lastPage != DisplayPages::Page::Solar) ||
-            // (strcmp(data.chargingStageText,
-            //     lastData.chargingStageText) != 0);
-
         if (stageChanged)
         {
             DrawLabelText(
@@ -523,11 +492,6 @@ namespace DisplayRenderer
             HasTextChanged(
                 data.inputVoltageText,
                 lastData.inputVoltageText);
-                
-            // m_firstRender ||
-            // (m_lastPage != DisplayPages::Page::Solar) ||
-            // (strcmp(data.inputVoltageText,
-            //     lastData.inputVoltageText) != 0);
 
         if (inputChanged)
         {
@@ -536,6 +500,32 @@ namespace DisplayRenderer
                 data.inputVoltageText,
                 4U);
         }
+
+        const bool dailyEnergyChanged =
+            HasValueChanged(
+                data.dailyEnergy,
+                lastData.dailyEnergy);
+
+        if (dailyEnergyChanged)
+        {
+            DrawLabelValue(
+                "Daily Energy",
+                data.dailyEnergy,
+                5U);
+        }
+
+        const bool totalEnergyChanged =
+            HasValueChanged(
+                data.totalEnergy,
+                lastData.totalEnergy);
+
+        // if (totalEnergyChanged)
+        // {
+        //     DrawLabelValue(
+        //         "Total Energy",
+        //         data.totalEnergy,
+        //         6U);
+        // }
     }
 
     void Renderer::DrawBattery(

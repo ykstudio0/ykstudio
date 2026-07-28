@@ -69,7 +69,7 @@ namespace EpeverStatusParser
         switch (stage)
         {
             case ChargingStage::NotCharging:
-                return "Not Charging";
+                return "Idle";
 
             case ChargingStage::Float:
                 return "Float";
