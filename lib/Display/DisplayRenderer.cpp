@@ -462,7 +462,7 @@ namespace DisplayRenderer
             HasValueChanged(
                 data.current,
                 lastData.current);
-                
+
             // m_firstRender ||
             // (m_lastPage != DisplayPages::Page::Solar) ||
             // (data.current.value !=
@@ -481,14 +481,17 @@ namespace DisplayRenderer
         }
 
         const bool powerChanged =
-            m_firstRender ||
-            (m_lastPage != DisplayPages::Page::Solar) ||
-            (data.power.value !=
-                lastData.power.value) ||
-            (data.power.state !=
-                lastData.power.state) ||
-            (data.power.visible !=
-                lastData.power.visible);
+            HasValueChanged(
+                data.power,
+                lastData.power);
+            // m_firstRender ||
+            // (m_lastPage != DisplayPages::Page::Solar) ||
+            // (data.power.value !=
+            //     lastData.power.value) ||
+            // (data.power.state !=
+            //     lastData.power.state) ||
+            // (data.power.visible !=
+            //     lastData.power.visible);
 
         if (powerChanged)
         {
