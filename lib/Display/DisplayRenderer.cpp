@@ -459,14 +459,18 @@ namespace DisplayRenderer
         }
 
         const bool currentChanged =
-            m_firstRender ||
-            (m_lastPage != DisplayPages::Page::Solar) ||
-            (data.current.value !=
-                lastData.current.value) ||
-            (data.current.state !=
-                lastData.current.state) ||
-            (data.current.visible !=
-                lastData.current.visible);
+            HasValueChanged(
+                data.current,
+                lastData.current);
+                
+            // m_firstRender ||
+            // (m_lastPage != DisplayPages::Page::Solar) ||
+            // (data.current.value !=
+            //     lastData.current.value) ||
+            // (data.current.state !=
+            //     lastData.current.state) ||
+            // (data.current.visible !=
+            //     lastData.current.visible);
 
         if (currentChanged)
         {
