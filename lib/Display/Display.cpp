@@ -42,6 +42,8 @@ bool Display::Begin()
 
     g_pageManager.Begin();
 
+    g_pageManager.Next();
+
     if (!InitializeLCD())
     {
         Logger::Error("DISPLAY", "Init failed");
