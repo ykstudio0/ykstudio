@@ -52,4 +52,6 @@ namespace EpeverStatusParser
     };
 
     ChargingStatus ParseChargingStatus(uint16_t raw);
+
+    const char* ToString(ChargingStage stage);
 }

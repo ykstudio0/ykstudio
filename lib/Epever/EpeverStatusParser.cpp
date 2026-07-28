@@ -58,4 +58,25 @@ namespace EpeverStatusParser
 
         return status;
     }
+
+    const char* ToString(ChargingStage stage)
+    {
+        switch (stage)
+        {
+            case ChargingStage::NotCharging:
+                return "Not Charging";
+
+            case ChargingStage::Float:
+                return "Float";
+
+            case ChargingStage::Boost:
+                return "Boost";
+
+            case ChargingStage::Equalize:
+                return "Equalize";
+
+            default:
+                return "Unknown";
+        }
+    }
 }

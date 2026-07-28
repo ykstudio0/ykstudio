@@ -79,11 +79,11 @@ namespace DisplayLayout
 
     // Footer 내부 좌표
     constexpr int16_t FOOTER_PREVIOUS_X = MARGIN_LEFT;
-    constexpr int16_t FOOTER_PREVIOUS_Y = FOOTER_Y + 8;
+    constexpr int16_t FOOTER_PREVIOUS_Y = FOOTER_Y + 9;
     constexpr int16_t FOOTER_PAGE_X = SCREEN_WIDTH / 2;
-    constexpr int16_t FOOTER_PAGE_Y = FOOTER_Y + 8;
+    constexpr int16_t FOOTER_PAGE_Y = FOOTER_Y + 9;
     constexpr int16_t FOOTER_NEXT_X = SCREEN_WIDTH - MARGIN_RIGHT;
-    constexpr int16_t FOOTER_NEXT_Y = FOOTER_Y + 8;
+    constexpr int16_t FOOTER_NEXT_Y = FOOTER_Y + 9;
 
     // Content 내부 공통 간격
     constexpr int16_t CONTENT_ROW_HEIGHT = 28;
