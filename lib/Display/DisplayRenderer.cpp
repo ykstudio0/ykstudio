@@ -82,6 +82,9 @@ namespace DisplayRenderer
         // DrawFooter(page);
         if (pageChanged)
         {
+            m_target->Clear(
+                DisplayTheme::COLOR_BACKGROUND);
+
             DrawStatic(page);
         }
 
@@ -630,6 +633,20 @@ namespace DisplayRenderer
             valueText,
             unit,
             valueColor);
+    }
+
+    void Renderer::DrawLabelText(
+        const char* label,
+        const char* text,
+        uint8_t row)
+    {
+        DisplayWidgets::ValueWidget::Draw(
+            *m_target,
+            row,
+            label,
+            text,
+            "",
+            DisplayTheme::COLOR_TEXT);
     }
 
     void Renderer::DrawValue(

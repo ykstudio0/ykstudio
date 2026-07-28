@@ -34,6 +34,11 @@ bool Scheduler::Begin()
     return true;
 }
 
+void Scheduler::RunInitial()
+{
+
+}
+
 void Scheduler::Run()
 {
     uint32_t now = millis();

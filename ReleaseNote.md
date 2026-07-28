@@ -180,6 +180,12 @@ v0.3.4 : TFTRenderTarget
     DrawText() / DrawValue() / FormatValue() 정상 동작 확인
 v0.4.0 : Design Rule
 v0.4.1 : Charging Status Parser
+    Display Framework
+    Page Manager
+    Overview
+    Solar Page
+    Dynamic Rendering
+    Page Clear
 v0.4.2 : Charging Status DataManager
 v0.4.3 : Charging Status Display
 v0.4.4 : Charging Alarm

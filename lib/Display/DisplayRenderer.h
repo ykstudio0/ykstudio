@@ -108,5 +108,10 @@ namespace DisplayRenderer
         void DrawDynamic(
             DisplayPages::Page page,
             const DisplayModel::Model& model);
+
+        void DrawLabelText(
+            const char* label,
+            const char* text,
+            uint8_t row);
     };
 }

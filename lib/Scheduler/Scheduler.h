@@ -17,6 +17,7 @@ class Scheduler
 public:
     static bool Begin();
     static void Run();
+    static void RunInitial();
 
 private:
     static void Run100ms();
