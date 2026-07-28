@@ -90,10 +90,10 @@ namespace EpeverStatusParser
         switch (status)
         {
             case InputVoltageStatus::Normal:
-                return "NOrmal";
+                return "Normal";
 
             case InputVoltageStatus::NoInputPower:
-                return "No Input";
+                return "No PV Input";
 
             case InputVoltageStatus::HighVoltage:
                 return "High Voltage";

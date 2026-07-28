@@ -12,6 +12,7 @@
 #include "DisplayModelBuilder.h"
 #include "DataManager.h"
 #include "DisplayTypes.H"
+#include "Logger.h"
 
 namespace
 {
@@ -86,6 +87,18 @@ namespace
             DisplayTypes::MakeValue(
                 DataManager::Solar.power,
                 DisplayTypes::ValueType::Power);
+
+        solar.chargingStageText = 
+            EpeverStatusParser::ToString(
+                DataManager::Charge.stage);
+
+        Logger::Info("DISPLAY", solar.chargingStageText);
+
+        solar.inputVoltageText =
+            EpeverStatusParser::ToString(
+                DataManager::Charge.inputVoltage);
+
+        Logger::Info("DISPLAY", solar.inputVoltageText);
 
         ApplyStatus(
             solar.voltage,
