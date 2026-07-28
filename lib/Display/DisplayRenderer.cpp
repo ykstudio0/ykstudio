@@ -9,11 +9,13 @@
 
 #include <math.h>
 #include <stdio.h>
+#include <cstring>
 
 #include "DisplayRenderer.h"
 #include "HeaderWidget.h"
 #include "ValueWidget.h"
 #include "FooterWidget.h"
+
 
 namespace DisplayRenderer
 {
@@ -486,6 +488,34 @@ namespace DisplayRenderer
                 "PV Power",
                 data.power,
                 2U);
+        }
+
+        const bool stageChanged =
+            m_firstRender ||
+            (m_lastPage != DisplayPages::Page::Solar) ||
+            (strcmp(data.chargingStageText,
+                lastData.chargingStageText) != 0);
+
+        if (stageChanged)
+        {
+            DrawLabelText(
+                "Stage",
+                data.chargingStageText,
+                3U);
+        }
+
+        const bool inputChanged =
+            m_firstRender ||
+            (m_lastPage != DisplayPages::Page::Solar) ||
+            (strcmp(data.inputVoltageText,
+                lastData.inputVoltageText) != 0);
+
+        if (inputChanged)
+        {
+            DrawLabelText(
+                "Input",
+                data.inputVoltageText,
+                4U);
         }
     }
 
