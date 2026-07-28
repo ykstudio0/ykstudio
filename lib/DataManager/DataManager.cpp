@@ -15,6 +15,7 @@ DataManager::BatteryData DataManager::Battery;
 DataManager::LoadData DataManager::Load;
 DataManager::TemperatureData DataManager::Temperature;
 DataManager::SocData DataManager::Soc;
+DataManager::ChargeData DataManager::Charge;
 
 void DataManager::ClearUpdates()
 {

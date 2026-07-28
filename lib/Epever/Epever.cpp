@@ -213,6 +213,11 @@ bool Epever::ReadChargingStatus()
     EpeverStatusParser::ChargingStatus parsed =
         EpeverStatusParser::ParseChargingStatus(status.value);
 
+    DataManager::Charge.stage        = parsed.stage;
+    DataManager::Charge.inputVoltage = parsed.inputVoltage;
+    DataManager::Charge.running      = parsed.running;
+    DataManager::Charge.fault        = parsed.fault;
+    
     snprintf(
         buffer,
         sizeof(buffer),

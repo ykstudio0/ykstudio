@@ -179,6 +179,10 @@ v0.3.4 : TFTRenderTarget
     Header, Divider, Row Layout 정상 동작 확인
     DrawText() / DrawValue() / FormatValue() 정상 동작 확인
 v0.4.0 : Design Rule
-v0.5.0 : 원격 제어 및 자동화
+v0.4.1 : Charging Status Parser
+v0.4.2 : Charging Status DataManager
+v0.4.3 : Charging Status Display
+v0.4.4 : Charging Alarm
+v0.5.0 : EPEVER Full Status
 v1.0.0 : 차량 실사용 버전(첫 번째 정식 릴리스)
 

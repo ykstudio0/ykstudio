@@ -9,6 +9,7 @@
 
 #pragma once
 #include <stdint.h>
+#include "EpeverStatusParser.h"
 
 class DataManager
 {
@@ -63,11 +64,24 @@ public:
         Status status;
     };
 
+    struct ChargeData
+    {
+        EpeverStatusParser::ChargingStage stage =
+            EpeverStatusParser::ChargingStage::NotCharging;
+
+        EpeverStatusParser::InputVoltageStatus inputVoltage =
+            EpeverStatusParser::InputVoltageStatus::Normal;
+
+        bool running = false;
+        bool fault = false;
+    };
+
     static SolarData Solar;
     static BatteryData Battery;
     static LoadData Load;
     static TemperatureData Temperature;
     static SocData Soc;
+    static ChargeData Charge;
 
     static void ClearUpdates();
     static void UpdateOnlineStatus(uint32_t now);

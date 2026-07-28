@@ -73,17 +73,17 @@ namespace DisplayLayout
 
     constexpr int16_t HEADER_TITLE_Y  = 8;
     constexpr int16_t HEADER_TIME_X   = 286;
-    constexpr int16_t HEADER_TIME_Y   = 8;
+    constexpr int16_t HEADER_TIME_Y   = 12;
     constexpr int16_t HEADER_STATUS_X = 292;
-    constexpr int16_t HEADER_STATUS_Y = 8;
+    constexpr int16_t HEADER_STATUS_Y = 12;
 
     // Footer 내부 좌표
     constexpr int16_t FOOTER_PREVIOUS_X = MARGIN_LEFT;
-    constexpr int16_t FOOTER_PREVIOUS_Y = FOOTER_Y + 7;
+    constexpr int16_t FOOTER_PREVIOUS_Y = FOOTER_Y + 8;
     constexpr int16_t FOOTER_PAGE_X = SCREEN_WIDTH / 2;
-    constexpr int16_t FOOTER_PAGE_Y = FOOTER_Y + 7;
+    constexpr int16_t FOOTER_PAGE_Y = FOOTER_Y + 8;
     constexpr int16_t FOOTER_NEXT_X = SCREEN_WIDTH - MARGIN_RIGHT;
-    constexpr int16_t FOOTER_NEXT_Y = FOOTER_Y + 7;
+    constexpr int16_t FOOTER_NEXT_Y = FOOTER_Y + 8;
 
     // Content 내부 공통 간격
     constexpr int16_t CONTENT_ROW_HEIGHT = 28;
