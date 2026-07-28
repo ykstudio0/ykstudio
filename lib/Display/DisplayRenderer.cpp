@@ -437,14 +437,18 @@ namespace DisplayRenderer
             m_lastModel.GetSolar();
 
         const bool voltageChanged =
-            m_firstRender ||
-            (m_lastPage != DisplayPages::Page::Solar) ||
-            (data.voltage.value !=
-                lastData.voltage.value) ||
-            (data.voltage.state !=
-                lastData.voltage.state) ||
-            (data.voltage.visible !=
-                lastData.voltage.visible);
+            HasValueChanged(
+                data.voltage,
+                lastData.voltage);
+
+            // m_firstRender ||
+            // (m_lastPage != DisplayPages::Page::Solar) ||
+            // (data.voltage.value !=
+            //     lastData.voltage.value) ||
+            // (data.voltage.state !=
+            //     lastData.voltage.state) ||
+            // (data.voltage.visible !=
+            //     lastData.voltage.visible);
 
         if (voltageChanged)
         {
@@ -677,6 +681,18 @@ namespace DisplayRenderer
             text,
             "",
             DisplayTheme::COLOR_TEXT);
+    }
+
+    bool Renderer::HasValueChanged(
+        const DisplayTypes::DisplayValue& current,
+        const DisplayTypes::DisplayValue& previous) const
+    {
+        return
+            m_firstRender ||
+            (m_lastPage != DisplayPages::Page::Solar) ||
+            (current.value != previous.value) ||
+            (current.state != previous.state) ||
+            (current.visible != previous.visible);
     }
 
     void Renderer::DrawValue(

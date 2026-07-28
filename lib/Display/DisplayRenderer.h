@@ -113,5 +113,9 @@ namespace DisplayRenderer
             const char* label,
             const char* text,
             uint8_t row);
+
+        bool HasValueChanged(
+            const DisplayTypes::DisplayValue& current,
+            const DisplayTypes::DisplayValue& previous) const;
     };
 }
