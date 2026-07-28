@@ -50,8 +50,13 @@ namespace EpeverStatusParser
         status.stage =
             static_cast<ChargingStage>((raw >> 2) & 0x03);
 
-        status.fault =
-            (raw & (1U << 1)) != 0;
+        // status.fault =
+        //     (raw & (1U << 1)) != 0;
+
+        // D6,D5,D1,D0
+        // Meaning not yet verified on actual hardware.
+        status.statusFlags =
+            raw & 0x63;
 
         status.running =
             (raw & (1U << 0)) != 0;
@@ -74,6 +79,27 @@ namespace EpeverStatusParser
 
             case ChargingStage::Equalize:
                 return "Equalize";
+
+            default:
+                return "Unknown";
+        }
+    }
+
+    const char* ToString(InputVoltageStatus status)
+    {
+        switch (status)
+        {
+            case InputVoltageStatus::Normal:
+                return "NOrmal";
+
+            case InputVoltageStatus::NoInputPower:
+                return "No Input";
+
+            case InputVoltageStatus::HighVoltage:
+                return "High Voltage";
+
+            case InputVoltageStatus::InputError:
+                return "Input Error";
 
             default:
                 return "Unknown";

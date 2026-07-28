@@ -47,11 +47,13 @@ namespace EpeverStatusParser
         bool circuitDisequilibrium;
         bool pvInputShortCircuit;
 
-        bool fault;
+        // bool fault;
         bool running;
+        uint8_t statusFlags;
     };
 
     ChargingStatus ParseChargingStatus(uint16_t raw);
 
     const char* ToString(ChargingStage stage);
+    const char* ToString(InputVoltageStatus status);
 }

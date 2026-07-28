@@ -216,7 +216,7 @@ bool Epever::ReadChargingStatus()
     DataManager::Charge.stage        = parsed.stage;
     DataManager::Charge.inputVoltage = parsed.inputVoltage;
     DataManager::Charge.running      = parsed.running;
-    DataManager::Charge.fault        = parsed.fault;
+    // DataManager::Charge.fault        = parsed.fault;
 
     snprintf(
         buffer,
@@ -234,11 +234,19 @@ bool Epever::ReadChargingStatus()
 
     Logger::Info("EPEVER", buffer);
 
+    // snprintf(
+    //     buffer,
+    //     sizeof(buffer),
+    //     "Fault = %s",
+    //     parsed.fault ? "YES" : "NO");
+
+    // Logger::Info("EPEVER", buffer);
+
     snprintf(
         buffer,
         sizeof(buffer),
-        "Fault = %s",
-        parsed.fault ? "YES" : "NO");
+        "Input = %s",
+        EpeverStatusParser::ToString(parsed.inputVoltage));
 
     Logger::Info("EPEVER", buffer);
     
