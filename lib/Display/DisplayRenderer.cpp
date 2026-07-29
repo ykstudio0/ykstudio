@@ -845,7 +845,7 @@ namespace DisplayRenderer
     {
         return
             m_firstRender ||
-            (m_lastPage != DisplayPages::Page::Load) ||
+            (m_lastPage != DisplayPages::Page::Temperature) ||
             (current.value != previous.value) ||
             (current.state != previous.state) ||
             (current.visible != previous.visible);
@@ -857,7 +857,7 @@ namespace DisplayRenderer
     {
         return 
             m_firstRender ||
-            (m_lastPage != DisplayPages::Page::Load) ||
+            (m_lastPage != DisplayPages::Page::Solar) ||
             (strcmp(current, previous) != 0);
     }
 
