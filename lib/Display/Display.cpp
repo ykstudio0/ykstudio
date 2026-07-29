@@ -60,18 +60,6 @@ bool Display::Begin()
 
     Logger::Info("DISPLAY", "Redady");
 
-    delay(3000);
-    
-    g_pageManager.Next();
-
-    delay(3000);
-
-    g_pageManager.Next();
-
-    delay(3000);
-    
-    g_pageManager.Next();
-
     return true;
 }
 
