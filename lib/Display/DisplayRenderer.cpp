@@ -62,11 +62,9 @@ namespace DisplayRenderer
             return false;
         }
 
-        bool pageChanged =
+        m_pageChanged =
             m_firstRender ||
             (page != m_lastPage);
-
-        (void)pageChanged;
 
         m_target->BeginFrame();
 
@@ -82,7 +80,7 @@ namespace DisplayRenderer
         //     model);
 
         // DrawFooter(page);
-        if (pageChanged)
+        if (m_pageChanged)
         {
             m_target->Clear(
                 DisplayTheme::COLOR_BACKGROUND);
@@ -741,7 +739,7 @@ namespace DisplayRenderer
         if (cabinChanged)
         {
             DrawLabelValue(
-                "Temp",
+                "Cabin",
                 data.cabinTemperature,
                 2U);
         }
@@ -845,7 +843,7 @@ namespace DisplayRenderer
     {
         return
             m_firstRender ||
-            (m_lastPage != DisplayPages::Page::Temperature) ||
+            m_pageChanged ||
             (current.value != previous.value) ||
             (current.state != previous.state) ||
             (current.visible != previous.visible);
@@ -857,7 +855,7 @@ namespace DisplayRenderer
     {
         return 
             m_firstRender ||
-            (m_lastPage != DisplayPages::Page::Solar) ||
+            m_pageChanged ||
             (strcmp(current, previous) != 0);
     }
 

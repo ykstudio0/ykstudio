@@ -42,18 +42,6 @@ bool Display::Begin()
 
     g_pageManager.Begin();
 
-    // delay(3000);
-    
-    // g_pageManager.Next();
-
-    // delay(3000);
-
-    // g_pageManager.Next();
-
-    // delay(3000);
-    
-    // g_pageManager.Next();
-
     if (!InitializeLCD())
     {
         Logger::Error("DISPLAY", "Init failed");
@@ -72,6 +60,18 @@ bool Display::Begin()
 
     Logger::Info("DISPLAY", "Redady");
 
+    delay(3000);
+    
+    g_pageManager.Next();
+
+    delay(3000);
+
+    g_pageManager.Next();
+
+    delay(3000);
+    
+    g_pageManager.Next();
+
     return true;
 }
 
@@ -89,14 +89,14 @@ void Display::Update()
         return;
     }
 
-    // const uint32_t now = millis();
+    // TEST :: Auto Page Rotation (Temprary)
+    static uint32_t lastPageChange = 0;
 
-    // if (now - lastRenderMs < 1000U)
-    // {
-    //     return;
-    // }
-
-    // lastRenderMs = now;
+    if (millis() - lastPageChange >= 3000)
+    {
+        lastPageChange = millis();
+        g_pageManager.Next();
+    }
 
     DisplayModelBuilder::Build(g_model);
 

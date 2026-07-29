@@ -101,6 +101,7 @@ namespace DisplayRenderer
             DisplayPages::Page::Overview;
 
         bool m_firstRender = true;
+        bool m_pageChanged = false;
 
         void DrawStatic(
             DisplayPages::Page page);
