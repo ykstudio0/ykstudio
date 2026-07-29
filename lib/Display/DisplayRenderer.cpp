@@ -19,6 +19,50 @@
 
 namespace DisplayRenderer
 {
+    const char* GetEnergyStatusText(
+        DisplayModel::EnergyStatus status)
+    {
+        switch (status)
+        {
+            case DisplayModel::EnergyStatus::Charging:
+                return "Charging";
+
+            case DisplayModel::EnergyStatus::Idle:
+                return "Idle";
+
+            case DisplayModel::EnergyStatus::Night:
+                return "Night";
+
+            case DisplayModel::EnergyStatus::Warning:
+                return "Warning";
+            
+            default:
+                return "Idle";
+        }
+    }
+
+    DisplayTheme::Color GetEnergyStatusColor(
+        DisplayModel::EnergyStatus status)
+    {
+        switch (status)
+        {
+            case DisplayModel::EnergyStatus::Charging:
+                return DisplayTheme::COLOR_ACTIVE;
+
+            case DisplayModel::EnergyStatus::Idle:
+                return DisplayTheme::COLOR_INFO;
+
+            case DisplayModel::EnergyStatus::Night:
+                return DisplayTheme::COLOR_DISABLED;
+
+            case DisplayModel::EnergyStatus::Warning:
+                return DisplayTheme::COLOR_ALARM;
+
+            default:
+                return DisplayTheme::COLOR_INFO;
+        }
+    }
+
     // Constructor
     Renderer::Renderer()
         : m_target(nullptr),
@@ -137,6 +181,7 @@ namespace DisplayRenderer
 
         DrawHeader(
             page,
+            model.GetOverview(),
             model.GetSystem());
 
         DrawContent(
@@ -147,6 +192,7 @@ namespace DisplayRenderer
     // Common
     void Renderer::DrawHeader(
         DisplayPages::Page page,
+        const DisplayModel::OverviewData& overview,
         const DisplayModel::SystemData& system)
     {
         if (!IsReady())
@@ -211,9 +257,20 @@ namespace DisplayRenderer
             statusColor = DisplayTheme::COLOR_WARNING;
         }
 
+        const char* energyStatusText =
+            GetEnergyStatusText(
+                overview.energyStatus);
+
+        const DisplayTheme::Color energyStatusColor =
+            GetEnergyStatusColor(
+                overview.energyStatus);
+
+
         DisplayWidgets::HeaderWidget::Draw(
             *m_target,
             nullptr,
+            energyStatusText,
+            energyStatusColor,
             timeChanged ? timeText : nullptr,
             statusText,
             statusColor);

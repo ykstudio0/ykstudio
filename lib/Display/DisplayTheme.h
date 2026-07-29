@@ -57,7 +57,8 @@ namespace DisplayTheme
         0X0841;
 
     constexpr Color COLOR_TITLE =
-        WHITE;
+        // WHITE;
+        LIGHT_GRAY;
 
     constexpr Color COLOR_TEXT = 
         WHITE;
@@ -82,6 +83,9 @@ namespace DisplayTheme
 
     constexpr Color COLOR_SUCCESS =
         GREEN;
+
+    constexpr Color COLOR_INFO =
+        BLUE;
 
     constexpr Color COLOR_WARNING =
         ORANGE;

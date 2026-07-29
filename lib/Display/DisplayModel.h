@@ -14,10 +14,20 @@
 
 namespace DisplayModel
 {
+    enum class EnergyStatus
+    {
+        Charging,
+        Idle,
+        Night,
+        Warning
+    };
+
     // Overview page data
     // 시스템의 주요 상태를 한 화면에서 요약한다.
     struct OverviewData
     {
+        EnergyStatus energyStatus;
+
         DisplayTypes::DisplayValue solarPower;
         DisplayTypes::DisplayValue batteryVoltage;
         DisplayTypes::DisplayValue batteryPercent;
@@ -26,7 +36,10 @@ namespace DisplayModel
         DisplayTypes::DisplayValue humidity;
 
         constexpr OverviewData()
-            : solarPower(
+            : energyStatus(
+                EnergyStatus::Idle),
+
+              solarPower(
                 DisplayTypes::MakeValue(
                     0.0f,
                     DisplayTypes::ValueType::Power)),
@@ -380,8 +393,20 @@ namespace DisplayModel
 
             overview.humidity =
                 temperature.cabinHumidity;
+
+            overview.energyStatus =
+                DetermineEnergyStatus();
         }
     private:
+        EnergyStatus DetermineEnergyStatus() const
+        {
+            if (solar.power.value > 20.0f)
+            {
+                return EnergyStatus::Charging;
+            }
+
+            return EnergyStatus::Idle;
+        }
         OverviewData overview;
         SolarData solar;
         BatteryData battery;

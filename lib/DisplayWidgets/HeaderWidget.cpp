@@ -54,6 +54,8 @@ namespace DisplayWidgets
     void HeaderWidget::Draw(
         IRenderTarget& target,
         const char* title,
+        const char* energyStatusText,
+        DisplayTheme::Color energyStatusColor,
         const char* timeText,
         const char* statusText,
         DisplayTheme::Color statusColor)
@@ -63,6 +65,20 @@ namespace DisplayWidgets
         //     target,
         //     title);
 
+        // Energy status
+        if (energyStatusText != nullptr &&
+            energyStatusText[0] != '\0')
+        {
+            target.DrawText(
+                DisplayLayout::HEADER_ENERGY_X,
+                DisplayLayout::HEADER_ENERGY_Y,
+                energyStatusText,
+                energyStatusColor,
+                DisplayTheme::GetFontSize(
+                    DisplayTheme::FontRole::Large),
+                DisplayTypes::TextAlign::Center);
+        }
+        
         // Current time
         if (timeText != nullptr &&
             timeText[0] != '\0')

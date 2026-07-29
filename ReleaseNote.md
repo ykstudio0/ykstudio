@@ -188,7 +188,12 @@ v0.4.1 : Charging Status Parser
     Page Clear
 v0.4.2 : Charging Status DataManager
 v0.4.3 : Charging Status Display
-v0.4.4 : Charging Alarm
+v0.4.4 : Renderer Framework
+    Renderer Framework Completed
+    Generic Page Change Detection
+    Unified Value/Text Rendering
+    Overview Rendering Completed
+v0.4.5 : Overview Energy Status
 v0.5.0 : EPEVER Full Status
 v1.0.0 : 차량 실사용 버전(첫 번째 정식 릴리스)
 

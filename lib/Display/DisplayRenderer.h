@@ -41,6 +41,7 @@ namespace DisplayRenderer
         // Common
         void DrawHeader(
             DisplayPages::Page page,
+            const DisplayModel::OverviewData& overview,
             const DisplayModel::SystemData& system);
 
         void DrawFooter(
