@@ -282,16 +282,16 @@ namespace DisplayRenderer
         m_lastModel.GetOverview();
 
         const bool solarChanged =
-            // HasValueChanged(
-            //     data.solarPower,
-            //     lastData.solarPower);
-            m_firstRender ||
-            (data.solarPower.value !=
-                lastData.solarPower.value) ||
-            (data.solarPower.state !=
-                lastData.solarPower.state) ||
-            (data.solarPower.visible !=
-                lastData.solarPower.visible);
+            HasValueChanged(
+                data.solarPower,
+                lastData.solarPower);
+            // m_firstRender ||
+            // (data.solarPower.value !=
+            //     lastData.solarPower.value) ||
+            // (data.solarPower.state !=
+            //     lastData.solarPower.state) ||
+            // (data.solarPower.visible !=
+            //     lastData.solarPower.visible);
 
         if (solarChanged)
         {
@@ -301,17 +301,23 @@ namespace DisplayRenderer
                 0U);
         }
 
+        Serial.printf(
+            "pageChanged-5d value=%.1f prev=%1f\n",
+            m_pageChanged,
+            data.solarPower.value,
+            lastData.solarPower.value);
+
         const bool batteryChanged =
-            // HasValueChanged(
-            //     data.batteryVoltage,
-            //     lastData.batteryVoltage);
-            m_firstRender ||
-            (data.batteryVoltage.value !=
-                lastData.batteryVoltage.value) ||
-            (data.batteryVoltage.state !=
-                lastData.batteryVoltage.state) ||
-            (data.batteryVoltage.visible !=
-                lastData.batteryVoltage.visible);
+            HasValueChanged(
+                data.batteryVoltage,
+                lastData.batteryVoltage);
+            // m_firstRender ||
+            // (data.batteryVoltage.value !=
+            //     lastData.batteryVoltage.value) ||
+            // (data.batteryVoltage.state !=
+            //     lastData.batteryVoltage.state) ||
+            // (data.batteryVoltage.visible !=
+            //     lastData.batteryVoltage.visible);
 
         if (batteryChanged)
         {
@@ -322,16 +328,16 @@ namespace DisplayRenderer
         }
 
         const bool socChanged =
-            // HasValueChanged(
-            //     data.batteryPercent,
-            //     lastData.batteryPercent);
-            m_firstRender ||
-            (data.batteryPercent.value !=
-                lastData.batteryPercent.value) ||
-            (data.batteryPercent.state !=
-                lastData.batteryPercent.state) ||
-            (data.batteryPercent.visible !=
-                lastData.batteryPercent.visible);
+            HasValueChanged(
+                data.batteryPercent,
+                lastData.batteryPercent);
+            // m_firstRender ||
+            // (data.batteryPercent.value !=
+            //     lastData.batteryPercent.value) ||
+            // (data.batteryPercent.state !=
+            //     lastData.batteryPercent.state) ||
+            // (data.batteryPercent.visible !=
+            //     lastData.batteryPercent.visible);
 
         if (socChanged)
         {
@@ -342,16 +348,16 @@ namespace DisplayRenderer
         }
 
         const bool loadChanged =
-            // HasValueChanged(
-            //     data.loadPower,
-            //     lastData.loadPower);
-            m_firstRender ||
-            (data.loadPower.value !=
-                lastData.loadPower.value) ||
-            (data.loadPower.state !=
-                lastData.loadPower.state) ||
-            (data.loadPower.visible !=
-                lastData.loadPower.visible);
+            HasValueChanged(
+                data.loadPower,
+                lastData.loadPower);
+            // m_firstRender ||
+            // (data.loadPower.value !=
+            //     lastData.loadPower.value) ||
+            // (data.loadPower.state !=
+            //     lastData.loadPower.state) ||
+            // (data.loadPower.visible !=
+            //     lastData.loadPower.visible);
 
         if (loadChanged)
         {
@@ -362,36 +368,36 @@ namespace DisplayRenderer
         }
 
         const bool temperatureChanged =
-            // HasValueChanged(
-            //     data.temperature,
-            //     lastData.temperature);
-            m_firstRender ||
-            (data.temperature.value !=
-                lastData.temperature.value) ||
-            (data.temperature.state !=
-                lastData.temperature.state) ||
-            (data.temperature.visible !=
-                lastData.temperature.visible);
+            HasValueChanged(
+                data.temperature,
+                lastData.temperature);
+            // m_firstRender ||
+            // (data.temperature.value !=
+            //     lastData.temperature.value) ||
+            // (data.temperature.state !=
+            //     lastData.temperature.state) ||
+            // (data.temperature.visible !=
+            //     lastData.temperature.visible);
 
         if (temperatureChanged)
         {
             DrawLabelValue(
-                "Temp",
+                "Cabin",
                 data.temperature,
                 4U);
         }
 
         const bool humidityChanged =
-            // HasValueChanged(
-            //     data.humidity,
-            //     lastData.humidity);
-            m_firstRender ||
-            (data.humidity.value !=
-                lastData.humidity.value) ||
-            (data.humidity.state !=
-                lastData.humidity.state) ||
-            (data.humidity.visible !=
-                lastData.humidity.visible);
+            HasValueChanged(
+                data.humidity,
+                lastData.humidity);
+            // m_firstRender ||
+            // (data.humidity.value !=
+            //     lastData.humidity.value) ||
+            // (data.humidity.state !=
+            //     lastData.humidity.state) ||
+            // (data.humidity.visible !=
+            //     lastData.humidity.visible);
             
         if (humidityChanged)
         {

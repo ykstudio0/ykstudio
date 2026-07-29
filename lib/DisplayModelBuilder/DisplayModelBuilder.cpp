@@ -329,7 +329,8 @@ namespace DisplayModelBuilder
         BuildTemperature(model);
         BuildSystem(model);
 
-        // 상세 페이지의 주요 데이터 Overview로 복사한다.
+        // Overview는 별도의 데이터를 생성하지 않는다.
+        // 상세 페이지에서 생성된 표시 데이터를 요약 화면으로 복사한다.
         model.SyncOverview();
     }
 }
