@@ -285,13 +285,6 @@ namespace DisplayRenderer
             HasValueChanged(
                 data.solarPower,
                 lastData.solarPower);
-            // m_firstRender ||
-            // (data.solarPower.value !=
-            //     lastData.solarPower.value) ||
-            // (data.solarPower.state !=
-            //     lastData.solarPower.state) ||
-            // (data.solarPower.visible !=
-            //     lastData.solarPower.visible);
 
         if (solarChanged)
         {
@@ -301,24 +294,11 @@ namespace DisplayRenderer
                 0U);
         }
 
-        Serial.printf(
-            "pageChanged-5d value=%.1f prev=%1f\n",
-            m_pageChanged,
-            data.solarPower.value,
-            lastData.solarPower.value);
-
         const bool batteryChanged =
             HasValueChanged(
                 data.batteryVoltage,
                 lastData.batteryVoltage);
-            // m_firstRender ||
-            // (data.batteryVoltage.value !=
-            //     lastData.batteryVoltage.value) ||
-            // (data.batteryVoltage.state !=
-            //     lastData.batteryVoltage.state) ||
-            // (data.batteryVoltage.visible !=
-            //     lastData.batteryVoltage.visible);
-
+            
         if (batteryChanged)
         {
             DrawLabelValue(
@@ -331,14 +311,7 @@ namespace DisplayRenderer
             HasValueChanged(
                 data.batteryPercent,
                 lastData.batteryPercent);
-            // m_firstRender ||
-            // (data.batteryPercent.value !=
-            //     lastData.batteryPercent.value) ||
-            // (data.batteryPercent.state !=
-            //     lastData.batteryPercent.state) ||
-            // (data.batteryPercent.visible !=
-            //     lastData.batteryPercent.visible);
-
+            
         if (socChanged)
         {
             DrawLabelValue(
@@ -351,14 +324,7 @@ namespace DisplayRenderer
             HasValueChanged(
                 data.loadPower,
                 lastData.loadPower);
-            // m_firstRender ||
-            // (data.loadPower.value !=
-            //     lastData.loadPower.value) ||
-            // (data.loadPower.state !=
-            //     lastData.loadPower.state) ||
-            // (data.loadPower.visible !=
-            //     lastData.loadPower.visible);
-
+            
         if (loadChanged)
         {
             DrawLabelValue(
@@ -371,14 +337,7 @@ namespace DisplayRenderer
             HasValueChanged(
                 data.temperature,
                 lastData.temperature);
-            // m_firstRender ||
-            // (data.temperature.value !=
-            //     lastData.temperature.value) ||
-            // (data.temperature.state !=
-            //     lastData.temperature.state) ||
-            // (data.temperature.visible !=
-            //     lastData.temperature.visible);
-
+            
         if (temperatureChanged)
         {
             DrawLabelValue(
@@ -391,13 +350,6 @@ namespace DisplayRenderer
             HasValueChanged(
                 data.humidity,
                 lastData.humidity);
-            // m_firstRender ||
-            // (data.humidity.value !=
-            //     lastData.humidity.value) ||
-            // (data.humidity.state !=
-            //     lastData.humidity.state) ||
-            // (data.humidity.visible !=
-            //     lastData.humidity.visible);
             
         if (humidityChanged)
         {
@@ -691,14 +643,6 @@ namespace DisplayRenderer
             HasValueChanged(
                 data.controllerTemperature,
                 lastData.controllerTemperature);    
-        
-        //     m_firstRender ||
-        //     (data.controllerTemperature.value !=
-        //         lastData.controllerTemperature.value) ||
-        //     (data.controllerTemperature.state !=
-        //         lastData.controllerTemperature.state) ||
-        //     (data.controllerTemperature.visible !=
-        //         lastData.controllerTemperature.visible);
 
         if (controllerChanged)
         {
@@ -713,14 +657,6 @@ namespace DisplayRenderer
                 data.batteryTemperature,
                 lastData.batteryTemperature);
 
-            // m_firstRender ||
-            // (data.batteryTemperature.value !=
-            //     lastData.batteryTemperature.value) ||
-            // (data.batteryTemperature.state !=
-            //     lastData.batteryTemperature.state) ||
-            // (data.batteryTemperature.visible !=
-            //     lastData.batteryTemperature.visible);
-
         if (batteryChanged)
         {
             DrawLabelValue(
@@ -734,14 +670,6 @@ namespace DisplayRenderer
                 data.cabinTemperature,
                 lastData.cabinTemperature);
 
-            // m_firstRender ||
-            // (data.cabinTemperature.value !=
-            //     lastData.cabinTemperature.value) ||
-            // (data.cabinTemperature.state !=
-            //     lastData.cabinTemperature.state) ||
-            // (data.cabinTemperature.visible !=
-            //     lastData.cabinTemperature.visible);
-
         if (cabinChanged)
         {
             DrawLabelValue(
@@ -754,14 +682,6 @@ namespace DisplayRenderer
             HasValueChanged(
                 data.cabinHumidity,
                 lastData.cabinHumidity);
-
-            // m_firstRender ||
-            // (data.cabinHumidity.value !=
-            //     lastData.cabinHumidity.value) ||
-            // (data.cabinHumidity.state !=
-            //     lastData.cabinHumidity.state) ||
-            // (data.cabinHumidity.visible !=
-            //     lastData.cabinHumidity.visible);
 
         if (humidityChanged)
         {

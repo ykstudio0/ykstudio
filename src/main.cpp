@@ -49,7 +49,7 @@ void setup()
     DeviceManager::Begin();
     Display::Begin();
     Scheduler::Begin();
-    delay(1000);
+    // delay(1000);
     TestTFT();
     delay(2000);
     Tests::RunDisplayTests();
@@ -78,14 +78,6 @@ void setup()
 void loop()
 {
     Scheduler::Run();
-    
-    // displayRenderer.RenderPage(
-    //     DisplayPages::Page::Overview,
-    //     displayModel);
-
-    // delay(5000);
-    // DeviceManager::Update();
-    // delay(1);
 }
 
 void TestTFT()
