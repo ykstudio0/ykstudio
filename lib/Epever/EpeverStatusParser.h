@@ -52,8 +52,17 @@ namespace EpeverStatusParser
         uint8_t statusFlags;
     };
 
+    enum class BatteryStatus : uint8_t
+    {
+        Normal       = 0,
+        OverVoltage  = 1,
+        UnderVoltage = 2,
+        Fault        = 3
+    };
+
     ChargingStatus ParseChargingStatus(uint16_t raw);
 
     const char* ToString(ChargingStage stage);
     const char* ToString(InputVoltageStatus status);
+    const char* ToString(BatteryStatus status);
 }

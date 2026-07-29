@@ -114,6 +114,7 @@ namespace DisplayModel
         DisplayTypes::DisplayValue power;
         DisplayTypes::DisplayValue percent;
         DisplayTypes::DisplayValue temperature;
+        DisplayTypes::DisplayValue status;
 
         constexpr BatteryData()
             : voltage(

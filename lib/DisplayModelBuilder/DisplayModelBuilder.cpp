@@ -141,6 +141,10 @@ namespace
                 DataManager::Temperature.battery,
                 DisplayTypes::ValueType::Temperature);
 
+        // battery.statusText =
+        //         EpeverStatusParser::ToString(
+        //             DataManager::Charge.batteryStatus);
+
         ApplyStatus(
             battery.voltage,
             DataManager::Battery.status);

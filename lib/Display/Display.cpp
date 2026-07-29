@@ -42,11 +42,11 @@ bool Display::Begin()
 
     g_pageManager.Begin();
 
-    delay(1000);
+    delay(3000);
     
     g_pageManager.Next();
 
-    delay(1000);
+    delay(3000);
 
     g_pageManager.Next();
 

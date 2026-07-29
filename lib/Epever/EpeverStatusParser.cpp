@@ -105,4 +105,25 @@ namespace EpeverStatusParser
                 return "Unknown";
         }
     }
+
+    const char* ToString(BatteryStatus status)
+    {
+        switch (status)
+        {
+            case BatteryStatus::Normal:
+                return "Normal";
+
+            case BatteryStatus::OverVoltage:
+                return "Over Volt";
+
+            case BatteryStatus::UnderVoltage:
+                return "Under Volt";
+
+            case BatteryStatus::Fault:
+                return "Fault";
+
+            default:
+                return "Unknown";
+        }
+    }
 }

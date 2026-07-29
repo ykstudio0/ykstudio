@@ -560,25 +560,103 @@ namespace DisplayRenderer
                 1U);
         }
 
-        // const bool powerChanged =
-        //     HasValueChanged(
-        //         data.power,
-        //         lastData.power);
+        const bool powerChanged =
+            HasValueChanged(
+                data.power,
+                lastData.power);
 
-        // if (powerChanged)
+        if (powerChanged)
+        {
+            DrawLabelValue(
+                "Power",
+                data.power,
+                2U);
+        }    
+
+        const bool socChanged =
+            HasValueChanged(
+                data.percent,
+                lastData.percent);
+
+        if (socChanged)
+        {
+            DrawLabelValue(
+                "SOC",
+                data.percent,
+                3U);
+        }    
+
+        const bool tempChanged =
+            HasValueChanged(
+                data.temperature,
+                lastData.temperature);
+
+        if (tempChanged)
+        {
+            DrawLabelValue(
+                "Temp",
+                data.temperature,
+                4U);
+        }    
+
+        // const bool statusChanged =
+        //     HasTextChanged(
+        //         data.status,
+        //         lastData.status);
+
+        // if (statusChanged)
         // {
-        //     DrawLabelValue(
-        //         "Power",
-        //         data.power,
-        //         2U);
-        // }    
+        //     DrawLabelText(
+        //         "Status",
+        //         data.status,
+        //         5U);
+        // }
     }
 
     void Renderer::DrawLoad(
         const DisplayModel::LoadData& data)
     {
-        // 다음 단계에서 구현한다.
-        (void)data;
+        const DisplayModel::LoadData& lastData =
+            m_lastModel.GetLoad();
+
+        const bool voltageChanged =
+            HasValueChanged(
+                data.voltage,
+                lastData.voltage);
+
+        if (voltageChanged)
+        {
+            DrawLabelValue(
+                "Voltage",
+                data.voltage,
+                0U);
+        }
+
+        const bool currentChanged =
+            HasValueChanged(
+                data.current,
+                lastData.current);
+
+        if (currentChanged)
+        {
+            DrawLabelValue(
+                "Current",
+                data.current,
+                1U);
+        }
+
+        const bool powerChanged =
+            HasValueChanged(
+                data.power,
+                lastData.power);
+
+        if (powerChanged)
+        {
+            DrawLabelValue(
+                "Power",
+                data.power,
+                2U);
+        }    
     }
 
     void Renderer::DrawTemperature(
@@ -733,7 +811,7 @@ namespace DisplayRenderer
     {
         return
             m_firstRender ||
-            (m_lastPage != DisplayPages::Page::Solar) ||
+            (m_lastPage != DisplayPages::Page::Battery) ||
             (current.value != previous.value) ||
             (current.state != previous.state) ||
             (current.visible != previous.visible);
