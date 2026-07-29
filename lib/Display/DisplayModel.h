@@ -400,6 +400,19 @@ namespace DisplayModel
     private:
         EnergyStatus DetermineEnergyStatus() const
         {
+            // --------Status Test ----------
+            return EnergyStatus::Warning;
+            
+            // 가장 높은 우선순위:
+            // 주요 에너지 데이터에 Warning 또는 Alarm이 존재하는 경우
+            if (solar.power.HasAlert() ||
+                battery.voltage.HasAlert() ||
+                battery.percent.HasAlert() ||
+                load.power.HasAlert())
+            {
+                return EnergyStatus::Warning;
+            }
+
             if (solar.power.value > 20.0f)
             {
                 return EnergyStatus::Charging;
