@@ -284,6 +284,9 @@ namespace DisplayRenderer
         m_lastModel.GetOverview();
 
         const bool solarChanged =
+            // HasValueChanged(
+            //     data.solarPower,
+            //     lastData.solarPower);
             m_firstRender ||
             (data.solarPower.value !=
                 lastData.solarPower.value) ||
@@ -301,6 +304,9 @@ namespace DisplayRenderer
         }
 
         const bool batteryChanged =
+            // HasValueChanged(
+            //     data.batteryVoltage,
+            //     lastData.batteryVoltage);
             m_firstRender ||
             (data.batteryVoltage.value !=
                 lastData.batteryVoltage.value) ||
@@ -318,6 +324,9 @@ namespace DisplayRenderer
         }
 
         const bool socChanged =
+            // HasValueChanged(
+            //     data.batteryPercent,
+            //     lastData.batteryPercent);
             m_firstRender ||
             (data.batteryPercent.value !=
                 lastData.batteryPercent.value) ||
@@ -335,6 +344,9 @@ namespace DisplayRenderer
         }
 
         const bool loadChanged =
+            // HasValueChanged(
+            //     data.loadPower,
+            //     lastData.loadPower);
             m_firstRender ||
             (data.loadPower.value !=
                 lastData.loadPower.value) ||
@@ -352,6 +364,9 @@ namespace DisplayRenderer
         }
 
         const bool temperatureChanged =
+            // HasValueChanged(
+            //     data.temperature,
+            //     lastData.temperature);
             m_firstRender ||
             (data.temperature.value !=
                 lastData.temperature.value) ||
@@ -369,6 +384,9 @@ namespace DisplayRenderer
         }
 
         const bool humidityChanged =
+            // HasValueChanged(
+            //     data.humidity,
+            //     lastData.humidity);
             m_firstRender ||
             (data.humidity.value !=
                 lastData.humidity.value) ||
@@ -376,7 +394,7 @@ namespace DisplayRenderer
                 lastData.humidity.state) ||
             (data.humidity.visible !=
                 lastData.humidity.visible);
-
+            
         if (humidityChanged)
         {
             DrawLabelValue(
@@ -666,13 +684,17 @@ namespace DisplayRenderer
             m_lastModel.GetTemperature();
 
         const bool controllerChanged =
-            m_firstRender ||
-            (data.controllerTemperature.value !=
-                lastData.controllerTemperature.value) ||
-            (data.controllerTemperature.state !=
-                lastData.controllerTemperature.state) ||
-            (data.controllerTemperature.visible !=
-                lastData.controllerTemperature.visible);
+            HasValueChanged(
+                data.controllerTemperature,
+                lastData.controllerTemperature);    
+        
+        //     m_firstRender ||
+        //     (data.controllerTemperature.value !=
+        //         lastData.controllerTemperature.value) ||
+        //     (data.controllerTemperature.state !=
+        //         lastData.controllerTemperature.state) ||
+        //     (data.controllerTemperature.visible !=
+        //         lastData.controllerTemperature.visible);
 
         if (controllerChanged)
         {
@@ -683,13 +705,17 @@ namespace DisplayRenderer
         }
 
         const bool batteryChanged =
-            m_firstRender ||
-            (data.batteryTemperature.value !=
-                lastData.batteryTemperature.value) ||
-            (data.batteryTemperature.state !=
-                lastData.batteryTemperature.state) ||
-            (data.batteryTemperature.visible !=
-                lastData.batteryTemperature.visible);
+            HasValueChanged(
+                data.batteryTemperature,
+                lastData.batteryTemperature);
+
+            // m_firstRender ||
+            // (data.batteryTemperature.value !=
+            //     lastData.batteryTemperature.value) ||
+            // (data.batteryTemperature.state !=
+            //     lastData.batteryTemperature.state) ||
+            // (data.batteryTemperature.visible !=
+            //     lastData.batteryTemperature.visible);
 
         if (batteryChanged)
         {
@@ -700,13 +726,17 @@ namespace DisplayRenderer
         }
 
         const bool cabinChanged =
-            m_firstRender ||
-            (data.cabinTemperature.value !=
-                lastData.cabinTemperature.value) ||
-            (data.cabinTemperature.state !=
-                lastData.cabinTemperature.state) ||
-            (data.cabinTemperature.visible !=
-                lastData.cabinTemperature.visible);
+            HasValueChanged(
+                data.cabinTemperature,
+                lastData.cabinTemperature);
+
+            // m_firstRender ||
+            // (data.cabinTemperature.value !=
+            //     lastData.cabinTemperature.value) ||
+            // (data.cabinTemperature.state !=
+            //     lastData.cabinTemperature.state) ||
+            // (data.cabinTemperature.visible !=
+            //     lastData.cabinTemperature.visible);
 
         if (cabinChanged)
         {
@@ -717,13 +747,17 @@ namespace DisplayRenderer
         }
 
         const bool humidityChanged =
-            m_firstRender ||
-            (data.cabinHumidity.value !=
-                lastData.cabinHumidity.value) ||
-            (data.cabinHumidity.state !=
-                lastData.cabinHumidity.state) ||
-            (data.cabinHumidity.visible !=
-                lastData.cabinHumidity.visible);
+            HasValueChanged(
+                data.cabinHumidity,
+                lastData.cabinHumidity);
+
+            // m_firstRender ||
+            // (data.cabinHumidity.value !=
+            //     lastData.cabinHumidity.value) ||
+            // (data.cabinHumidity.state !=
+            //     lastData.cabinHumidity.state) ||
+            // (data.cabinHumidity.visible !=
+            //     lastData.cabinHumidity.visible);
 
         if (humidityChanged)
         {
@@ -823,7 +857,7 @@ namespace DisplayRenderer
     {
         return 
             m_firstRender ||
-            (m_lastPage != DisplayPages::Page::Solar) ||
+            (m_lastPage != DisplayPages::Page::Load) ||
             (strcmp(current, previous) != 0);
     }
 
