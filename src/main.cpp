@@ -51,7 +51,7 @@ void setup()
     Scheduler::Begin();
     delay(1000);
     TestTFT();
-    delay(5000);
+    delay(2000);
     Tests::RunDisplayTests();
     Tests::RunDisplayThemeTests();
     Tests::RunDisplayModelTests();

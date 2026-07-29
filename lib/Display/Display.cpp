@@ -42,13 +42,17 @@ bool Display::Begin()
 
     g_pageManager.Begin();
 
-    delay(3000);
+    // delay(3000);
     
-    g_pageManager.Next();
+    // g_pageManager.Next();
 
-    delay(3000);
+    // delay(3000);
 
-    g_pageManager.Next();
+    // g_pageManager.Next();
+
+    // delay(3000);
+    
+    // g_pageManager.Next();
 
     if (!InitializeLCD())
     {

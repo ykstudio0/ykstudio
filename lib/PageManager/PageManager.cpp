@@ -15,7 +15,7 @@ namespace PageManager
     {
         m_currentPage =
             // DisplayPages::Page::Overview;
-            DisplayPages::Page::Overview;
+            DisplayPages::Page::Load;
     }
 
     DisplayPages::Page Manager::Current() const

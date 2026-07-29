@@ -811,7 +811,7 @@ namespace DisplayRenderer
     {
         return
             m_firstRender ||
-            (m_lastPage != DisplayPages::Page::Battery) ||
+            (m_lastPage != DisplayPages::Page::Load) ||
             (current.value != previous.value) ||
             (current.state != previous.state) ||
             (current.visible != previous.visible);
