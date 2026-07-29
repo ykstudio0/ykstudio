@@ -531,8 +531,47 @@ namespace DisplayRenderer
     void Renderer::DrawBattery(
         const DisplayModel::BatteryData& data)
     {
-        // 다음 단계에서 구현한다.
-        (void)data;
+        const DisplayModel::BatteryData& lastData =
+            m_lastModel.GetBattery();
+
+        const bool voltageChanged =
+            HasValueChanged(
+                data.voltage,
+                lastData.voltage);
+
+        if (voltageChanged)
+        {
+            DrawLabelValue(
+                "Voltage",
+                data.voltage,
+                0U);
+        }
+
+        const bool currentChanged =
+            HasValueChanged(
+                data.current,
+                lastData.current);
+
+        if (currentChanged)
+        {
+            DrawLabelValue(
+                "Current",
+                data.current,
+                1U);
+        }
+
+        // const bool powerChanged =
+        //     HasValueChanged(
+        //         data.power,
+        //         lastData.power);
+
+        // if (powerChanged)
+        // {
+        //     DrawLabelValue(
+        //         "Power",
+        //         data.power,
+        //         2U);
+        // }    
     }
 
     void Renderer::DrawLoad(

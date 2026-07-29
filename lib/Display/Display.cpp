@@ -42,7 +42,7 @@ bool Display::Begin()
 
     g_pageManager.Begin();
 
-    g_pageManager.Next();
+    // g_pageManager.Next();
 
     if (!InitializeLCD())
     {
