@@ -98,6 +98,26 @@ void SerialRenderTarget::DrawText(
     m_serial->println("\"");
 }
 
+// void SerialRenderTarget::DrawTextBg(
+//     int16_t x,
+//     int16_t y,
+//     const char* text,
+//     DisplayTheme::Color textColor,
+//     DisplayTheme::Color backgroundColor,
+//     uint8_t fontSize,
+//     DisplayTypes::TextAlign align)
+// {
+//     (void)backgroundColor;
+
+//     DrawText(
+//         x,
+//         y,
+//         text,
+//         textColor,
+//         fontSize,
+//         align);
+// }
+
 void SerialRenderTarget::DrawLine(
     int16_t x1,
     int16_t y1,

@@ -123,5 +123,23 @@ namespace DisplayRenderer
         bool HasTextChanged(
             const char* current,
             const char* previous) const;
+
+        //-------------------------------------------------------------
+        // Header Helpers
+        //-------------------------------------------------------------
+        void BuildEnergyDisplay(
+            DisplayModel::EnergyStatus status,
+            const char*& text,
+            DisplayTheme::Color& color);
+
+        void BuildTimeText(
+            const DisplayModel::SystemData& system,
+            char* buffer,
+            size_t bufferSize);
+
+        void BuildStatusText(
+            const DisplayModel::SystemData& system,
+            char* buffer,
+            size_t bufferSize);
     };
 }

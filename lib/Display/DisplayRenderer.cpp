@@ -189,92 +189,196 @@ namespace DisplayRenderer
             model);
     }
 
+    void Renderer::BuildTimeText(
+        const DisplayModel::SystemData& system,
+        char* buffer,
+        size_t bufferSize)
+    {
+        FormatValue(
+            system.currentTime,
+            buffer,
+            bufferSize);
+    }
+
     // Common
     void Renderer::DrawHeader(
         DisplayPages::Page page,
         const DisplayModel::OverviewData& overview,
         const DisplayModel::SystemData& system)
     {
-        if (!IsReady())
+        const char* energyText;
+        DisplayTheme::Color energyColor;
+
+        BuildEnergyDisplay(
+            overview.energyStatus,
+            energyText,
+            energyColor);
+
+        char currentTime[16];
+        char previousTime[16];
+
+        BuildTimeText(
+            system,
+            currentTime,
+            sizeof(currentTime));
+
+        BuildTimeText(
+            m_lastModel.GetSystem(),
+            previousTime,
+            sizeof(previousTime));
+
+        char currentStatus[8];
+        char previousStatus[8];
+
+        BuildStatusText(
+            system,
+            currentStatus,
+            sizeof(currentStatus));
+
+        BuildStatusText(
+            m_lastModel.GetSystem(),
+            previousStatus,
+            sizeof(previousStatus));
+
+        //---------------------------------------------------------
+        // Static
+        //---------------------------------------------------------
+
+        if (m_firstRender || m_pageChanged)
         {
-            return;
+            DisplayWidgets::HeaderWidget::DrawStatic(
+                *m_target,
+                DisplayPages::GetTitle(page));
         }
 
-        // Current time
-        const auto& previous =
-            m_lastModel.GetSystem();
+        //---------------------------------------------------------
+        // Energy
+        //---------------------------------------------------------
 
-        const bool forceRedraw =
-            m_firstRender ||
-            (page != m_lastPage);
-
-        const bool timeChanged =
-            forceRedraw ||
-            system.currentTime.value !=
-                previous.currentTime.value ||
-            system.currentTime.state !=
-                previous.currentTime.state ||
-            system.currentTime.visible !=
-                previous.currentTime.visible ||
-            system.currentTime.type !=
-                previous.currentTime.type ||
-            system.currentTime.decimals !=
-                previous.currentTime.decimals;
-
-        char timeText[12] = {};
-
-        if (timeChanged)
+        if (m_firstRender ||
+            overview.energyStatus !=
+            m_lastModel.GetOverview().energyStatus)
         {
-            FormatValue(
-                system.currentTime,
-                timeText,
-                sizeof(timeText));
+            DisplayWidgets::HeaderWidget::DrawEnergy(
+                *m_target,
+                energyText,
+                energyColor);
         }
 
-        const char* statusText = "OK";
+        //---------------------------------------------------------
+        // Time
+        //---------------------------------------------------------
 
-        DisplayTheme::Color statusColor =
-            DisplayTheme::COLOR_ACTIVE;
-
-        if (!system.wifiConnected)
+        if (m_firstRender ||
+            HasTextChanged(
+                currentTime,
+                previousTime))
         {
-            statusText = "NET";
-            statusColor = DisplayTheme::COLOR_WARNING;
-        }
-        else if (!system.rs485Ready)
-        {
-            statusText = "485";
-            statusColor = DisplayTheme::COLOR_ALARM;
-        }
-        else if (!system.modbusReady)
-        {
-            statusText = "MOD";
-            statusColor = DisplayTheme::COLOR_ALARM;
-        }
-        else if (!system.deviceManagerReady)
-        {
-            statusText = "DEV";
-            statusColor = DisplayTheme::COLOR_WARNING;
+            DisplayWidgets::HeaderWidget::DrawTime(
+                *m_target,
+                currentTime);
         }
 
-        const char* energyStatusText =
-            GetEnergyStatusText(
-                overview.energyStatus);
+        //---------------------------------------------------------
+        // Status
+        //---------------------------------------------------------
 
-        const DisplayTheme::Color energyStatusColor =
-            GetEnergyStatusColor(
-                overview.energyStatus);
-
-
-        DisplayWidgets::HeaderWidget::Draw(
-            *m_target,
-            nullptr,
-            energyStatusText,
-            energyStatusColor,
-            timeChanged ? timeText : nullptr,
-            statusText,
-            statusColor);
+        if (m_firstRender ||
+            HasTextChanged(
+                currentStatus,
+                previousStatus))
+        {
+            DisplayWidgets::HeaderWidget::DrawStatus(
+                *m_target,
+                currentStatus,
+                DisplayTheme::COLOR_TEXT);
+        }
     }
+    // void Renderer::DrawHeader(
+    //     DisplayPages::Page page,
+    //     const DisplayModel::OverviewData& overview,
+    //     const DisplayModel::SystemData& system)
+    // {
+    //     if (!IsReady())
+    //     {
+    //         return;
+    //     }
+
+    //     // Current time
+    //     const auto& previous =
+    //         m_lastModel.GetSystem();
+
+    //     const bool forceRedraw =
+    //         m_firstRender ||
+    //         (page != m_lastPage);
+
+    //     const bool timeChanged =
+    //         forceRedraw ||
+    //         system.currentTime.value !=
+    //             previous.currentTime.value ||
+    //         system.currentTime.state !=
+    //             previous.currentTime.state ||
+    //         system.currentTime.visible !=
+    //             previous.currentTime.visible ||
+    //         system.currentTime.type !=
+    //             previous.currentTime.type ||
+    //         system.currentTime.decimals !=
+    //             previous.currentTime.decimals;
+
+    //     char timeText[12] = {};
+
+    //     if (timeChanged)
+    //     {
+    //         FormatValue(
+    //             system.currentTime,
+    //             timeText,
+    //             sizeof(timeText));
+    //     }
+
+    //     const char* statusText = "OK";
+
+    //     DisplayTheme::Color statusColor =
+    //         DisplayTheme::COLOR_ACTIVE;
+
+    //     if (!system.wifiConnected)
+    //     {
+    //         statusText = "NET";
+    //         statusColor = DisplayTheme::COLOR_WARNING;
+    //     }
+    //     else if (!system.rs485Ready)
+    //     {
+    //         statusText = "485";
+    //         statusColor = DisplayTheme::COLOR_ALARM;
+    //     }
+    //     else if (!system.modbusReady)
+    //     {
+    //         statusText = "MOD";
+    //         statusColor = DisplayTheme::COLOR_ALARM;
+    //     }
+    //     else if (!system.deviceManagerReady)
+    //     {
+    //         statusText = "DEV";
+    //         statusColor = DisplayTheme::COLOR_WARNING;
+    //     }
+
+    //     const char* energyStatusText =
+    //         GetEnergyStatusText(
+    //             overview.energyStatus);
+
+    //     const DisplayTheme::Color energyStatusColor =
+    //         GetEnergyStatusColor(
+    //             overview.energyStatus);
+
+
+    //     DisplayWidgets::HeaderWidget::Draw(
+    //         *m_target,
+    //         nullptr,
+    //         energyStatusText,
+    //         energyStatusColor,
+    //         timeChanged ? timeText : nullptr,
+    //         statusText,
+    //         statusColor);
+    // }
 
     void Renderer::DrawFooter(
         DisplayPages::Page page)
@@ -415,6 +519,77 @@ namespace DisplayRenderer
                 data.humidity,
                 5U);
         }
+    }
+
+    void Renderer::BuildEnergyDisplay(
+        DisplayModel::EnergyStatus status,
+        const char*& text,
+        DisplayTheme::Color& color)
+    {
+        switch (status)
+        {
+        case DisplayModel::EnergyStatus::Charging:
+
+            text = "Charging";
+            color = DisplayTheme::COLOR_SUCCESS;
+            break;
+
+        case DisplayModel::EnergyStatus::Idle:
+
+            text = "Idle";
+            color = DisplayTheme::COLOR_INFO;
+            break;
+
+        case DisplayModel::EnergyStatus::Night:
+
+            text = "Night";
+            color = DisplayTheme::COLOR_LABEL;
+            break;
+
+        case DisplayModel::EnergyStatus::Warning:
+
+            text = "Warning";
+            color = DisplayTheme::COLOR_ALARM;
+            break;
+
+        default:
+
+            text = "---";
+            color = DisplayTheme::COLOR_INFO;
+            break;
+        }
+    }
+
+    void Renderer::BuildStatusText(
+        const DisplayModel::SystemData& system,
+        char* buffer,
+        size_t bufferSize)
+    {
+        if (bufferSize == 0)
+            return;
+
+        if (system.wifiConnected)
+        {
+            strncpy(buffer, "NET", bufferSize);
+        }
+        else if (system.rs485Ready)
+        {
+            strncpy(buffer, "485", bufferSize);
+        }
+        else if (system.modbusReady)
+        {
+            strncpy(buffer, "MOD", bufferSize);
+        }
+        else if (system.deviceManagerReady)
+        {
+            strncpy(buffer, "DEV", bufferSize);
+        }
+        else
+        {
+            strncpy(buffer, "---", bufferSize);
+        }
+
+        buffer[bufferSize - 1] = '\0';
     }
 
     void Renderer::DrawHeaderStatus(

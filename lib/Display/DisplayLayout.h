@@ -71,14 +71,18 @@ namespace DisplayLayout
     // Header 내부 좌표
     constexpr int16_t HEADER_TITLE_X = MARGIN_LEFT;
 
-    constexpr int16_t HEADER_TITLE_Y  = 8;
-    constexpr int16_t HEADER_TIME_X   = 286;
-    constexpr int16_t HEADER_TIME_Y   = 12;
-    constexpr int16_t HEADER_STATUS_X = 292;
-    constexpr int16_t HEADER_STATUS_Y = 12;
     constexpr int16_t HEADER_ENERGY_X = SCREEN_WIDTH / 2;
     // constexpr int16_t HEADER_ENERGY_X = (HEADER_TITLE_X + HEADER_TIME_X) / 2;
     constexpr int16_t HEADER_ENERGY_Y = 8;
+    constexpr int16_t HEADER_ENERGY_WIDTH = 100;
+    constexpr int16_t HEADER_TITLE_Y  = 8;
+    constexpr int16_t HEADER_TIME_X   = 284;
+    constexpr int16_t HEADER_TIME_Y   = 12;
+    constexpr int16_t HEADER_TIME_WIDTH = 68;
+    constexpr int16_t HEADER_STATUS_X = 290;
+    constexpr int16_t HEADER_STATUS_Y = 12;
+    constexpr int16_t HEADER_STATUS_WIDTH = 30;
+    
 
     // Footer 내부 좌표
     constexpr int16_t FOOTER_PREVIOUS_X = MARGIN_LEFT;

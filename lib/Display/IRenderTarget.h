@@ -69,6 +69,32 @@ public:
         DisplayTheme::Color color,
         uint8_t fontSize,
         DisplayTypes::TextAlign align) = 0;
+    
+    /*
+     * 배경색을 함께 사용하여 문자열을 출력한다.
+     *
+     * TFT에서 이전 문자열의 잔상을 방지하기 위해
+     * 문자 배경을 지정하여 출력한다.
+     */
+    virtual void DrawTextBg(
+        int16_t x,
+        int16_t y,
+        const char* text,
+        DisplayTheme::Color textColor,
+        DisplayTheme::Color backgroundColor,
+        uint8_t fontSize,
+        DisplayTypes::TextAlign align)
+    {
+        (void)backgroundColor;
+
+        DrawText(
+            x,
+            y,
+            text,
+            textColor,
+            fontSize,
+            align);
+    }
 
     /*
      * 선을 그린다.

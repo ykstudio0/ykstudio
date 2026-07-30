@@ -88,6 +88,36 @@ void TFTRenderTarget::DrawText(
         y);
 }
 
+void TFTRenderTarget::DrawTextBg(
+    int16_t x,
+    int16_t y,
+    const char* text,
+    DisplayTheme::Color textColor,
+    DisplayTheme::Color backgroundColor,
+    uint8_t fontSize,
+    DisplayTypes::TextAlign align)
+{
+    if (!IsReady() || text == nullptr)
+    {
+        return;
+    }
+
+    m_display->setTextDatum(
+        ToTextDatum(align));
+
+    m_display->setTextColor(
+        ToNativeColor(textColor),
+        ToNativeColor(backgroundColor));
+
+    m_display->setTextSize(
+        ToNativeFontSize(fontSize));
+
+    m_display->drawString(
+        text,
+        x,
+        y);
+}
+
 void TFTRenderTarget::DrawLine(
     int16_t x1,
     int16_t y1,

@@ -194,6 +194,15 @@ v0.4.4 : Renderer Framework
     Unified Value/Text Rendering
     Overview Rendering Completed
 v0.4.5 : Overview Energy Status
+v0.4.6 :Display Refactoring
+    HeaderWidget 분리
+        DrawEnergy()
+        DrawTime()
+        DrawStatus()
+    Renderer에서 HasTextChanged()로 변경 감지
+    변경된 항목만
+        FillRect()
+        DrawTextBg()
 v0.5.0 : EPEVER Full Status
 v1.0.0 : 차량 실사용 버전(첫 번째 정식 릴리스)
 

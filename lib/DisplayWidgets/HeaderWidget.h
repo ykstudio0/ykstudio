@@ -22,13 +22,32 @@ namespace DisplayWidgets
             IRenderTarget& target,
             const char* title);
 
-        static void Draw(
+        static void DrawEnergy(
             IRenderTarget& target,
-            const char* title,
             const char* energyStatusText,
-            DisplayTheme::Color energyStatusColor,
-            const char* timeText,
+            DisplayTheme::Color energyStatusColor);
+
+        static void DrawTime(
+            IRenderTarget& target,
+            const char* timeText);
+
+        static void DrawStatus(
+            IRenderTarget& target,
             const char* statusText,
             DisplayTheme::Color statusColor);
+
+        // static void Draw(
+        //     IRenderTarget& target,
+        //     const char* title,
+        //     const char* energyStatusText,
+        //     DisplayTheme::Color energyStatusColor,
+        //     const char* timeText,
+        //     const char* statusText,
+        //     DisplayTheme::Color statusColor);
+    private:
+        HeaderWidget() = delete;
+
+        // static void ClearDynamic(
+        //     IRenderTarget& target);
     };
 }

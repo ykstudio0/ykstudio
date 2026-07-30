@@ -401,7 +401,7 @@ namespace DisplayModel
         EnergyStatus DetermineEnergyStatus() const
         {
             // --------Status Test ----------
-            return EnergyStatus::Warning;
+            //return EnergyStatus::Warning;
             
             // 가장 높은 우선순위:
             // 주요 에너지 데이터에 Warning 또는 Alarm이 존재하는 경우
@@ -413,7 +413,7 @@ namespace DisplayModel
                 return EnergyStatus::Warning;
             }
 
-            if (solar.power.value > 20.0f)
+            if (solar.power.value > 1.8f)
             {
                 return EnergyStatus::Charging;
             }

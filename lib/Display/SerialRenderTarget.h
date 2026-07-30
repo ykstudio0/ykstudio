@@ -34,6 +34,14 @@ public:
         uint8_t fontSize,
         DisplayTypes::TextAlign align) override;
 
+    // void DrawTextBg(
+    //     int16_t x,
+    //     int16_t y,
+    //     const char* text,
+    //     DisplayTheme::Color color,
+    //     uint8_t fontSize,
+    //     DisplayTypes::TextAlign align) override;
+
     void DrawLine(
         int16_t x1,
         int16_t y1,
