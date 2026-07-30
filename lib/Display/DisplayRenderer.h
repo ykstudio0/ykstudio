@@ -137,9 +137,10 @@ namespace DisplayRenderer
             char* buffer,
             size_t bufferSize);
 
-        void BuildStatusText(
+        void BuildStatus(
             const DisplayModel::SystemData& system,
             char* buffer,
-            size_t bufferSize);
+            size_t bufferSize,
+            DisplayTheme::Color& color);
     };
 }

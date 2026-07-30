@@ -229,16 +229,19 @@ namespace DisplayRenderer
 
         char currentStatus[8];
         char previousStatus[8];
+        uint16_t statusColor;
 
-        BuildStatusText(
+        BuildStatus(
             system,
             currentStatus,
-            sizeof(currentStatus));
+            sizeof(currentStatus),
+            statusColor);
 
-        BuildStatusText(
+        BuildStatus(
             m_lastModel.GetSystem(),
             previousStatus,
-            sizeof(previousStatus));
+            sizeof(previousStatus),
+            statusColor);
 
         //---------------------------------------------------------
         // Static
@@ -291,10 +294,10 @@ namespace DisplayRenderer
             DisplayWidgets::HeaderWidget::DrawStatus(
                 *m_target,
                 currentStatus,
-                DisplayTheme::COLOR_TEXT);
+                statusColor);
         }
     }
-    
+
     // void Renderer::DrawHeader(
     //     DisplayPages::Page page,
     //     const DisplayModel::OverviewData& overview,
@@ -561,33 +564,39 @@ namespace DisplayRenderer
         }
     }
 
-    void Renderer::BuildStatusText(
+    void Renderer::BuildStatus(
         const DisplayModel::SystemData& system,
         char* buffer,
-        size_t bufferSize)
+        size_t bufferSize,
+        uint16_t& color)
     {
         if (bufferSize == 0)
             return;
 
-        if (system.wifiConnected)
+        if (!system.wifiConnected)
         {
             strncpy(buffer, "NET", bufferSize);
+            color = DisplayTheme::COLOR_WARNING;
         }
-        else if (system.rs485Ready)
+        else if (!system.rs485Ready)
         {
             strncpy(buffer, "485", bufferSize);
+            color = DisplayTheme::COLOR_WARNING;
         }
-        else if (system.modbusReady)
+        else if (!system.modbusReady)
         {
             strncpy(buffer, "MOD", bufferSize);
+            color = DisplayTheme::COLOR_WARNING;
         }
-        else if (system.deviceManagerReady)
+        else if (!system.deviceManagerReady)
         {
             strncpy(buffer, "DEV", bufferSize);
+            color = DisplayTheme::COLOR_WARNING;
         }
         else
         {
-            strncpy(buffer, "---", bufferSize);
+            strncpy(buffer, "OK", bufferSize);
+            color = DisplayTheme::COLOR_ACTIVE;
         }
 
         buffer[bufferSize - 1] = '\0';
