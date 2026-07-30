@@ -145,6 +145,31 @@ namespace DisplayRenderer
         return true;
     }
 
+    void Renderer::DrawContentStatic(
+        DisplayPages::Page page)
+    {
+        size_t count = 0;
+
+        auto rows =
+            DisplayLayout::GetStaticRows(
+                page,
+                count);
+
+        if(rows == nullptr)
+            return;
+
+        for(size_t i=0;i<count;i++)
+        {
+            if(!rows[i].visible)
+                continue;
+
+            DisplayWidgets::ValueWidget::DrawStatic(
+                *m_target,
+                rows[i].row,
+                rows[i].label);
+        }
+    }
+    
     void Renderer::DrawStatic(
         DisplayPages::Page page)
     {
@@ -154,6 +179,8 @@ namespace DisplayRenderer
             *m_target,
             DisplayPages::GetTitle(page));
 
+        DrawContentStatic(page);
+
         DrawFooter(page);
     }
 
@@ -161,24 +188,6 @@ namespace DisplayRenderer
         DisplayPages::Page page,
         const DisplayModel::Model& model)
     {
-        // Serial.println("DrawDynamic");
-
-        // Header 동적 영역 지우기
-        // m_target->FillRect(
-        //     DisplayLayout::HEADER_X,
-        //     DisplayLayout::HEADER_Y,
-        //     DisplayLayout::HEADER_WIDTH,
-        //     DisplayLayout::HEADER_HEIGHT,
-        //     DisplayTheme::COLOR_HEADER_BACKGROUND);
-
-        // // Content 영역 지우기
-        // m_target->FillRect(
-        //     DisplayLayout::CONTENT_X,
-        //     DisplayLayout::CONTENT_Y,
-        //     DisplayLayout::CONTENT_WIDTH,
-        //     DisplayLayout::CONTENT_HEIGHT,
-        //     DisplayTheme::COLOR_BACKGROUND);
-
         DrawHeader(
             page,
             model.GetOverview(),
@@ -298,92 +307,6 @@ namespace DisplayRenderer
         }
     }
 
-    // void Renderer::DrawHeader(
-    //     DisplayPages::Page page,
-    //     const DisplayModel::OverviewData& overview,
-    //     const DisplayModel::SystemData& system)
-    // {
-    //     if (!IsReady())
-    //     {
-    //         return;
-    //     }
-
-    //     // Current time
-    //     const auto& previous =
-    //         m_lastModel.GetSystem();
-
-    //     const bool forceRedraw =
-    //         m_firstRender ||
-    //         (page != m_lastPage);
-
-    //     const bool timeChanged =
-    //         forceRedraw ||
-    //         system.currentTime.value !=
-    //             previous.currentTime.value ||
-    //         system.currentTime.state !=
-    //             previous.currentTime.state ||
-    //         system.currentTime.visible !=
-    //             previous.currentTime.visible ||
-    //         system.currentTime.type !=
-    //             previous.currentTime.type ||
-    //         system.currentTime.decimals !=
-    //             previous.currentTime.decimals;
-
-    //     char timeText[12] = {};
-
-    //     if (timeChanged)
-    //     {
-    //         FormatValue(
-    //             system.currentTime,
-    //             timeText,
-    //             sizeof(timeText));
-    //     }
-
-    //     const char* statusText = "OK";
-
-    //     DisplayTheme::Color statusColor =
-    //         DisplayTheme::COLOR_ACTIVE;
-
-    //     if (!system.wifiConnected)
-    //     {
-    //         statusText = "NET";
-    //         statusColor = DisplayTheme::COLOR_WARNING;
-    //     }
-    //     else if (!system.rs485Ready)
-    //     {
-    //         statusText = "485";
-    //         statusColor = DisplayTheme::COLOR_ALARM;
-    //     }
-    //     else if (!system.modbusReady)
-    //     {
-    //         statusText = "MOD";
-    //         statusColor = DisplayTheme::COLOR_ALARM;
-    //     }
-    //     else if (!system.deviceManagerReady)
-    //     {
-    //         statusText = "DEV";
-    //         statusColor = DisplayTheme::COLOR_WARNING;
-    //     }
-
-    //     const char* energyStatusText =
-    //         GetEnergyStatusText(
-    //             overview.energyStatus);
-
-    //     const DisplayTheme::Color energyStatusColor =
-    //         GetEnergyStatusColor(
-    //             overview.energyStatus);
-
-
-    //     DisplayWidgets::HeaderWidget::Draw(
-    //         *m_target,
-    //         nullptr,
-    //         energyStatusText,
-    //         energyStatusColor,
-    //         timeChanged ? timeText : nullptr,
-    //         statusText,
-    //         statusColor);
-    // }
-
     void Renderer::DrawFooter(
         DisplayPages::Page page)
     {
@@ -453,8 +376,7 @@ namespace DisplayRenderer
 
         if (solarChanged)
         {
-            DrawLabelValue(
-                "Solar",
+            DrawRowValue(
                 data.solarPower,
                 0U);
         }
@@ -466,8 +388,7 @@ namespace DisplayRenderer
             
         if (batteryChanged)
         {
-            DrawLabelValue(
-                "Battery",
+            DrawRowValue(
                 data.batteryVoltage,
                 1U);
         }
@@ -479,8 +400,7 @@ namespace DisplayRenderer
             
         if (socChanged)
         {
-            DrawLabelValue(
-                "SOC",
+            DrawRowValue(
                 data.batteryPercent,
                 2U);
         }
@@ -492,8 +412,7 @@ namespace DisplayRenderer
             
         if (loadChanged)
         {
-            DrawLabelValue(
-                "Load",
+            DrawRowValue(
                 data.loadPower,
                 3U);
         }
@@ -505,8 +424,7 @@ namespace DisplayRenderer
             
         if (temperatureChanged)
         {
-            DrawLabelValue(
-                "Cabin",
+            DrawRowValue(
                 data.temperature,
                 4U);
         }
@@ -518,8 +436,7 @@ namespace DisplayRenderer
             
         if (humidityChanged)
         {
-            DrawLabelValue(
-                "Humidity",
+            DrawRowValue(
                 data.humidity,
                 5U);
         }
@@ -659,8 +576,7 @@ namespace DisplayRenderer
 
         if (voltageChanged)
         {
-            DrawLabelValue(
-                "PV Voltage",
+            DrawRowValue(
                 data.voltage,
                 0U);
         }
@@ -672,8 +588,7 @@ namespace DisplayRenderer
 
         if (currentChanged)
         {
-            DrawLabelValue(
-                "PV Current",
+            DrawRowValue(
                 data.current,
                 1U);
         }
@@ -685,36 +600,35 @@ namespace DisplayRenderer
 
         if (powerChanged)
         {
-            DrawLabelValue(
-                "PV Power",
+            DrawRowValue(
                 data.power,
                 2U);
         }
 
         const bool stageChanged =
-            HasTextChanged(
-                data.chargingStageText,
-                lastData.chargingStageText);
+            HasDisplayTextChanged(
+                data.chargingStage,
+                lastData.chargingStage);
 
         if (stageChanged)
         {
-            DrawLabelText(
-                "Stage",
-                data.chargingStageText,
-                3U);
+            DisplayWidgets::ValueWidget::DrawTextValue(
+                *m_target,
+                3U,
+                data.chargingStage);
         }
 
         const bool inputChanged =
-            HasTextChanged(
-                data.inputVoltageText,
-                lastData.inputVoltageText);
+            HasDisplayTextChanged(
+                data.inputVoltage,
+                lastData.inputVoltage);
 
         if (inputChanged)
         {
-            DrawLabelText(
-                "Input",
-                data.inputVoltageText,
-                4U);
+            DisplayWidgets::ValueWidget::DrawTextValue(
+                *m_target,
+                4U,
+                data.inputVoltage);
         }
 
         const bool dailyEnergyChanged =
@@ -724,8 +638,7 @@ namespace DisplayRenderer
 
         if (dailyEnergyChanged)
         {
-            DrawLabelValue(
-                "Daily Energy",
+            DrawRowValue(
                 data.dailyEnergy,
                 5U);
         }
@@ -737,8 +650,7 @@ namespace DisplayRenderer
 
         // if (totalEnergyChanged)
         // {
-        //     DrawLabelValue(
-        //         "Total Energy",
+        //     DrawRowValue(
         //         data.totalEnergy,
         //         6U);
         // }
@@ -757,8 +669,7 @@ namespace DisplayRenderer
 
         if (voltageChanged)
         {
-            DrawLabelValue(
-                "Voltage",
+            DrawRowValue(
                 data.voltage,
                 0U);
         }
@@ -770,8 +681,7 @@ namespace DisplayRenderer
 
         if (currentChanged)
         {
-            DrawLabelValue(
-                "Current",
+            DrawRowValue(
                 data.current,
                 1U);
         }
@@ -783,8 +693,7 @@ namespace DisplayRenderer
 
         if (powerChanged)
         {
-            DrawLabelValue(
-                "Power",
+            DrawRowValue(
                 data.power,
                 2U);
         }    
@@ -796,8 +705,7 @@ namespace DisplayRenderer
 
         if (socChanged)
         {
-            DrawLabelValue(
-                "SOC",
+            DrawRowValue(
                 data.percent,
                 3U);
         }    
@@ -809,8 +717,7 @@ namespace DisplayRenderer
 
         if (tempChanged)
         {
-            DrawLabelValue(
-                "Temp",
+            DrawRowValue(
                 data.temperature,
                 4U);
         }    
@@ -842,8 +749,7 @@ namespace DisplayRenderer
 
         if (voltageChanged)
         {
-            DrawLabelValue(
-                "Voltage",
+            DrawRowValue(
                 data.voltage,
                 0U);
         }
@@ -855,8 +761,7 @@ namespace DisplayRenderer
 
         if (currentChanged)
         {
-            DrawLabelValue(
-                "Current",
+            DrawRowValue(
                 data.current,
                 1U);
         }
@@ -868,8 +773,7 @@ namespace DisplayRenderer
 
         if (powerChanged)
         {
-            DrawLabelValue(
-                "Power",
+            DrawRowValue(
                 data.power,
                 2U);
         }    
@@ -888,8 +792,7 @@ namespace DisplayRenderer
 
         if (controllerChanged)
         {
-            DrawLabelValue(
-                "Controller",
+            DrawRowValue(
                 data.controllerTemperature,
                 0U);
         }
@@ -901,8 +804,7 @@ namespace DisplayRenderer
 
         if (batteryChanged)
         {
-            DrawLabelValue(
-                "Battery",
+            DrawRowValue(
                 data.batteryTemperature,
                 1U);
         }
@@ -914,8 +816,7 @@ namespace DisplayRenderer
 
         if (cabinChanged)
         {
-            DrawLabelValue(
-                "Cabin",
+            DrawRowValue(
                 data.cabinTemperature,
                 2U);
         }
@@ -927,8 +828,7 @@ namespace DisplayRenderer
 
         if (humidityChanged)
         {
-            DrawLabelValue(
-                "Humidity",
+            DrawRowValue(
                 data.cabinHumidity,
                 3U);
         }
@@ -942,8 +842,7 @@ namespace DisplayRenderer
     }
 
     // Drawing Helpers
-    void Renderer::DrawLabelValue(
-        const char* label,
+    void Renderer::DrawRowValue(
         const DisplayTypes::DisplayValue& value,
         uint8_t row)
     {
@@ -982,28 +881,27 @@ namespace DisplayRenderer
                 ? DisplayTypes::GetUnit(value.type)
                 : "";
 
-        DisplayWidgets::ValueWidget::Draw(
+        DisplayWidgets::ValueWidget::DrawValue(
             *m_target,
             row,
-            label,
             valueText,
             unit,
             valueColor);
     }
 
-    void Renderer::DrawLabelText(
-        const char* label,
-        const char* text,
-        uint8_t row)
-    {
-        DisplayWidgets::ValueWidget::Draw(
-            *m_target,
-            row,
-            label,
-            text,
-            "",
-            DisplayTheme::COLOR_TEXT);
-    }
+    // void Renderer::DrawLabelText(
+    //     const char* label,
+    //     const char* text,
+    //     uint8_t row)
+    // {
+    //     DisplayWidgets::ValueWidget::Draw(
+    //         *m_target,
+    //         row,
+    //         label,
+    //         text,
+    //         "",
+    //         DisplayTheme::COLOR_TEXT);
+    // }
 
     bool Renderer::HasValueChanged(
         const DisplayTypes::DisplayValue& current,
@@ -1025,6 +923,24 @@ namespace DisplayRenderer
             m_firstRender ||
             m_pageChanged ||
             (strcmp(current, previous) != 0);
+    }
+
+    bool Renderer::HasDisplayTextChanged(
+        const DisplayTypes::DisplayText& current,
+        const DisplayTypes::DisplayText& previous) const
+    {
+        const char* currentText =
+            current.text ? current.text : "";
+
+        const char* previousText =
+            previous.text ? previous.text : "";
+
+        if (strcmp(currentText, previousText) != 0)
+        {
+            return true;
+        }
+
+        return current.color != previous.color;
     }
 
     void Renderer::DrawValue(

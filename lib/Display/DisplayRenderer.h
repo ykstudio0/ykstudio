@@ -71,8 +71,7 @@ namespace DisplayRenderer
             const DisplayModel::SystemData& data);
 
         // Drawing Helpers
-        void DrawLabelValue(
-            const char* label,
+        void DrawRowValue(
             const DisplayTypes::DisplayValue& value,
             uint8_t row);
 
@@ -111,10 +110,10 @@ namespace DisplayRenderer
             DisplayPages::Page page,
             const DisplayModel::Model& model);
 
-        void DrawLabelText(
-            const char* label,
-            const char* text,
-            uint8_t row);
+        // void DrawLabelText(
+        //     const char* label,
+        //     const char* text,
+        //     uint8_t row);
 
         bool HasValueChanged(
             const DisplayTypes::DisplayValue& current,
@@ -123,6 +122,10 @@ namespace DisplayRenderer
         bool HasTextChanged(
             const char* current,
             const char* previous) const;
+
+        bool HasDisplayTextChanged(
+            const DisplayTypes::DisplayText& current,
+            const DisplayTypes::DisplayText& previous) const;
 
         //-------------------------------------------------------------
         // Header Helpers
@@ -142,5 +145,13 @@ namespace DisplayRenderer
             char* buffer,
             size_t bufferSize,
             DisplayTheme::Color& color);
+
+        void DrawContentStatic(
+            DisplayPages::Page page);
+
+        void DrawTextValue(
+            IRenderTarget& target,
+            uint8_t row,
+            const DisplayTypes::DisplayText& value);
     };
 }

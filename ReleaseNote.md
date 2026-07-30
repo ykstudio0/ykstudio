@@ -203,7 +203,7 @@ v0.4.6 :Display Refactoring
     변경된 항목만
         FillRect()
         DrawTextBg()
-v0.4.7 Render-on-Change
+v0.4.7 SVEMS Display Engine v0.4.7 (Overview Refactoring)
 v0.5.0 : EPEVER Full Status
 v1.0.0 : 차량 실사용 버전(첫 번째 정식 릴리스)
 

@@ -87,13 +87,13 @@ namespace
                 DataManager::Solar.power,
                 DisplayTypes::ValueType::Power);
 
-        solar.chargingStageText = 
-            EpeverStatusParser::ToString(
-                DataManager::Charge.stage);
+        // solar.chargingStageText = 
+        //     EpeverStatusParser::ToString(
+        //         DataManager::Charge.stage);
 
-        solar.inputVoltageText =
-            EpeverStatusParser::ToString(
-                DataManager::Charge.inputVoltage);
+        // solar.inputVoltageText =
+        //     EpeverStatusParser::ToString(
+        //         DataManager::Charge.inputVoltage);
 
         ApplyStatus(
             solar.voltage,

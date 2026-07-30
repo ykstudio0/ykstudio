@@ -84,6 +84,19 @@
         Settings
     };
 
+    struct DisplayText
+    {
+        const char* text;
+        uint16_t color;
+
+        constexpr DisplayText()
+            : text("")
+            , color(0)
+        {
+            
+        }
+    };
+
     // 화면에 표시할 하나의 수치 값
     // 값 자체뿐 아니라 표시 방식에 필요한 정보를
     // 하나의 구조체로 함께 관리한다.

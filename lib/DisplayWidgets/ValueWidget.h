@@ -25,5 +25,22 @@ namespace DisplayWidgets
             const char* valueText,
             const char* unit,
             DisplayTheme::Color valueColor);
+
+        static void DrawStatic(
+            IRenderTarget& target,
+            uint8_t row,
+            const char* label);
+
+        static void DrawValue(
+            IRenderTarget& target,
+            uint8_t row,
+            const char* valueText,
+            const char* unit,
+            DisplayTheme::Color valueColor);
+
+        static void DrawTextValue(
+            IRenderTarget& target,
+            uint8_t row,
+            const DisplayTypes::DisplayText& value);
     };
 }

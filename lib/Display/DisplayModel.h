@@ -82,8 +82,10 @@ namespace DisplayModel
         DisplayTypes::DisplayValue dailyEnergy;
         DisplayTypes::DisplayValue totalEnergy;
 
-        const char* chargingStageText;
-        const char* inputVoltageText;
+        // const char* chargingStageText;
+        // const char* inputVoltageText;
+        DisplayTypes::DisplayText chargingStage;
+        DisplayTypes::DisplayText inputVoltage;
         
         constexpr SolarData()
             : voltage(
@@ -111,9 +113,12 @@ namespace DisplayModel
                     0.0f,
                     DisplayTypes::ValueType::Energy)),
 
-              chargingStageText(""),
+            //   chargingStageText(""),
 
-              inputVoltageText("")
+            //   inputVoltageText("")
+            chargingStage(),
+            
+            inputVoltage()
         {
 
         }

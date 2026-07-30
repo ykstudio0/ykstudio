@@ -9,10 +9,22 @@
 
 #pragma once
 
-#include "DisplayTypes.h"
+#include <stddef.h>
+#include "DisplayPages.h"
 
 namespace DisplayLayout
 {
+    struct StaticRow
+    {
+        uint8_t row;
+        const char* label;
+        bool visible = true;
+    };
+
+    const StaticRow* GetStaticRows(
+        DisplayPages::Page page,
+        size_t& count);
+
     // LCD Size
     constexpr int16_t SCREEN_WIDTH  = 320;
     constexpr int16_t SCREEN_HEIGHT = 240;
@@ -104,6 +116,10 @@ namespace DisplayLayout
         CONTENT_X + CONTENT_WIDTH - 1;
     constexpr int16_t FOOTER_RIGHT =
         FOOTER_X + FOOTER_WIDTH - 1;
+
+    // Content Dynamic 영역
+    constexpr int16_t CONTENT_DYNAMIC_X = CONTENT_LABEL_X + 55;
+    constexpr int16_t CONTENT_DYNAMIC_WIDTH = CONTENT_WIDTH - (CONTENT_DYNAMIC_X - CONTENT_X);
 
     // 행 번호를 실제 Y 좌표로 변환
     // row는 0부터 시작한다.
