@@ -294,6 +294,7 @@ namespace DisplayRenderer
                 DisplayTheme::COLOR_TEXT);
         }
     }
+    
     // void Renderer::DrawHeader(
     //     DisplayPages::Page page,
     //     const DisplayModel::OverviewData& overview,
