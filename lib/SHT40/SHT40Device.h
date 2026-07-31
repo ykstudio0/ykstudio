@@ -3,7 +3,7 @@
 // Author : JongOh Kim + ChatGPT
 // Date : 2026-07-31
 // Project : SVEMS
-// Version : 5.0.0
+// Version : 0.5.0
 // Description : SHT40
 //-------------------------------------------------------------
 

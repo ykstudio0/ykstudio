@@ -215,5 +215,6 @@ v0.7.x
     DeviceManager 안정화
     Wi-Fi / IoT
 v0.5.0 : EPEVER Full Status
+v0.5.1 DS3231 연결
 v1.0.0 : 차량 실사용 버전(첫 번째 정식 릴리스)
 

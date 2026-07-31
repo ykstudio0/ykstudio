@@ -44,6 +44,45 @@ void setup()
     Serial.begin(MODBUS_BAUDRATE);
     delay(BOOT_DELAY_MS);
     Logger::Begin();
+
+    Wire.begin(8, 9);
+
+    Logger::Info("I2C", "Scanning...");
+
+    uint8_t foundCount = 0;
+
+    for (uint8_t address = 1; address < 127; address++)
+    {
+        Wire.beginTransmission(address);
+
+        const uint8_t error = Wire.endTransmission();
+
+        if (error == 0)
+        {
+            char message[24];
+
+            snprintf(
+                message,
+                sizeof(message),
+                "Found 0x%02X",
+                address);
+
+            Logger::Info("I2C", message);
+
+            ++foundCount;
+        }
+    }
+
+    char result[24];
+
+    snprintf(
+        result,
+        sizeof(result),
+        "Scan complete: %u",
+        foundCount);
+
+    Logger::Info("I2C", result);
+    
     RS485::Begin();
     ModbusRTU::Begin();
     DeviceManager::Begin();
@@ -106,13 +145,13 @@ void TestTFT()
     lcd.println("Hello SVEMS");
     lcd.setCursor(130, 130);
     lcd.printf("v0.4.7");
-    lcd.setCursor(0, 160);
-    lcd.printf("ABCDEFGHIJKLMNOPQRSTUVWXYZ"); //fontSize(2) 12 x 14
-    lcd.setCursor(0, 176);
-    lcd.printf("abcdefghijklmnopqrstuvwxyz");
-    lcd.setTextSize(1);
-    lcd.setCursor(0, 194);
-    lcd.printf("ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ"); //fontSize(1) 6 x 7
+    // lcd.setCursor(0, 160);
+    // lcd.printf("ABCDEFGHIJKLMNOPQRSTUVWXYZ"); //fontSize(2) 12 x 14
+    // lcd.setCursor(0, 176);
+    // lcd.printf("abcdefghijklmnopqrstuvwxyz");
+    // lcd.setTextSize(1);
+    // lcd.setCursor(0, 194);
+    // lcd.printf("ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ"); //fontSize(1) 6 x 7
     lcd.setTextSize(1);
     lcd.setCursor(110,220);
     lcd.printf("ykstudio & ChatGPT");
