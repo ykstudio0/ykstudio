@@ -106,13 +106,13 @@ void TestTFT()
     lcd.println("Hello SVEMS");
     lcd.setCursor(130, 130);
     lcd.printf("v0.4.7");
-    // lcd.setCursor(0, 160);
-    // lcd.printf("ABCDEFGHIJKLMNOPQRSTUVWXYZ"); //fontSize(2) 12 x 14
-    // lcd.setCursor(0, 174);
-    // lcd.printf("abcdefghijklmnopqrstuvwxyz");
-    // lcd.setTextSize(1);
-    // lcd.setCursor(0, 196);
-    // lcd.printf("ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ"); //fontSize(1) 6 x 7
+    lcd.setCursor(0, 160);
+    lcd.printf("ABCDEFGHIJKLMNOPQRSTUVWXYZ"); //fontSize(2) 12 x 14
+    lcd.setCursor(0, 176);
+    lcd.printf("abcdefghijklmnopqrstuvwxyz");
+    lcd.setTextSize(1);
+    lcd.setCursor(0, 194);
+    lcd.printf("ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ"); //fontSize(1) 6 x 7
     lcd.setTextSize(1);
     lcd.setCursor(110,220);
     lcd.printf("ykstudio & ChatGPT");
