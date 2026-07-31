@@ -58,7 +58,7 @@ bool Display::Begin()
 
     g_initialized = true;
 
-    Logger::Info("DISPLAY", "Redady");
+    Logger::Info("DISPLAY", "Ready");
 
     return true;
 }

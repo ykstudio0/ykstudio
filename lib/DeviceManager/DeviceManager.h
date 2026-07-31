@@ -1,5 +1,5 @@
 //-------------------------------------------------------------
-// File : DeviceManger.h
+// File : DeviceManager.h
 // Author : JongOh Kim + ChatGPT
 // Date : 2026-07-13
 // Project : SVEMS

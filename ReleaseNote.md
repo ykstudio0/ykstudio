@@ -204,7 +204,7 @@ v0.4.6 :Display Refactoring
         FillRect()
         DrawTextBg()
 v0.4.7 SVEMS Display Engine v0.4.7 (Overview Refactoring)
-v0.5.x
+v0.5.0 Device Layer
     DS3231 연동
     SHT40 연동
     실제 센서 데이터 표시
