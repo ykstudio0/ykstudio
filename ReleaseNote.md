@@ -204,6 +204,16 @@ v0.4.6 :Display Refactoring
         FillRect()
         DrawTextBg()
 v0.4.7 SVEMS Display Engine v0.4.7 (Overview Refactoring)
+v0.5.x
+    DS3231 연동
+    SHT40 연동
+    실제 센서 데이터 표시
+v0.6.x
+    EPEVER Modbus 통신 완료
+    태양광 실시간 데이터
+v0.7.x
+    DeviceManager 안정화
+    Wi-Fi / IoT
 v0.5.0 : EPEVER Full Status
 v1.0.0 : 차량 실사용 버전(첫 번째 정식 릴리스)
 

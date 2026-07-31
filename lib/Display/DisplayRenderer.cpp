@@ -112,18 +112,6 @@ namespace DisplayRenderer
 
         m_target->BeginFrame();
 
-        // m_target->Clear(
-        //     DisplayTheme::COLOR_BACKGROUND);
-
-        // DrawHeader(
-        //     page,
-        //     model.GetSystem());
-
-        // DrawContent(
-        //     page,
-        //     model);
-
-        // DrawFooter(page);
         if (m_pageChanged)
         {
             m_target->Clear(
@@ -267,14 +255,18 @@ namespace DisplayRenderer
         // Energy
         //---------------------------------------------------------
 
-        if (m_firstRender ||
-            overview.energyStatus !=
-            m_lastModel.GetOverview().energyStatus)
+        if (page == DisplayPages::Page::Overview)
         {
-            DisplayWidgets::HeaderWidget::DrawEnergy(
-                *m_target,
-                energyText,
-                energyColor);
+            if (m_firstRender ||
+                m_pageChanged ||
+                overview.energyStatus !=
+                m_lastModel.GetOverview().energyStatus)
+            {
+                DisplayWidgets::HeaderWidget::DrawEnergy(
+                    *m_target,
+                    energyText,
+                    energyColor);
+            }
         }
 
         //---------------------------------------------------------
@@ -917,7 +909,7 @@ namespace DisplayRenderer
                 : "";
 
         return 
-            strcmp(currentText, previousText) !=0 ||
+            strcmp(currentText, previousText) != 0 ||
             current.color != previous.color;
     }
 

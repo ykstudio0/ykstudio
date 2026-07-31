@@ -85,7 +85,7 @@ void Display::Update()
     //     lastPageChange = millis();
     //     g_pageManager.Next();
     // }
-    // TEST :: Auto Page Rotation (Temprary)
+    // TEST :: Auto Page Rotation (Temprary End)
 
     DisplayModelBuilder::Build(g_model);
 

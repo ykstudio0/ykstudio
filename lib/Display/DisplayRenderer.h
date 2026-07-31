@@ -143,10 +143,5 @@ namespace DisplayRenderer
 
         void DrawContentStatic(
             DisplayPages::Page page);
-
-        // void DrawTextValue(
-        //     IRenderTarget& target,
-        //     uint8_t row,
-        //     const DisplayTypes::DisplayText& value);
     };
 }
