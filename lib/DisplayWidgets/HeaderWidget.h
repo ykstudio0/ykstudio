@@ -36,14 +36,6 @@ namespace DisplayWidgets
             const char* statusText,
             DisplayTheme::Color statusColor);
 
-        // static void Draw(
-        //     IRenderTarget& target,
-        //     const char* title,
-        //     const char* energyStatusText,
-        //     DisplayTheme::Color energyStatusColor,
-        //     const char* timeText,
-        //     const char* statusText,
-        //     DisplayTheme::Color statusColor);
     private:
         HeaderWidget() = delete;
 

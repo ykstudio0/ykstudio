@@ -18,14 +18,6 @@ namespace DisplayWidgets
     class ValueWidget
     {
     public:
-        static void Draw(
-            IRenderTarget& target,
-            uint8_t row,
-            const char* label,
-            const char* valueText,
-            const char* unit,
-            DisplayTheme::Color valueColor);
-
         static void DrawStatic(
             IRenderTarget& target,
             uint8_t row,

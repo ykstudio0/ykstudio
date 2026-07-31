@@ -642,18 +642,6 @@ namespace DisplayRenderer
                 data.dailyEnergy,
                 5U);
         }
-
-        const bool totalEnergyChanged =
-            HasValueChanged(
-                data.totalEnergy,
-                lastData.totalEnergy);
-
-        // if (totalEnergyChanged)
-        // {
-        //     DrawRowValue(
-        //         data.totalEnergy,
-        //         6U);
-        // }
     }
 
     void Renderer::DrawBattery(
@@ -723,14 +711,12 @@ namespace DisplayRenderer
         }    
 
         // const bool statusChanged =
-        //     HasTextChanged(
+        //     HasDisplayTextChanged(
         //         data.status,
         //         lastData.status);
-
         // if (statusChanged)
         // {
-        //     DrawLabelText(
-        //         "Status",
+        //     HasTextChanged(
         //         data.status,
         //         5U);
         // }
@@ -889,20 +875,6 @@ namespace DisplayRenderer
             valueColor);
     }
 
-    // void Renderer::DrawLabelText(
-    //     const char* label,
-    //     const char* text,
-    //     uint8_t row)
-    // {
-    //     DisplayWidgets::ValueWidget::Draw(
-    //         *m_target,
-    //         row,
-    //         label,
-    //         text,
-    //         "",
-    //         DisplayTheme::COLOR_TEXT);
-    // }
-
     bool Renderer::HasValueChanged(
         const DisplayTypes::DisplayValue& current,
         const DisplayTypes::DisplayValue& previous) const
@@ -929,18 +901,24 @@ namespace DisplayRenderer
         const DisplayTypes::DisplayText& current,
         const DisplayTypes::DisplayText& previous) const
     {
-        const char* currentText =
-            current.text ? current.text : "";
-
-        const char* previousText =
-            previous.text ? previous.text : "";
-
-        if (strcmp(currentText, previousText) != 0)
+        if (m_firstRender || m_pageChanged)
         {
             return true;
         }
 
-        return current.color != previous.color;
+        const char* currentText =
+            current.text != nullptr
+                ? current.text
+                : "";
+
+        const char* previousText =
+            previous.text != nullptr
+                ? previous.text
+                : "";
+
+        return 
+            strcmp(currentText, previousText) !=0 ||
+            current.color != previous.color;
     }
 
     void Renderer::DrawValue(

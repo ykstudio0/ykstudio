@@ -110,11 +110,6 @@ namespace DisplayRenderer
             DisplayPages::Page page,
             const DisplayModel::Model& model);
 
-        // void DrawLabelText(
-        //     const char* label,
-        //     const char* text,
-        //     uint8_t row);
-
         bool HasValueChanged(
             const DisplayTypes::DisplayValue& current,
             const DisplayTypes::DisplayValue& previous) const;
@@ -149,9 +144,9 @@ namespace DisplayRenderer
         void DrawContentStatic(
             DisplayPages::Page page);
 
-        void DrawTextValue(
-            IRenderTarget& target,
-            uint8_t row,
-            const DisplayTypes::DisplayText& value);
+        // void DrawTextValue(
+        //     IRenderTarget& target,
+        //     uint8_t row,
+        //     const DisplayTypes::DisplayText& value);
     };
 }
