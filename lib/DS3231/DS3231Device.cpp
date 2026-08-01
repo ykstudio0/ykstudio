@@ -82,12 +82,17 @@ namespace SVEMS::Device
             return;
         }
         
-        uint8_t buffer[7];
-
-        if (!ReadRegisters(0x00, buffer, sizeof(buffer)))
+        if (!ReadTime())
         {
-            return;
+            SetState(DeviceState::Error);
         }
+
+        // uint8_t buffer[7];
+
+        // if (!ReadRegisters(0x00, buffer, sizeof(buffer)))
+        // {
+        //     return;
+        // }
     }
 
     const char* DS3231Device::GetName() const

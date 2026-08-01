@@ -274,6 +274,7 @@ namespace DisplayRenderer
         //---------------------------------------------------------
 
         if (m_firstRender ||
+            m_pageChanged ||
             HasTextChanged(
                 currentTime,
                 previousTime))
@@ -288,6 +289,7 @@ namespace DisplayRenderer
         //---------------------------------------------------------
 
         if (m_firstRender ||
+            m_pageChanged ||
             HasTextChanged(
                 currentStatus,
                 previousStatus))

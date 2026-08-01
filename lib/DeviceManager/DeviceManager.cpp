@@ -15,6 +15,7 @@
 #include "DeviceBase.h"
 #include "DS3231Device.h"
 #include "SHT40Device.h"
+#include "TimeService.h"
 
 namespace
 {
@@ -66,6 +67,19 @@ bool DeviceManager::Begin()
         ok &= deviceOk;
     }
 
+    if (g_ds3231.IsOnline())
+    {
+        const bool timeServiceOk =
+            SVEMS::Service::TimeService::Begin(
+                g_ds3231);
+        
+        ok &= timeServiceOk;
+    }
+    else
+    {
+        ok = false;
+    }
+
     Ready = ok;
 
     if (Ready)
@@ -83,8 +97,6 @@ bool DeviceManager::Update()
         return false;
     }
 
-    Scheduler::Run();
-
     // 등록된 모든 Device 갱신
     for (auto* device : g_devices)
     {
@@ -92,6 +104,11 @@ bool DeviceManager::Update()
         {
             device->Update();
         }
+    }
+
+    if (!SVEMS::Service::TimeService::Update())
+    {
+        return false;
     }
 
     return true;

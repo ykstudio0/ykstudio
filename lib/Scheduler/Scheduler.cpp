@@ -12,6 +12,7 @@
 #include "Logger.h"
 #include "DataManager.h"
 #include "Display.h"
+#include "DeviceManager.h"
 
 namespace
 {
@@ -85,22 +86,23 @@ void Scheduler::Run100ms()
 // 1 Second Tasks
 void Scheduler::Run1Sec()
 {
-    PollSolar();
+    DeviceManager::Update();
+    // PollSolar();
 }
 
 // 5 Second Tasks
 void Scheduler::Run5Sec()
 {
-    PollBattery();
-    PollLoad();
-    PollChargingStatus();
+    // PollBattery();
+    // PollLoad();
+    // PollChargingStatus();
 }
 
 // 30 Second Tasks
 void Scheduler::Run30Sec()
 {
-    PollTemperature();
-    PollSOC();
+    // PollTemperature();
+    // PollSOC();
 }
 
 // 60 Second Tasks
@@ -150,7 +152,7 @@ void Scheduler::PollChargingStatus()
 void Scheduler::Service()
 {
     DataManager::UpdateOnlineStatus(millis());
-    
+
     ServiceLogger();
     ServiceDisplay();
     ServiceIoT();
@@ -228,13 +230,17 @@ void Scheduler::ServiceLogger()
 
 void Scheduler::ServiceDisplay()
 {
-    // static uint32_t prev = 0;
+    static uint32_t previousMs = 0U;
 
-    // if (millis() - prev >= 500)
-    // {
-    //     prev = millis();
-    //     Display::Update();
-    // }
+    const uint32_t now = millis();
+
+    if (now - previousMs < 500U)
+    {
+        return;
+    }
+
+    previousMs = now;
+    
     Display::Update();
 }
 

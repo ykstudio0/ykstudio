@@ -12,6 +12,7 @@
 #include "DisplayModelBuilder.h"
 #include "DataManager.h"
 #include "DisplayTypes.H"
+#include "TimeService.h"
 
 namespace
 {
@@ -286,6 +287,21 @@ namespace
     {
         DisplayModel::SystemData& system =
             model.GetSystem();
+
+        const SVEMS::Device::RTCDateTime& now =
+            SVEMS::Service::TimeService::Now();
+
+        const uint32_t currentTimeSeconds =
+            static_cast<uint32_t>(now.hour) * 3600UL +
+            static_cast<uint32_t>(now.minute) * 60UL +
+            static_cast<uint32_t>(now.second);
+
+        system.currentTime =
+            DisplayTypes::MakeValue(
+                static_cast<float>(currentTimeSeconds),
+                DisplayTypes::ValueType::Time);
+
+        system.currentTime.decimals = 0U;
 
         const float uptimeSeconds =
             static_cast<float>(millis()) / 1000.0f;
