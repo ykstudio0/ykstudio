@@ -49,8 +49,12 @@ namespace SVEMS::Device
             return;
         }
 
+        Logger::Info("SHT40", "Update()");
+
         if (!StartMeasurement())
         {
+            Logger::Error("SHT40", "Start failed");
+            
             SetState(DeviceState::Error);
             return;
         }
@@ -61,19 +65,36 @@ namespace SVEMS::Device
 
         if (!ReadMeasurement(buffer, sizeof(buffer)))
         {
+            Logger::Error("SHT40", "Read failed");
+
             SetState(DeviceState::Error);
             return;
         }
 
         if (!CheckCRC(buffer))
         {
+            Logger::Error("SHT40", "CRC failed");
+
             SetState(DeviceState::Error);
             return;
         }
 
         DecodeMeasurement(buffer);
 
+        Logger::Info("SHT40", "Measurement OK");
+
         SetState(DeviceState::Online);
+
+        char message[40];
+
+        snprintf(
+            message,
+            sizeof(message),
+            "%.2F C  %.2f %%",
+            m_data.temperature,
+            m_data.humidity);
+
+        Logger::Info("SHT40", message);
     }
 
     bool SHT40Device::StartMeasurement()
@@ -102,12 +123,10 @@ namespace SVEMS::Device
             return false;
         }
 
-        for (uint8_t i = 0; 1 < length; ++i)
+        for (uint8_t i = 0; i < length; ++i)
         {
             buffer[i] = Wire.read();
         }
-
-        Logger::Hex("SHT40", buffer, 6);
 
         return true;
     }
