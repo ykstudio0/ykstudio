@@ -53,7 +53,7 @@ namespace
     {
         {0, "Controller"},
         {1, "Battery"},
-        {2, "Carbin"},
+        {2, "Cabin"},
         {3, "Humidity"}
     };
 

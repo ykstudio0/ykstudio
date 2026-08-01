@@ -1,3 +1,4 @@
+# SVEMS Development History
 v0.1.0 : 개발환경 구축
     ESP32-S3 DevKitC 개발환경 구축
     VS Code + PlatformIO 설정 완료
@@ -208,13 +209,70 @@ v0.5.0 Device Layer
     DS3231 연동
     SHT40 연동
     실제 센서 데이터 표시
+    DS3231 Driver Complete
+    SHT40 Driver Complete
+    SVEMS 최초의 Device Layer 완성
+    Device
+    ↓
+    Service
+    ↓
+    DataManager
+    ↓
+    Display
+    전체 데이터 파이프라인이 실제 하드웨어에서 검증됨.
+v0.5.0 : EPEVER Full Status
+v0.5.1 RTC Service
+    DS3231 Driver Complete
+    RTC Display
+    Header Real-time Clock
+v0.5.2  Environment Layer
+    SHT40 Device Driver 완료
+    EnvironmentService 추가
+    DataManager(Environment) 추가
+    DisplayModelBuilder 연동
+    LCD 실시간 Cabin Temperature/Humidity 표시
+    SVEMS 최초의 환경(Environment) 데이터 파이프라인 완성
+    SHT40
+        ↓
+    EnvironmentService
+        ↓
+    DataManager
+        ↓
+    DisplayModel
+        ↓
+    Renderer
+        ↓
+    LCD
+v0.5.3 Device Framework
+    Device Layer Refactoring
+    Generic Device Pattern
+    Driver Standardization
+v0.5.4
+## 2026-08-01
+    - DS3231 Driver Complete
+    - SHT40 Driver Complete
+    - Real-time Clock displayed on LCD
+    - Real-time Cabin Temperature displayed on LCD
+    - Real-time Cabin Humidity displayed on LCD
 v0.6.x
     EPEVER Modbus 통신 완료
     태양광 실시간 데이터
 v0.7.x
     DeviceManager 안정화
     Wi-Fi / IoT
-v0.5.0 : EPEVER Full Status
-v0.5.1 DS3231 연결
 v1.0.0 : 차량 실사용 버전(첫 번째 정식 릴리스)
 
+Architecture Status
+──────────────────────────────────────
+
+Core            ██████████ 100%
+RS485           ██████████ 100%
+Modbus          ██████████ 100%
+EPEVER Driver   ████████░░  80%
+RTC Driver      ██████████ 100%
+SHT40 Driver    ██████████ 100%
+DeviceManager   █████████░  90%
+Scheduler       █████████░  90%
+DataManager     █████████░  90%
+Display Engine  ██████████ 100%
+IoT             ░░░░░░░░░░   0%

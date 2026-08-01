@@ -130,7 +130,7 @@ bool DeviceManager::Update()
         // 첫 측정 전 valid=false 일 수 있으므로
         // 전체 DeviceManager를 실패 처리하지는 않는다.
     }
-    
+
     return true;
 }
 
