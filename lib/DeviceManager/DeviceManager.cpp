@@ -16,6 +16,7 @@
 #include "DS3231Device.h"
 #include "SHT40Device.h"
 #include "TimeService.h"
+#include "EnvironmentService.h"
 
 namespace
 {
@@ -80,6 +81,19 @@ bool DeviceManager::Begin()
         ok = false;
     }
 
+    if (g_sht40.IsOnline())
+    {
+        const bool environmentServiceOk =
+            SVEMS::Service::EnvironmentService::Begin(
+                g_sht40);
+
+        ok &= environmentServiceOk;
+    }
+    else
+    {
+        ok = false;
+    }
+
     Ready = ok;
 
     if (Ready)
@@ -111,6 +125,12 @@ bool DeviceManager::Update()
         return false;
     }
 
+    if (!SVEMS::Service::EnvironmentService::Update())
+    {
+        // 첫 측정 전 valid=false 일 수 있으므로
+        // 전체 DeviceManager를 실패 처리하지는 않는다.
+    }
+    
     return true;
 }
 

@@ -220,19 +220,13 @@ namespace
 
         temperature.cabinTemperature =
             DisplayTypes::MakeValue(
-                0.0f,
+                DataManager::Environment.temperature,
                 DisplayTypes::ValueType::Temperature);
-
-        temperature.cabinTemperature.state =
-                DisplayTypes::WidgetState::NoData;
 
         temperature.cabinHumidity =
             DisplayTypes::MakeValue(
-                0.0f,
+                DataManager::Environment.humidity,
                 DisplayTypes::ValueType::Humidity);
-                
-        temperature.cabinHumidity.state =
-                DisplayTypes::WidgetState::NoData;
 
         ApplyStatus(
             temperature.controllerTemperature,
@@ -244,11 +238,11 @@ namespace
 
         ApplyStatus(
             temperature.cabinTemperature,
-            DataManager::Temperature.status);
+            DataManager::Environment.status);
 
         ApplyStatus(
             temperature.cabinHumidity,
-            DataManager::Temperature.status);
+            DataManager::Environment.status);
     }
 
     uint8_t CountOnlineDevices()

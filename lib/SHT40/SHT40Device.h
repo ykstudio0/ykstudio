@@ -9,6 +9,7 @@
 
 #pragma once
 
+#include <stdint.h>
 #include "DeviceBase.h"
 #include "SHT40Data.h"
 
@@ -50,7 +51,7 @@ namespace SVEMS::Device
 
         void DecodeMeasurement(
             const uint8_t* buffer);
-            
+
         SHT40Data m_data;
     };
 }

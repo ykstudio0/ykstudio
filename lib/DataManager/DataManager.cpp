@@ -16,6 +16,7 @@ DataManager::LoadData DataManager::Load;
 DataManager::TemperatureData DataManager::Temperature;
 DataManager::SocData DataManager::Soc;
 DataManager::ChargeData DataManager::Charge;
+DataManager::EnvironmentData DataManager::Environment;
 
 void DataManager::ClearUpdates()
 {

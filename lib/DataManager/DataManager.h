@@ -51,8 +51,15 @@ public:
     struct TemperatureData
     {
         float battery = 0.0f;
-        float humidity = 0.0f;
         float device = 0.0f;
+
+        Status status;
+    };
+
+    struct EnvironmentData
+    {
+        float temperature = 0.0f;
+        float humidity = 0.0f;
 
         Status status;
     };
@@ -82,6 +89,7 @@ public:
     static TemperatureData Temperature;
     static SocData Soc;
     static ChargeData Charge;
+    static EnvironmentData Environment;
 
     static void ClearUpdates();
     static void UpdateOnlineStatus(uint32_t now);

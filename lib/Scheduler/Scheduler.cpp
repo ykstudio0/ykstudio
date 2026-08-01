@@ -101,7 +101,7 @@ void Scheduler::Run5Sec()
 // 30 Second Tasks
 void Scheduler::Run30Sec()
 {
-    // PollTemperature();
+    PollTemperature();
     // PollSOC();
 }
 
