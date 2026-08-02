@@ -24,14 +24,15 @@ namespace SVEMS::Device
             return false;
         }
 
+        // DateTime 강제 입력
         // RTCDateTime rtc;
 
         // rtc.year      = 2026;
-        // rtc.month     = 7;
-        // rtc.day       = 31;
-        // rtc.dayOfWeek = 5;      // 토요일이라면 6 또는 사용하는 규칙에 맞게
-        // rtc.hour      = 22;
-        // rtc.minute    = 50;
+        // rtc.month     = 8;
+        // rtc.day       = 2;
+        // rtc.dayOfWeek = 7;      // 월요일 1, 화요일 2... 토요일이라면 6 또는 사용하는 규칙에 맞게
+        // rtc.hour      = 21;
+        // rtc.minute    = 59;
         // rtc.second    = 0;
 
         // if (!SetTime(rtc))
@@ -39,6 +40,7 @@ namespace SVEMS::Device
         //     SetState(DeviceState::Error);
         //     return false;
         // }
+        // DateTime 강제 입력 End
 
         if (!ReadTime())
         {
