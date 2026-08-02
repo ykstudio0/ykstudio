@@ -271,11 +271,16 @@ v0.5.4.1 Renderer Optimization & Display Stability
     Header 시간 문자열을 자체 버퍼로 안전하게 보관
     BuildHeader()에서 Time / Status / Energy 생성
     Renderer는 HeaderData만 소비
+    Time 생성 로직을 Builder로 이동
+    Status 생성 로직을 Builder로 이동
+    Energy 생성 로직을 Builder로 이동
     DrawHeader() 인자 단순화
     BuildTimeText() 제거
     BuildStatus() 제거
     DrawHeaderStatus() 제거
     BuildEnergyDisplay() 제거
+    DrawHeaderStatus() 제거
+    Header Static 호출을 DrawStatic()으로 일원화
     빌드 성공
     LCD 정상
     TimeService / DataManager
