@@ -78,13 +78,13 @@ void Display::Update()
     }
 
     // TEST :: Auto Page Rotation (Temprary)
-    // static uint32_t lastPageChange = 0;
+    static uint32_t lastPageChange = 0;
 
-    // if (millis() - lastPageChange >= 3000)
-    // {
-    //     lastPageChange = millis();
-    //     g_pageManager.Next();
-    // }
+    if (millis() - lastPageChange >= 5000)
+    {
+        lastPageChange = millis();
+        g_pageManager.Next();
+    }
     // TEST :: Auto Page Rotation (Temprary End)
 
     DisplayModelBuilder::Build(g_model);

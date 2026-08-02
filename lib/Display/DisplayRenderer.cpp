@@ -19,6 +19,15 @@
 
 namespace DisplayRenderer
 {
+    bool Renderer::ShouldDraw(
+        const bool changed) const
+    {
+        return
+            m_firstRender ||
+            m_pageChanged ||
+            changed;
+    }
+    
     const char* GetEnergyStatusText(
         DisplayModel::EnergyStatus status)
     {
@@ -368,7 +377,7 @@ namespace DisplayRenderer
                 data.solarPower,
                 lastData.solarPower);
 
-        if (solarChanged)
+        if (ShouldDraw(solarChanged))
         {
             DrawRowValue(
                 data.solarPower,
@@ -380,7 +389,7 @@ namespace DisplayRenderer
                 data.batteryVoltage,
                 lastData.batteryVoltage);
             
-        if (batteryChanged)
+        if (ShouldDraw(batteryChanged))
         {
             DrawRowValue(
                 data.batteryVoltage,
@@ -392,7 +401,7 @@ namespace DisplayRenderer
                 data.batteryPercent,
                 lastData.batteryPercent);
             
-        if (socChanged)
+        if (ShouldDraw(socChanged))
         {
             DrawRowValue(
                 data.batteryPercent,
@@ -404,7 +413,7 @@ namespace DisplayRenderer
                 data.loadPower,
                 lastData.loadPower);
             
-        if (loadChanged)
+        if (ShouldDraw(loadChanged))
         {
             DrawRowValue(
                 data.loadPower,
@@ -416,7 +425,7 @@ namespace DisplayRenderer
                 data.temperature,
                 lastData.temperature);
             
-        if (temperatureChanged)
+        if (ShouldDraw(temperatureChanged))
         {
             DrawRowValue(
                 data.temperature,
@@ -428,7 +437,7 @@ namespace DisplayRenderer
                 data.humidity,
                 lastData.humidity);
             
-        if (humidityChanged)
+        if (ShouldDraw(humidityChanged))
         {
             DrawRowValue(
                 data.humidity,
@@ -568,7 +577,7 @@ namespace DisplayRenderer
                 data.voltage,
                 lastData.voltage);
 
-        if (voltageChanged)
+        if (ShouldDraw(voltageChanged))
         {
             DrawRowValue(
                 data.voltage,
@@ -580,7 +589,7 @@ namespace DisplayRenderer
                 data.current,
                 lastData.current);
 
-        if (currentChanged)
+        if (ShouldDraw(currentChanged))
         {
             DrawRowValue(
                 data.current,
@@ -592,7 +601,7 @@ namespace DisplayRenderer
                 data.power,
                 lastData.power);
 
-        if (powerChanged)
+        if (ShouldDraw(powerChanged))
         {
             DrawRowValue(
                 data.power,
@@ -604,7 +613,7 @@ namespace DisplayRenderer
                 data.chargingStage,
                 lastData.chargingStage);
 
-        if (stageChanged)
+        if (ShouldDraw(stageChanged))
         {
             DisplayWidgets::ValueWidget::DrawTextValue(
                 *m_target,
@@ -617,7 +626,7 @@ namespace DisplayRenderer
                 data.inputVoltage,
                 lastData.inputVoltage);
 
-        if (inputChanged)
+        if (ShouldDraw(inputChanged))
         {
             DisplayWidgets::ValueWidget::DrawTextValue(
                 *m_target,
@@ -630,7 +639,7 @@ namespace DisplayRenderer
                 data.dailyEnergy,
                 lastData.dailyEnergy);
 
-        if (dailyEnergyChanged)
+        if (ShouldDraw(dailyEnergyChanged))
         {
             DrawRowValue(
                 data.dailyEnergy,
@@ -649,7 +658,7 @@ namespace DisplayRenderer
                 data.voltage,
                 lastData.voltage);
 
-        if (voltageChanged)
+        if (ShouldDraw(voltageChanged))
         {
             DrawRowValue(
                 data.voltage,
@@ -661,7 +670,7 @@ namespace DisplayRenderer
                 data.current,
                 lastData.current);
 
-        if (currentChanged)
+        if (ShouldDraw(currentChanged))
         {
             DrawRowValue(
                 data.current,
@@ -673,7 +682,7 @@ namespace DisplayRenderer
                 data.power,
                 lastData.power);
 
-        if (powerChanged)
+        if (ShouldDraw(powerChanged))
         {
             DrawRowValue(
                 data.power,
@@ -685,7 +694,7 @@ namespace DisplayRenderer
                 data.percent,
                 lastData.percent);
 
-        if (socChanged)
+        if (ShouldDraw(socChanged))
         {
             DrawRowValue(
                 data.percent,
@@ -697,22 +706,26 @@ namespace DisplayRenderer
                 data.temperature,
                 lastData.temperature);
 
-        if (tempChanged)
+        if (ShouldDraw(tempChanged))
         {
             DrawRowValue(
                 data.temperature,
                 4U);
         }    
 
+        // 배터리 상태는 파워뱅크 적산계 연동시 활성화한다.
         // const bool statusChanged =
         //     HasDisplayTextChanged(
         //         data.status,
         //         lastData.status);
-        // if (statusChanged)
+        // if (m_firstRender ||
+        //     m_pageChanged ||
+        //     statusChanged)
         // {
-        //     HasTextChanged(
-        //         data.status,
-        //         5U);
+        //     DisplayWidgets::ValueWidget::DrawTextValue(
+        //         *m_target,
+        //         5U,
+        //         data.status);
         // }
     }
 
@@ -727,7 +740,9 @@ namespace DisplayRenderer
                 data.voltage,
                 lastData.voltage);
 
-        if (voltageChanged)
+        if (m_firstRender ||
+            m_pageChanged ||
+            voltageChanged)
         {
             DrawRowValue(
                 data.voltage,
@@ -739,7 +754,9 @@ namespace DisplayRenderer
                 data.current,
                 lastData.current);
 
-        if (currentChanged)
+        if (m_firstRender ||
+            m_pageChanged ||
+            currentChanged)
         {
             DrawRowValue(
                 data.current,
@@ -751,7 +768,9 @@ namespace DisplayRenderer
                 data.power,
                 lastData.power);
 
-        if (powerChanged)
+        if (m_firstRender ||
+            m_pageChanged ||
+            powerChanged)
         {
             DrawRowValue(
                 data.power,
@@ -770,7 +789,9 @@ namespace DisplayRenderer
                 data.controllerTemperature,
                 lastData.controllerTemperature);    
 
-        if (controllerChanged)
+        if (m_firstRender ||
+            m_pageChanged ||
+            controllerChanged)
         {
             DrawRowValue(
                 data.controllerTemperature,
@@ -782,7 +803,9 @@ namespace DisplayRenderer
                 data.batteryTemperature,
                 lastData.batteryTemperature);
 
-        if (batteryChanged)
+        if (m_firstRender ||
+            m_pageChanged ||
+            batteryChanged)
         {
             DrawRowValue(
                 data.batteryTemperature,
@@ -794,7 +817,9 @@ namespace DisplayRenderer
                 data.cabinTemperature,
                 lastData.cabinTemperature);
 
-        if (cabinChanged)
+        if (m_firstRender ||
+            m_pageChanged ||
+            cabinChanged)
         {
             DrawRowValue(
                 data.cabinTemperature,
@@ -806,7 +831,9 @@ namespace DisplayRenderer
                 data.cabinHumidity,
                 lastData.cabinHumidity);
 
-        if (humidityChanged)
+        if (m_firstRender ||
+            m_pageChanged ||
+            humidityChanged)
         {
             DrawRowValue(
                 data.cabinHumidity,

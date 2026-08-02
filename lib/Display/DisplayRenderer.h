@@ -143,5 +143,8 @@ namespace DisplayRenderer
 
         void DrawContentStatic(
             DisplayPages::Page page);
+
+        bool ShouldDraw(
+            bool changed) const;
     };
 }

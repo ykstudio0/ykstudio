@@ -254,6 +254,10 @@ v0.5.4
     - Real-time Clock displayed on LCD
     - Real-time Cabin Temperature displayed on LCD
     - Real-time Cabin Humidity displayed on LCD
+v0.5.4.1 2026-08-02
+    DisplayText Framework 완성
+    DisplayText Color 적용
+    Stage / Input Status 표시 완료
 v0.6.x
     EPEVER Modbus 통신 완료
     태양광 실시간 데이터

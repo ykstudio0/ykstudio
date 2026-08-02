@@ -82,8 +82,6 @@ namespace DisplayModel
         DisplayTypes::DisplayValue dailyEnergy;
         DisplayTypes::DisplayValue totalEnergy;
 
-        // const char* chargingStageText;
-        // const char* inputVoltageText;
         DisplayTypes::DisplayText chargingStage;
         DisplayTypes::DisplayText inputVoltage;
         
@@ -132,7 +130,9 @@ namespace DisplayModel
         DisplayTypes::DisplayValue power;
         DisplayTypes::DisplayValue percent;
         DisplayTypes::DisplayValue temperature;
-        DisplayTypes::DisplayValue status;
+        // DisplayTypes::DisplayValue status;
+
+        DisplayTypes::DisplayText status;
 
         constexpr BatteryData()
             : voltage(
@@ -158,7 +158,9 @@ namespace DisplayModel
               temperature(
                 DisplayTypes::MakeValue(
                     0.0f,
-                    DisplayTypes::ValueType::Temperature))
+                    DisplayTypes::ValueType::Temperature)),
+
+              status()
         {
 
         }

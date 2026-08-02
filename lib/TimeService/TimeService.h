@@ -9,6 +9,8 @@
 
 #pragma once
 
+#include <stdint.h>
+
 #include "RTCDateTime.h"
 #include "DS3231Device.h"
 
@@ -32,5 +34,7 @@ namespace SVEMS::Service
         static SVEMS::Device::RTCDateTime CurrentTime;
 
         static SVEMS::Device::DS3231Device* Rtc;
+
+        static uint32_t LastTickMs;
     };
 }

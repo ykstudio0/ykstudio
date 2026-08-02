@@ -120,10 +120,10 @@ bool DeviceManager::Update()
         }
     }
 
-    if (!SVEMS::Service::TimeService::Update())
-    {
-        return false;
-    }
+    // if (!SVEMS::Service::TimeService::Update())
+    // {
+    //     return false;
+    // }
 
     if (!SVEMS::Service::EnvironmentService::Update())
     {

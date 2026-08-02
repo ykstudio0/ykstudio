@@ -11,8 +11,11 @@
 
 #include "DisplayModelBuilder.h"
 #include "DataManager.h"
-#include "DisplayTypes.H"
+#include "DisplayTypes.h"
+#include "DisplayTheme.h"
 #include "TimeService.h"
+#include "EpeverStatusParser.h"
+#include "Logger.h"
 
 namespace
 {
@@ -88,13 +91,17 @@ namespace
                 DataManager::Solar.power,
                 DisplayTypes::ValueType::Power);
 
-        // solar.chargingStageText = 
-        //     EpeverStatusParser::ToString(
-        //         DataManager::Charge.stage);
+        solar.chargingStage.text = 
+            EpeverStatusParser::ToString(
+                DataManager::Charge.stage);
 
-        // solar.inputVoltageText =
-        //     EpeverStatusParser::ToString(
-        //         DataManager::Charge.inputVoltage);
+        solar.chargingStage.color = DisplayTheme::COLOR_VALUE;
+
+        solar.inputVoltage.text =
+            EpeverStatusParser::ToString(
+                DataManager::Charge.inputVoltage);
+            
+        solar.inputVoltage.color = DisplayTheme::COLOR_VALUE;
 
         ApplyStatus(
             solar.voltage,
@@ -142,9 +149,14 @@ namespace
                 DataManager::Temperature.battery,
                 DisplayTypes::ValueType::Temperature);
 
-        // battery.statusText =
+        // 배터리 상태는 향후 파워뱅크 적산계/BMS 데이터로 구성한다.
+        // EPEVER 충전 컨트롤러의 배터리 상태는 의미가 다르므로 사용하지 않는다.
+        // Do not use the EPEVER controller battery status here.
+        // battery.status.text =
         //         EpeverStatusParser::ToString(
         //             DataManager::Charge.batteryStatus);
+
+        // battery.status.color = DisplayTheme::COLOR_VALUE;
 
         ApplyStatus(
             battery.voltage,

@@ -7,10 +7,14 @@
 // Description : System Time service
 //-------------------------------------------------------------
 
+#include <Arduino.h>
+
 #include "TimeService.h"
 
 namespace SVEMS::Service
 {
+    uint32_t TimeService::LastTickMs = 0U;
+
     bool TimeService::Ready = false;
 
     SVEMS::Device::RTCDateTime
@@ -33,6 +37,8 @@ namespace SVEMS::Service
         CurrentTime =
             Rtc->GetTime();
 
+        LastTickMs = millis();
+
         Ready = true;
 
         return true;
@@ -46,16 +52,53 @@ namespace SVEMS::Service
             return false;
         }
 
-        if (!Rtc->IsOnline())
+        const uint32_t now = millis();
+
+        const uint32_t elapsedSeconds =
+            (now - LastTickMs) / 1000U;
+
+        if (elapsedSeconds == 0U)
         {
-            Ready = false;
-            return false;
+            return true;
         }
 
-        CurrentTime =
-            Rtc->GetTime();
+        LastTickMs +=
+            elapsedSeconds * 1000U;
+
+        for (uint32_t i = 0U; i < elapsedSeconds; ++i)
+        {
+            ++CurrentTime.second;
+
+            if (CurrentTime.second >= 60U)
+            {
+                CurrentTime.second = 0U;
+                ++CurrentTime.minute;
+            }
+
+            if (CurrentTime.minute >= 60U)
+            {
+                CurrentTime.minute = 0U;
+                ++CurrentTime.hour;
+            }
+
+            if (CurrentTime.hour >= 24U)
+            {
+                CurrentTime.hour = 0U;
+            }
+        }
 
         return true;
+
+        // if (!Rtc->IsOnline())
+        // {
+        //     Ready = false;
+        //     return false;
+        // }
+
+        // CurrentTime =
+        //     Rtc->GetTime();
+
+        // return true;
     }
 
     bool TimeService::IsReady()

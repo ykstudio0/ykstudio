@@ -40,6 +40,7 @@ namespace
         {2, "Power"},
         {3, "SOC"},
         {4, "Temp"}
+        // {5, "Status"}
     };
 
     const DisplayLayout::StaticRow g_loadRows[] =
@@ -61,7 +62,8 @@ namespace
     {
         {0, "Product"},
         {1, "Version"},
-        {2, "Developer"}
+        {2, "Developer"},
+        {3, "Wifi"}
     };
 } // anonymous namespace
 
