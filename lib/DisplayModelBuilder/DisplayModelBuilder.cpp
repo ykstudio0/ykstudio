@@ -336,6 +336,120 @@ namespace
         //
         // 따라서 현재는 Reset()의 기본값을 유지한다.
     }
+
+    void BuildHeader(DisplayModel::Model& model)
+    {
+        DisplayModel::HeaderData& header =
+            model.GetHeader();
+
+        const DisplayModel::SystemData& system =
+            model.GetSystem();
+
+        const DisplayModel::OverviewData& overview =
+            model.GetOverview();
+
+        // Time
+        const uint32_t totalSeconds =
+            system.currentTime.value > 0.0f
+                ? static_cast<uint32_t>(
+                    system.currentTime.value)
+                : 0U;
+                
+        const uint32_t normalizedSeconds =
+            totalSeconds % 86400UL;
+
+        const uint32_t hours = 
+            normalizedSeconds / 3600UL;
+
+        const uint32_t minutes =
+            (normalizedSeconds % 3600UL) / 60UL;
+
+        const uint32_t seconds =
+            normalizedSeconds % 60UL;
+
+        const SVEMS::Device::RTCDateTime& now =
+            SVEMS::Service::TimeService::Now();
+            
+        snprintf(
+            header.timeText,
+            sizeof(header.timeText),
+            "%02u:%02u:%02u",
+            static_cast<unsigned>(hours),
+            static_cast<unsigned>(minutes),
+            static_cast<unsigned>(seconds));
+
+        //---------------------------------------------------------
+        // System status
+        //---------------------------------------------------------
+
+        if (!system.wifiConnected)
+        {
+            header.status.text = "NET";
+            header.status.color =
+                DisplayTheme::COLOR_WARNING;
+        }
+        else if (!system.rs485Ready)
+        {
+            header.status.text = "485";
+            header.status.color =
+                DisplayTheme::COLOR_WARNING;
+        }
+        else if (!system.modbusReady)
+        {
+            header.status.text = "MOD";
+            header.status.color =
+                DisplayTheme::COLOR_WARNING;
+        }
+        else if (!system.deviceManagerReady)
+        {
+            header.status.text = "DEV";
+            header.status.color =
+                DisplayTheme::COLOR_WARNING;
+        }
+        else
+        {
+            header.status.text = "OK";
+            header.status.color =
+                DisplayTheme::COLOR_ACTIVE;
+        }
+
+        //---------------------------------------------------------
+        // Energy status
+        //---------------------------------------------------------
+
+        switch (overview.energyStatus)
+        {
+            case DisplayModel::EnergyStatus::Charging:
+                header.energy.text = "Charging";
+                header.energy.color =
+                    DisplayTheme::COLOR_SUCCESS;
+                break;
+
+            case DisplayModel::EnergyStatus::Idle:
+                header.energy.text = "Idle";
+                header.energy.color =
+                    DisplayTheme::COLOR_INFO;
+                break;
+
+            case DisplayModel::EnergyStatus::Night:
+                header.energy.text = "Night";
+                header.energy.color =
+                    DisplayTheme::COLOR_LABEL;
+                break;
+
+            case DisplayModel::EnergyStatus::Warning:
+                header.energy.text = "Warning";
+                header.energy.color =
+                    DisplayTheme::COLOR_ALARM;
+                break;
+
+            default:
+                header.energy.text = "---";
+                header.energy.color =
+                    DisplayTheme::COLOR_INFO;
+                break;
+        }
+    }
 }
 
 namespace DisplayModelBuilder
@@ -354,5 +468,9 @@ namespace DisplayModelBuilder
         // Overview는 별도의 데이터를 생성하지 않는다.
         // 상세 페이지에서 생성된 표시 데이터를 요약 화면으로 복사한다.
         model.SyncOverview();
+
+        // System과 Overview가 완성된 후
+        // Header 표시 데이터를 구성한다.
+        BuildHeader(model);
     }
 }

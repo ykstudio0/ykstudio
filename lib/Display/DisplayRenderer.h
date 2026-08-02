@@ -41,8 +41,7 @@ namespace DisplayRenderer
         // Common
         void DrawHeader(
             DisplayPages::Page page,
-            const DisplayModel::OverviewData& overview,
-            const DisplayModel::SystemData& system);
+            const DisplayModel::HeaderData& header);
 
         void DrawFooter(
             DisplayPages::Page page);
@@ -84,9 +83,6 @@ namespace DisplayRenderer
             const DisplayTypes::DisplayValue& value,
             char* buffer,
             size_t bufferSize) const;
-        
-        void DrawHeaderStatus(
-            const DisplayModel::SystemData& system);
 
         // Members
         IRenderTarget* m_target;
@@ -121,25 +117,6 @@ namespace DisplayRenderer
         bool HasDisplayTextChanged(
             const DisplayTypes::DisplayText& current,
             const DisplayTypes::DisplayText& previous) const;
-
-        //-------------------------------------------------------------
-        // Header Helpers
-        //-------------------------------------------------------------
-        void BuildEnergyDisplay(
-            DisplayModel::EnergyStatus status,
-            const char*& text,
-            DisplayTheme::Color& color);
-
-        void BuildTimeText(
-            const DisplayModel::SystemData& system,
-            char* buffer,
-            size_t bufferSize);
-
-        void BuildStatus(
-            const DisplayModel::SystemData& system,
-            char* buffer,
-            size_t bufferSize,
-            DisplayTheme::Color& color);
 
         void DrawContentStatic(
             DisplayPages::Page page);

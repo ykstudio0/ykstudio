@@ -22,6 +22,24 @@ namespace DisplayModel
         Warning
     };
 
+    struct HeaderData
+    {
+        static constexpr size_t TIME_TEXT_SIZE = 16U;
+
+        char timeText[TIME_TEXT_SIZE];
+
+        DisplayTypes::DisplayText status;
+        DisplayTypes::DisplayText energy;
+
+        constexpr HeaderData()
+            : timeText{0},
+              status(),
+              energy()
+        {
+
+        }
+    };
+
     // Overview page data
     // 시스템의 주요 상태를 한 화면에서 요약한다.
     struct OverviewData
@@ -296,6 +314,17 @@ namespace DisplayModel
     public:
         constexpr Model() = default;
 
+        // Header 데이터 접근
+        HeaderData& GetHeader()
+        {
+            return header;
+        }
+
+        const HeaderData& GetHeader() const
+        {
+            return header;
+        }
+
         // 페이지별 데이터 접근
         OverviewData& GetOverview()
         {
@@ -360,6 +389,9 @@ namespace DisplayModel
         // 모든 값을 초기 상태로 되돌린다.
         void Reset()
         {
+            header =
+                HeaderData();
+
             overview =
                 OverviewData();
 
@@ -427,6 +459,7 @@ namespace DisplayModel
 
             return EnergyStatus::Idle;
         }
+        HeaderData header;
         OverviewData overview;
         SolarData solar;
         BatteryData battery;

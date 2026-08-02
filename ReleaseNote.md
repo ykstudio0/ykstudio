@@ -254,10 +254,39 @@ v0.5.4
     - Real-time Clock displayed on LCD
     - Real-time Cabin Temperature displayed on LCD
     - Real-time Cabin Humidity displayed on LCD
-v0.5.4.1 2026-08-02
+v0.5.4.1 Renderer Optimization & Display Stability
+## 2026-08-02
     DisplayText Framework 완성
     DisplayText Color 적용
     Stage / Input Status 표시 완료
+    모든 페이지에 m_pageChanged 반영
+    반복 조건을 ShouldDraw()로 통합
+    빌드 성공
+    ESP32 업로드 성공
+    LCD 페이지 전환 정상
+    Solar / Battery / Load / Temperature 값 정상 출력
+    변경된 항목만 갱신하는 구조 유지
+    Battery Status는 적산계/BMS 연동 전까지 의도적으로 보류
+    HeaderData 모델 추가
+    Header 시간 문자열을 자체 버퍼로 안전하게 보관
+    BuildHeader()에서 Time / Status / Energy 생성
+    Renderer는 HeaderData만 소비
+    DrawHeader() 인자 단순화
+    BuildTimeText() 제거
+    BuildStatus() 제거
+    DrawHeaderStatus() 제거
+    BuildEnergyDisplay() 제거
+    빌드 성공
+    LCD 정상
+    TimeService / DataManager
+            ↓
+    DisplayModelBuilder::BuildHeader()
+            ↓
+    DisplayModel::HeaderData
+            ↓
+    Renderer::DrawHeader()
+            ↓
+    HeaderWidget
 v0.6.x
     EPEVER Modbus 통신 완료
     태양광 실시간 데이터

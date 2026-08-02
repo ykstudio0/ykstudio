@@ -187,78 +187,31 @@ namespace DisplayRenderer
     {
         DrawHeader(
             page,
-            model.GetOverview(),
-            model.GetSystem());
+            model.GetHeader());
 
         DrawContent(
             page,
             model);
     }
 
-    void Renderer::BuildTimeText(
-        const DisplayModel::SystemData& system,
-        char* buffer,
-        size_t bufferSize)
-    {
-        FormatValue(
-            system.currentTime,
-            buffer,
-            bufferSize);
-    }
-
     // Common
     void Renderer::DrawHeader(
         DisplayPages::Page page,
-        const DisplayModel::OverviewData& overview,
-        const DisplayModel::SystemData& system)
+        const DisplayModel::HeaderData& header)
     {
-        const char* energyText;
-        DisplayTheme::Color energyColor;
+        const DisplayModel::HeaderData& lastHeader =
+            m_lastModel.GetHeader();
 
-        BuildEnergyDisplay(
-            overview.energyStatus,
-            energyText,
-            energyColor);
+        // //---------------------------------------------------------
+        // // Static
+        // //---------------------------------------------------------
 
-        char currentTime[16];
-        char previousTime[16];
-
-        BuildTimeText(
-            system,
-            currentTime,
-            sizeof(currentTime));
-
-        BuildTimeText(
-            m_lastModel.GetSystem(),
-            previousTime,
-            sizeof(previousTime));
-
-        char currentStatus[8];
-        char previousStatus[8];
-        uint16_t statusColor;
-
-        BuildStatus(
-            system,
-            currentStatus,
-            sizeof(currentStatus),
-            statusColor);
-
-        BuildStatus(
-            m_lastModel.GetSystem(),
-            previousStatus,
-            sizeof(previousStatus),
-            statusColor);
-
-        //---------------------------------------------------------
-        // Static
-        //---------------------------------------------------------
-
-        if (m_firstRender || m_pageChanged)
-        {
-            DisplayWidgets::HeaderWidget::DrawStatic(
-                *m_target,
-                DisplayPages::GetTitle(page));
-        }
+        // if (m_firstRender || m_pageChanged)
+        // {
+        //     DisplayWidgets::HeaderWidget::DrawStatic(
+        //         *m_target,
+        //         DisplayPages::GetTitle(page));
+        // }
 
         //---------------------------------------------------------
         // Energy
@@ -266,15 +219,17 @@ namespace DisplayRenderer
 
         if (page == DisplayPages::Page::Overview)
         {
-            if (m_firstRender ||
-                m_pageChanged ||
-                overview.energyStatus !=
-                m_lastModel.GetOverview().energyStatus)
+            const bool energyChanged =
+                HasDisplayTextChanged(
+                    header.energy,
+                    lastHeader.energy);
+
+            if (ShouldDraw(energyChanged))
             {
                 DisplayWidgets::HeaderWidget::DrawEnergy(
                     *m_target,
-                    energyText,
-                    energyColor);
+                    header.energy.text,
+                    header.energy.color);
             }
         }
 
@@ -282,31 +237,33 @@ namespace DisplayRenderer
         // Time
         //---------------------------------------------------------
 
-        if (m_firstRender ||
-            m_pageChanged ||
+        const bool timeChanged =
             HasTextChanged(
-                currentTime,
-                previousTime))
+                header.timeText,
+                lastHeader.timeText);
+
+        if (ShouldDraw(timeChanged))
         {
             DisplayWidgets::HeaderWidget::DrawTime(
                 *m_target,
-                currentTime);
+                header.timeText);
         }
 
         //---------------------------------------------------------
         // Status
         //---------------------------------------------------------
 
-        if (m_firstRender ||
-            m_pageChanged ||
-            HasTextChanged(
-                currentStatus,
-                previousStatus))
+        const bool statusChanged =
+            HasDisplayTextChanged(
+                header.status,
+                lastHeader.status);
+
+        if (ShouldDraw(statusChanged))
         {
             DisplayWidgets::HeaderWidget::DrawStatus(
                 *m_target,
-                currentStatus,
-                statusColor);
+                header.status.text,
+                header.status.color);
         }
     }
 
@@ -443,127 +400,6 @@ namespace DisplayRenderer
                 data.humidity,
                 5U);
         }
-    }
-
-    void Renderer::BuildEnergyDisplay(
-        DisplayModel::EnergyStatus status,
-        const char*& text,
-        DisplayTheme::Color& color)
-    {
-        switch (status)
-        {
-        case DisplayModel::EnergyStatus::Charging:
-
-            text = "Charging";
-            color = DisplayTheme::COLOR_SUCCESS;
-            break;
-
-        case DisplayModel::EnergyStatus::Idle:
-
-            text = "Idle";
-            color = DisplayTheme::COLOR_INFO;
-            break;
-
-        case DisplayModel::EnergyStatus::Night:
-
-            text = "Night";
-            color = DisplayTheme::COLOR_LABEL;
-            break;
-
-        case DisplayModel::EnergyStatus::Warning:
-
-            text = "Warning";
-            color = DisplayTheme::COLOR_ALARM;
-            break;
-
-        default:
-
-            text = "---";
-            color = DisplayTheme::COLOR_INFO;
-            break;
-        }
-    }
-
-    void Renderer::BuildStatus(
-        const DisplayModel::SystemData& system,
-        char* buffer,
-        size_t bufferSize,
-        uint16_t& color)
-    {
-        if (bufferSize == 0)
-            return;
-
-        if (!system.wifiConnected)
-        {
-            strncpy(buffer, "NET", bufferSize);
-            color = DisplayTheme::COLOR_WARNING;
-        }
-        else if (!system.rs485Ready)
-        {
-            strncpy(buffer, "485", bufferSize);
-            color = DisplayTheme::COLOR_WARNING;
-        }
-        else if (!system.modbusReady)
-        {
-            strncpy(buffer, "MOD", bufferSize);
-            color = DisplayTheme::COLOR_WARNING;
-        }
-        else if (!system.deviceManagerReady)
-        {
-            strncpy(buffer, "DEV", bufferSize);
-            color = DisplayTheme::COLOR_WARNING;
-        }
-        else
-        {
-            strncpy(buffer, "OK", bufferSize);
-            color = DisplayTheme::COLOR_ACTIVE;
-        }
-
-        buffer[bufferSize - 1] = '\0';
-    }
-
-    void Renderer::DrawHeaderStatus(
-        const DisplayModel::SystemData& system)
-    {
-        if (!IsReady())
-        {
-            return;
-        }
-
-        const char* statusText = "OK";
-
-        DisplayTheme::Color statusColor =
-            DisplayTheme::COLOR_ACTIVE;
-
-        if (!system.wifiConnected)
-        {
-            statusText = "NET";
-            statusColor = DisplayTheme::COLOR_WARNING;
-        }
-        else if (!system.rs485Ready)
-        {
-            statusText = "485";
-            statusColor = DisplayTheme::COLOR_ALARM;
-        }
-        else if (!system.modbusReady)
-        {
-            statusText = "MOD";
-            statusColor = DisplayTheme::COLOR_ALARM;
-        }
-        else if (!system.deviceManagerReady)
-        {
-            statusText = "DEV";
-            statusColor = DisplayTheme::COLOR_WARNING;
-        }
-
-        m_target->DrawText(
-            DisplayLayout::HEADER_STATUS_X,
-            DisplayLayout::HEADER_STATUS_Y,
-            statusText,
-            statusColor,
-            DisplayTheme::GetFontSize(
-                DisplayTheme::FontRole::Small),
-            DisplayTypes::TextAlign::Left);
     }
 
     void Renderer::DrawSolar(
