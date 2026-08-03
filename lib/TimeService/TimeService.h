@@ -26,7 +26,7 @@ namespace SVEMS::Service
 
         static bool Synchronize(
             const SVEMS::Device::RTCDateTime& time);
-            
+
         static bool IsReady();
 
         static const SVEMS::Device::RTCDateTime& Now();
@@ -39,5 +39,14 @@ namespace SVEMS::Service
         static SVEMS::Device::DS3231Device* Rtc;
 
         static uint32_t LastTickMs;
+
+        static void IncrementOneSecond();
+
+        static uint8_t GetDaysInMonth(
+            uint16_t year,
+            uint8_t month);
+
+        static bool IsLeapYear(
+            uint16_t year);
     };
 }

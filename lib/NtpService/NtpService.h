@@ -32,14 +32,17 @@ namespace SVEMS::Service
         static bool ApplySynchronizedTime(
             const struct tm& timeInfo);
 
-        static bool AppliedToRtc;
-        
+        static void OnTimeSynchronized(
+            struct timeval* timeValue);
+
         static bool Configured;
-
         static bool Synchronized;
+        static bool AppliedToRtc;
 
+        static volatile bool SyncNotificationPending;
+        
         static uint32_t LastAttemptMs;
-
         static uint32_t SyncStartedMs;
+        static uint32_t LastSuccessfulSyncMs;
     };
 }

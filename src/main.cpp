@@ -148,7 +148,7 @@ void TestTFT()
     lcd.setCursor(100, 100);
     lcd.println("Hello SVEMS");
     lcd.setCursor(130, 130);
-    lcd.printf("v0.4.7");
+    lcd.printf("v0.5.5");
     // lcd.setCursor(0, 160);
     // lcd.printf("ABCDEFGHIJKLMNOPQRSTUVWXYZ"); //fontSize(2) 12 x 14
     // lcd.setCursor(0, 176);

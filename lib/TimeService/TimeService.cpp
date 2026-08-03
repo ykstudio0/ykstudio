@@ -67,38 +67,10 @@ namespace SVEMS::Service
 
         for (uint32_t i = 0U; i < elapsedSeconds; ++i)
         {
-            ++CurrentTime.second;
-
-            if (CurrentTime.second >= 60U)
-            {
-                CurrentTime.second = 0U;
-                ++CurrentTime.minute;
-            }
-
-            if (CurrentTime.minute >= 60U)
-            {
-                CurrentTime.minute = 0U;
-                ++CurrentTime.hour;
-            }
-
-            if (CurrentTime.hour >= 24U)
-            {
-                CurrentTime.hour = 0U;
-            }
+            IncrementOneSecond();
         }
 
         return true;
-
-        // if (!Rtc->IsOnline())
-        // {
-        //     Ready = false;
-        //     return false;
-        // }
-
-        // CurrentTime =
-        //     Rtc->GetTime();
-
-        // return true;
     }
 
     bool TimeService::Synchronize(
@@ -132,5 +104,109 @@ namespace SVEMS::Service
         TimeService::Now()
     {
         return CurrentTime;
+    }
+
+    bool TimeService::IsLeapYear(
+        uint16_t year)
+    {
+        if ((year % 400U) == 0U)
+        {
+            return true;
+        }
+
+        if ((year % 100U) == 0U)
+        {
+            return false;
+        }
+
+        return
+            (year % 4U) == 0U;
+    }
+
+    uint8_t TimeService::GetDaysInMonth(
+        uint16_t year,
+        uint8_t month)
+    {
+        switch (month)
+        {
+            case 1u:
+            case 3U:
+            case 5U:
+            case 7U:
+            case 8U:
+            case 10U:
+            case 12U:
+                return 31U;
+            case 4U:
+            case 6U:
+            case 9U:
+            case 11U:
+                return 30U;
+            case 2U:
+                return
+                    IsLeapYear(year)
+                        ? 29U
+                        : 28U;
+            default:
+                return 31U;
+        }
+    }
+
+    void TimeService::IncrementOneSecond()
+    {
+        ++CurrentTime.second;
+
+        if (CurrentTime.second < 60U)
+        {
+            return;
+        }
+
+        CurrentTime.second = 0U;
+        ++CurrentTime.minute;
+
+        if (CurrentTime.minute < 60U)
+        {
+            return;
+        }
+
+        CurrentTime.minute = 0U;
+        ++CurrentTime.hour;
+
+        if (CurrentTime.hour < 24U)
+        {
+            return;
+        }
+
+        CurrentTime.hour = 0U;
+
+        ++CurrentTime.dayOfWeek;
+
+        if (CurrentTime.dayOfWeek > 7U)
+        {
+            CurrentTime.dayOfWeek = 1U;
+        }
+
+        ++CurrentTime.day;
+
+        const uint8_t daysInMonth =
+            GetDaysInMonth(
+                CurrentTime.year,
+                CurrentTime.month);
+
+        if (CurrentTime.day <= daysInMonth)
+        {
+            return;
+        }
+
+        CurrentTime.day = 1U;
+        ++CurrentTime.month;
+
+        if (CurrentTime.month <= 12U)
+        {
+            return;
+        }
+
+        CurrentTime.month = 1U;
+        ++CurrentTime.year;
     }
 }

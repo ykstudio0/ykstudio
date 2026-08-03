@@ -318,13 +318,19 @@ v0.5.4.2 UI Framework Enhancement
             ↓
         Widget
 v0.5.5 WifiServicde
-    비차단 Wi-Fi 연결
-    자동 재연결 구조
-    Scheduler 연동
-    Header Status 연동
-    Self Recovery 구조 유지
-    LCD 정상
-    기존 기능 영향 없음
+    ✅ WiFi Service
+        비차단 연결
+        자동 재접속
+    Header Status
+    ✅ NTP Service
+        NTP 동기화
+        한국 시간 적용
+        비차단 처리
+    ✅ RTC 자동 보정
+        DS3231 기록
+        TimeService 즉시 갱신
+        LCD 즉시 반영
+        초 단위까지 정확한 동기화
 v0.6.x
     EPEVER Modbus 통신 완료
     태양광 실시간 데이터

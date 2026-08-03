@@ -15,6 +15,7 @@
 #include "Logger.h"
 #include "TimeService.h"
 #include "RTCDateTime.h"
+#include <esp_sntp.h>
 
 namespace
 {
@@ -23,6 +24,9 @@ namespace
 
     constexpr uint32_t NTP_SYNC_TIMEOUT_MS =
         15000UL;
+
+    constexpr uint32_t NTP_RESYNC_INTERVAL_MS =
+        24UL * 60UL * 60UL * 1000UL;
 
     // 2024-01-01 00:00:00 UTC
     // 시스템 시간이 초기 기본값인지 판단하기 위한 기준값
@@ -61,12 +65,29 @@ namespace SVEMS::Service
         Synchronized = false;
         AppliedToRtc = false;
 
+        SyncNotificationPending = false;
+
         LastAttemptMs = 0U;
         SyncStartedMs = 0U;
+        LastSuccessfulSyncMs = 0U;
+
+        sntp_set_time_sync_notification_cb(
+            OnTimeSynchronized);
+
+        sntp_set_sync_interval(
+            NTP_RESYNC_INTERVAL_MS);
 
         Logger::Info(
             "NTP",
             "Ready");
+    }
+
+    void NtpService::OnTimeSynchronized(
+        struct timeval* timeValue)
+    {
+        (void)timeValue;
+        
+        SyncNotificationPending = true;
     }
 
     void NtpService::Update()
@@ -93,57 +114,74 @@ namespace SVEMS::Service
             return;
         }
 
-        const time_t currentTime =
-            time(nullptr);
-
-        if (currentTime >= VALID_EPOCH_TIME)
+        if (SyncNotificationPending)
         {
+            SyncNotificationPending = false;
+
+            const time_t currentTime =
+                time(nullptr);
+
+            if (currentTime < VALID_EPOCH_TIME)
+            {
+                Logger::Warning(
+                    "NTP",
+                    "Invalid synchronized time");
+
+                return;
+            }
+
             struct tm timeInfo;
 
             if (localtime_r(
                     &currentTime,
                     &timeInfo) == nullptr)
             {
+                Logger::Error(
+                    "NTP",
+                    "Local time conversion failed");
+
                 return;
             }
 
-            if (!Synchronized)
+            Synchronized = true;
+            AppliedToRtc = false;
+
+            Logger::Info(
+                "NTP",
+                "Synchronized");
+
+            char message[40];
+
+            snprintf(
+                message,
+                sizeof(message),
+                "%04d-%02d-%02d %02d:%02d:%02d",
+                timeInfo.tm_year + 1900,
+                timeInfo.tm_mon + 1,
+                timeInfo.tm_mday,
+                timeInfo.tm_hour,
+                timeInfo.tm_min,
+                timeInfo.tm_sec);
+
+            Logger::Info(
+                "NTP",
+                message);
+
+            AppliedToRtc =
+                ApplySynchronizedTime(
+                    timeInfo);
+
+            if (AppliedToRtc)
             {
-                Synchronized = true;
-
-                Logger::Info(
-                    "NTP",
-                    "Synchronized");
-
-                char message[40];
-
-                snprintf(
-                    message,
-                    sizeof(message),
-                    "%04d-%02d-%02d %02d:%02d:%02d",
-                    timeInfo.tm_year + 1900,
-                    timeInfo.tm_mon + 1,
-                    timeInfo.tm_mday,
-                    timeInfo.tm_hour,
-                    timeInfo.tm_min,
-                    timeInfo.tm_sec);
-
-                Logger::Info(
-                    "NTP",
-                    message);
-            }
-
-            if (!AppliedToRtc)
-            {
-                AppliedToRtc =
-                    ApplySynchronizedTime(
-                        timeInfo);
+                LastSuccessfulSyncMs =
+                    nowMs;
             }
 
             return;
         }
 
-        if ((nowMs - SyncStartedMs) >=
+        if (!Synchronized &&
+            (nowMs - SyncStartedMs) >=
             NTP_SYNC_TIMEOUT_MS)
         {
             Configured = false;
@@ -266,4 +304,10 @@ namespace SVEMS::Service
 
         return true;
     }
+
+    volatile bool
+        NtpService::SyncNotificationPending = false;
+
+    uint32_t
+        NtpService::LastSuccessfulSyncMs = 0U;
 }
