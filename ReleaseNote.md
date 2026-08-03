@@ -321,7 +321,7 @@ v0.5.5 WifiServicde
     ✅ WiFi Service
         비차단 연결
         자동 재접속
-    Header Status
+        Header Status
     ✅ NTP Service
         NTP 동기화
         한국 시간 적용
@@ -331,6 +331,11 @@ v0.5.5 WifiServicde
         TimeService 즉시 갱신
         LCD 즉시 반영
         초 단위까지 정확한 동기화
+        날짜 Tick 보강
+        윤년 처리
+        24시간 자동 재동기화
+        오프라인 지속 운전
+        RTC 재보정 정책 검증
 v0.6.x
     EPEVER Modbus 통신 완료
     태양광 실시간 데이터
