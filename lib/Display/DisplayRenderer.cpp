@@ -270,18 +270,22 @@ namespace DisplayRenderer
     void Renderer::DrawFooter(
         DisplayPages::Page page)
     {
-        Serial.println("DrawFooter");
-        const char* previousText = "< Prev";
-        const char* pageText     = "1 / 4";
-        const char* nextText     = "Next >";
-        
+        char pageText[16];
+
+        snprintf(
+            pageText,
+            sizeof(pageText),
+            "%u / %u",
+            static_cast<unsigned>(
+                DisplayPages::GetPageNumber(page)),
+            static_cast<unsigned>(
+                DisplayPages::PAGE_COUNT));
+                
         DisplayWidgets::FooterWidget::Draw(
             *m_target,
-            previousText,
+            "< Prev",
             pageText,
-            nextText);
-            
-            (void)page;
+            "Next >");
     }
 
     void Renderer::DrawContent(

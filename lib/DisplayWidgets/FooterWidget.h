@@ -22,6 +22,6 @@ namespace DisplayWidgets
             IRenderTarget& target,
             const char* leftText,
             const char* centerText,
-            const char* rihtText);
+            const char* rightText);
     };
 }

@@ -16,6 +16,10 @@
 #include "TimeService.h"
 #include "EpeverStatusParser.h"
 #include "Logger.h"
+#include "WiFiService.h"
+#include "RS485.h"
+#include "ModbusRTU.h"
+#include "DeviceManager.h"
 
 namespace
 {
@@ -323,6 +327,18 @@ namespace
                 DisplayTypes::ValueType::None);
 
         system.deviceCount.decimals = 0U;
+
+        system.wifiConnected =
+            SVEMS::Service::WiFiService::IsConnected();
+
+        system.rs485Ready = 
+            RS485::IsReady();
+
+        system.modbusReady =
+            ModbusRTU::IsReady();
+
+        system.deviceManagerReady =
+            DeviceManager::IsReady();
 
         // 다른 값들은 현재 DataManager에서 제공하지 않는다.
         //

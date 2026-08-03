@@ -39,6 +39,18 @@ namespace DisplayPages
         return static_cast<uint8_t>(page) < PAGE_COUNT;
     }
 
+    // 화면에 표시할 1부터 시작하는 페이지 번호 반환
+    inline uint8_t GetPageNumber(Page page)
+    {
+        if (!IsValid(page))
+        {
+            return 0U;
+        }
+
+        return
+            static_cast<uint8_t>(page) + 1U;
+    }
+
     // 페이지 제목 반환
     inline const char* GetTitle(Page page)
     {

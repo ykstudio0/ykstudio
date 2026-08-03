@@ -12,8 +12,23 @@
 #include "RS485.h"
 #include "Logger.h"
 
+bool ModbusRTU::Ready = false;
+
 bool ModbusRTU::Begin()
 {
+    Ready = false;
+
+    if (!RS485::IsReady())
+    {
+        Logger::Error(
+            "MODBUS",
+            "RS485 Not Ready");
+
+        return false;
+    }
+
+    Ready = true;
+
     Logger::Info("MODBUS", "Ready (" + String(MODBUS_BAUDRATE) + "bps)");
     
     return true;
@@ -198,4 +213,9 @@ bool ModbusRTU::ReadInputRegisters(
     }
     
     return true;
+}
+
+bool ModbusRTU::IsReady()
+{
+    return Ready;
 }

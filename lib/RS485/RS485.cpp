@@ -14,8 +14,12 @@
 
 HardwareSerial RS485Serial(1);
 
+bool RS485::Ready = false;
+
 bool RS485::Begin()
 {
+    Ready = false;
+
     pinMode(PIN_RS485_DE, OUTPUT);
 
     RxMode();
@@ -27,9 +31,16 @@ bool RS485::Begin()
         PIN_RS485_TX
     );
 
+    Ready = true;
+
     Logger::Info("RS485", "Ready");
 
     return true;
+}
+
+bool RS485::IsReady()
+{
+    return Ready;
 }
 
 void RS485::TxMode()

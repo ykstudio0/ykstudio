@@ -14,6 +14,7 @@ class ModbusRTU
 {
 public:
     static bool Begin();
+    static bool IsReady();
 
     static bool ReadInputRegisters(
         uint8_t slave,
@@ -21,6 +22,8 @@ public:
         uint16_t count,
         uint8_t* response,
         size_t responseSize);
+private:
+    static bool Ready;
 };
 
 #endif

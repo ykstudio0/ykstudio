@@ -24,6 +24,7 @@
 #include "LGFX_Config.h"
 #include "TFTRenderTarget.h"
 #include "Scheduler.h"
+#include "WifiService.h"
 
 namespace
 {
@@ -87,6 +88,7 @@ void setup()
     ModbusRTU::Begin();
     DeviceManager::Begin();
     Display::Begin();
+    SVEMS::Service::WiFiService::Begin();
     Scheduler::Begin();
     // delay(1000);
     TestTFT();

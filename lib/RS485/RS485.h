@@ -15,6 +15,7 @@ class RS485
 {
 public:
     static bool Begin();
+    static bool IsReady();
     static void TxMode();
     static void RxMode();
     static void Send(
@@ -30,12 +31,14 @@ public:
     static void ClearReceiveBuffer();
 
 private:
-        static bool DetermineFrameLength(
-            const uint8_t* buffer,
-            size_t receivedLength,
-            size_t& expectedLength);
+    static bool Ready;
+    
+    static bool DetermineFrameLength(
+        const uint8_t* buffer,
+        size_t receivedLength,
+        size_t& expectedLength);
 
-        static bool IsTimeOut(
-            uint32_t startTime,
-            uint32_t timeout);
+    static bool IsTimeOut(
+        uint32_t startTime,
+        uint32_t timeout);
 };

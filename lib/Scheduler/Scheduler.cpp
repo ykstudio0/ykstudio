@@ -14,6 +14,7 @@
 #include "Display.h"
 #include "DeviceManager.h"
 #include "TimeService.h"
+#include "WiFiService.h"
 
 namespace
 {
@@ -88,22 +89,22 @@ void Scheduler::Run100ms()
 void Scheduler::Run1Sec()
 {
     DeviceManager::Update();
-    PollSolar();
+    // PollSolar();
 }
 
 // 5 Second Tasks
 void Scheduler::Run5Sec()
 {
-    PollBattery();
-    PollLoad();
-    PollChargingStatus();
+    // PollBattery();
+    // PollLoad();
+    // PollChargingStatus();
 }
 
 // 30 Second Tasks
 void Scheduler::Run30Sec()
 {
     PollTemperature();
-    PollSOC();
+    // PollSOC();
 }
 
 // 60 Second Tasks
@@ -250,4 +251,5 @@ void Scheduler::ServiceDisplay()
 void Scheduler::ServiceIoT()
 {
     // Wi-Fi / MQTT / Web 모듈 구현 후 연결
+    SVEMS::Service::WiFiService::Update();
 }

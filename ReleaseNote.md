@@ -292,6 +292,39 @@ v0.5.4.1 Renderer Optimization & Display Stability
     Renderer::DrawHeader()
             ↓
     HeaderWidget
+v0.5.4.2 UI Framework Enhancement
+    Header
+        HeaderData 도입
+        BuildHeader()
+        Legacy 제거
+        Renderer 단순화
+    Footer
+        FooterWidget 정리
+        실제 페이지 번호 표시
+        하드코딩 제거
+        Renderer 단순화
+    Architecture
+        Driver
+            ↓
+        Service
+            ↓
+        DataManager
+            ↓
+        DisplayModelBuilder
+            ↓
+        DisplayModel
+            ↓
+        Renderer
+            ↓
+        Widget
+v0.6.0 WifiServicde
+    비차단 Wi-Fi 연결
+    자동 재연결 구조
+    Scheduler 연동
+    Header Status 연동
+    Self Recovery 구조 유지
+    LCD 정상
+    기존 기능 영향 없음
 v0.6.x
     EPEVER Modbus 통신 완료
     태양광 실시간 데이터
