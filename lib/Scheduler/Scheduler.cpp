@@ -89,22 +89,22 @@ void Scheduler::Run100ms()
 void Scheduler::Run1Sec()
 {
     DeviceManager::Update();
-    // PollSolar();
+    PollSolar();
 }
 
 // 5 Second Tasks
 void Scheduler::Run5Sec()
 {
-    // PollBattery();
-    // PollLoad();
-    // PollChargingStatus();
+    PollBattery();
+    PollLoad();
+    PollChargingStatus();
 }
 
 // 30 Second Tasks
 void Scheduler::Run30Sec()
 {
     PollTemperature();
-    // PollSOC();
+    PollSOC();
 }
 
 // 60 Second Tasks
