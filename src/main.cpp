@@ -25,6 +25,7 @@
 #include "TFTRenderTarget.h"
 #include "Scheduler.h"
 #include "WifiService.h"
+#include "NtpService.h"
 
 namespace
 {
@@ -89,6 +90,7 @@ void setup()
     DeviceManager::Begin();
     Display::Begin();
     SVEMS::Service::WiFiService::Begin();
+    SVEMS::Service::NtpService::Begin();
     Scheduler::Begin();
     // delay(1000);
     TestTFT();

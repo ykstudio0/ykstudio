@@ -3,7 +3,7 @@
 // Author : JongOh Kim + ChatGPT
 // Date : 2026-08-03
 // Project : SVEMS
-// Version : 0.6.0
+// Version : 0.5.5
 // Description : Non-blocking WiFi connection service
 //-------------------------------------------------------------
 

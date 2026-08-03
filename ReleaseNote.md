@@ -317,7 +317,7 @@ v0.5.4.2 UI Framework Enhancement
         Renderer
             ↓
         Widget
-v0.6.0 WifiServicde
+v0.5.5 WifiServicde
     비차단 Wi-Fi 연결
     자동 재연결 구조
     Scheduler 연동

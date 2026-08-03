@@ -3,7 +3,7 @@
 // Author : JongOh Kim + ChatGPT
 // Date : 2026-08-03
 // Project : SVEMS
-// Version : 0.6.0
+// Version : 0.5.5
 // Description : Wifi
 //-------------------------------------------------------------
 
@@ -17,17 +17,4 @@ namespace SVEMS::Config
 
     inline constexpr char WIFI_PASSWORD[] =
         "YOUR_WIFI_PASSWORD";
-
-    // MQTT (향후)
-    inline constexpr char MQTT_SERVER[] =
-        "";
-
-    inline constexpr uint16_t MQTT_PORT =
-        1883;
-
-    inline constexpr char MQTT_USER[] =
-        "";
-
-    inline constexpr char MQTT_PASSWORD[] =
-        "";
 }

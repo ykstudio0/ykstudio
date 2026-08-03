@@ -32,6 +32,9 @@ namespace SVEMS::Device
             return m_time;
         }
 
+        bool SetTime(
+            const RTCDateTime& time);
+
     private:
 
         bool Probe();
@@ -48,9 +51,6 @@ namespace SVEMS::Device
 
         bool ReadTime();
 
-        bool SetTime(
-            const RTCDateTime& time);
-
         void DecodeTime(
             const uint8_t* buffer);
 
@@ -60,8 +60,6 @@ namespace SVEMS::Device
         static uint8_t BcdToDecimal(uint8_t value);
 
         static uint8_t DecimalToBcd(uint8_t value);
-
-    private:
 
         static constexpr uint8_t DEVICE_ADDRESS = 0x68;
 

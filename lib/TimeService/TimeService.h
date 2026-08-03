@@ -24,6 +24,9 @@ namespace SVEMS::Service
 
         static bool Update();
 
+        static bool Synchronize(
+            const SVEMS::Device::RTCDateTime& time);
+            
         static bool IsReady();
 
         static const SVEMS::Device::RTCDateTime& Now();

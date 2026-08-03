@@ -101,6 +101,28 @@ namespace SVEMS::Service
         // return true;
     }
 
+    bool TimeService::Synchronize(
+        const SVEMS::Device::RTCDateTime& time)
+    {
+        if (!Ready || Rtc == nullptr)
+        {
+            return false;
+        }
+
+        if (!Rtc->SetTime(time))
+        {
+            return false;
+        }
+
+        CurrentTime = 
+            time;
+
+        LastTickMs =
+            millis();
+
+        return true;
+    }
+
     bool TimeService::IsReady()
     {
         return Ready;
