@@ -336,7 +336,16 @@ v0.5.5 WifiServicde
         24시간 자동 재동기화
         오프라인 지속 운전
         RTC 재보정 정책 검증
-    v0.5.6 Touch Device
+v0.5.6 Touch Device
+    ✅ FT6336G 터치 IC 인식 (0x38)
+    ✅ TouchDevice Driver 완료
+    ✅ TouchManager Framework 완료
+    ✅ 좌표 변환(Calibration) 완료
+    ✅ Pressed / Released 이벤트 완료
+    ✅ Tap 이벤트 완료
+    ✅ 초기화 중복 제거
+    ✅ v0.5.6 빌드 성공
+    ✅ 모든 기존 테스트(Display, Theme, Model, Renderer) PASS 유지    
 v0.6.x
     EPEVER Modbus 통신 완료
     태양광 실시간 데이터
