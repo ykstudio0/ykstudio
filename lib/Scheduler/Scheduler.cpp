@@ -16,9 +16,13 @@
 #include "TimeService.h"
 #include "WiFiService.h"
 #include "NtpService.h"
+#include "TouchDevice.h"
+#include "TouchManager.h"
 
 namespace
 {
+    SVEMS::Device::TouchDevice Touch;
+
     uint32_t Timer100ms = 0;
     uint32_t Timer1sec  = 0;
     uint32_t Timer5sec  = 0;
@@ -28,6 +32,20 @@ namespace
 
 bool Scheduler::Begin()
 {
+    if (!Touch.Begin())
+    {
+        Logger::Error(
+            "SCHEDULER",
+            "Touch device failed");
+    }
+    else if (!SVEMS::Manager::TouchManager::Begin(
+        Touch))
+    {
+        Logger::Error(
+            "SCHEDULER",
+            "Touch manager failed");
+    }
+
     uint32_t now = millis();
     Timer100ms = now;
     Timer1sec  = now;
@@ -83,29 +101,102 @@ void Scheduler::Run()
 // 0.1 Second Tasks
 void Scheduler::Run100ms()
 {
+    if (!SVEMS::Manager::TouchManager::Update())
+    {
+        return;
+    }
 
+    const SVEMS::Touch::Event event =
+        SVEMS::Manager::TouchManager::GetEvent();
+
+    if (event ==
+        SVEMS::Touch::Event::None)
+    {
+        return;
+    }
+
+    SVEMS::Touch::TouchPoint point;
+
+    SVEMS::Manager::TouchManager::GetPoint(
+        point);
+
+    char message[40];
+
+    switch (event)
+    {
+        case SVEMS::Touch::Event::Pressed:
+            snprintf(
+                message,
+                sizeof(message),
+                "Pressed X=%u Y=%u",
+                static_cast<unsigned int>(
+                    point.x),
+                static_cast<unsigned int>(
+                    point.y));
+
+            Logger::Info(
+                "TOUCH",
+                message);
+
+            break;
+
+        case SVEMS::Touch::Event::Released:
+                snprintf(
+                    message,
+                    sizeof(message),
+                    "Released X=%u Y=%u",
+                    static_cast<unsigned int>(
+                        point.x),
+                    static_cast<unsigned int>(
+                        point.y));
+
+                Logger::Info(
+                    "TOUCH",
+                    message);
+            
+            break;
+
+        case SVEMS::Touch::Event::Tap:
+            snprintf(
+                message,
+                sizeof(message),
+                "Tap X=%u Y=%u",
+                static_cast<unsigned int>(
+                    point.x),
+                static_cast<unsigned int>(
+                    point.y));
+
+            Logger::Info(
+                "TOUCH",
+                message);
+
+            break;
+
+        default:
+            break;
+    }
 }
 
 // 1 Second Tasks
 void Scheduler::Run1Sec()
 {
     DeviceManager::Update();
-    PollSolar();
+    // PollSolar();
 }
 
 // 5 Second Tasks
 void Scheduler::Run5Sec()
 {
-    PollBattery();
-    PollLoad();
-    PollChargingStatus();
+    // PollBattery();
+    // PollLoad();
+    // PollChargingStatus();
 }
 
 // 30 Second Tasks
 void Scheduler::Run30Sec()
 {
-    PollTemperature();
-    PollSOC();
+    // PollTemperature();
+    // PollSOC();
 }
 
 // 60 Second Tasks

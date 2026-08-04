@@ -336,6 +336,7 @@ v0.5.5 WifiServicde
         24시간 자동 재동기화
         오프라인 지속 운전
         RTC 재보정 정책 검증
+    v0.5.6 Touch Device
 v0.6.x
     EPEVER Modbus 통신 완료
     태양광 실시간 데이터

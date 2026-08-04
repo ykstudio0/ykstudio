@@ -47,6 +47,12 @@ void setup()
     delay(BOOT_DELAY_MS);
     Logger::Begin();
 
+    pinMode(6, OUTPUT);
+    digitalWrite(6, LOW);
+    delay(10);
+    digitalWrite(6, HIGH);
+    delay(200);
+
     Wire.begin(8, 9);
 
     Logger::Info("I2C", "Scanning...");
@@ -91,7 +97,7 @@ void setup()
     Display::Begin();
     SVEMS::Service::WiFiService::Begin();
     SVEMS::Service::NtpService::Begin();
-    Scheduler::Begin();
+    // Scheduler::Begin();
     // delay(1000);
     TestTFT();
     delay(2000);
