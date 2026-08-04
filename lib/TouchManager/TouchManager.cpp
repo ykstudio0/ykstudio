@@ -240,7 +240,6 @@ namespace SVEMS::Manager
     //---------------------------------------------------------
     // IsInside
     //---------------------------------------------------------
-
     bool TouchManager::IsInside(
         uint16_t x,
         uint16_t y,
@@ -267,6 +266,24 @@ namespace SVEMS::Manager
             CurrentPoint.x < right &&
             CurrentPoint.y >= y &&
             CurrentPoint.y < bottom;
+    }
+
+    bool TouchManager::IsInside(
+        const SVEMS::Display::Rect& rect)
+    {
+        if (rect.x < 0 ||
+            rect.y < 0 ||
+            rect.width <= 0 ||
+            rect.height <= 0)
+        {
+            return false;
+        }
+
+        return IsInside(
+            static_cast<uint16_t>(rect.x),
+            static_cast<uint16_t>(rect.y),
+            static_cast<uint16_t>(rect.width),
+            static_cast<uint16_t>(rect.height));
     }
 
     //---------------------------------------------------------

@@ -8,6 +8,7 @@
 //-------------------------------------------------------------
 
 #include <Arduino.h>
+#include <WiFi.h>
 
 #include "DisplayModelBuilder.h"
 #include "DataManager.h"
@@ -326,12 +327,56 @@ namespace
                 static_cast<float>(CountOnlineDevices()),
                 DisplayTypes::ValueType::None);
 
+
         system.deviceCount.decimals = 0U;
 
+        // WiFi RSSI
         system.wifiConnected =
             SVEMS::Service::WiFiService::IsConnected();
 
-        system.rs485Ready = 
+        system.wifiSignal =
+            DisplayTypes::MakeValue(
+                system.wifiConnected
+                    ? static_cast<float>(WiFi.RSSI())
+                    : 0.0f,
+                DisplayTypes::ValueType::SignalStrength);
+
+        system.wifiSignal.decimals = 0U;
+
+        if (!system.wifiConnected)
+        {
+            system.wifiSignal.state =
+                DisplayTypes::WidgetState::Offline;
+        }
+
+        // Heap Usage
+        const uint32_t totalHeap =
+            ESP.getHeapSize();
+
+        const uint32_t freeHeap =
+            ESP.getFreeHeap();
+
+        float heapUsedPercent = 0.0f;
+
+        if (totalHeap > 0U)
+        {
+            heapUsedPercent =
+                static_cast<float>(
+                    totalHeap - freeHeap) *
+                100.0f /
+                static_cast<float>(
+                    totalHeap);
+        }
+
+        system.heapPercent =
+            DisplayTypes::MakeValue(
+                heapUsedPercent,
+                DisplayTypes::ValueType::Percent);
+
+        system.heapPercent.decimals = 0U;
+
+        // Communication / Manager State
+        system.rs485Ready =
             RS485::IsReady();
 
         system.modbusReady =
@@ -340,17 +385,36 @@ namespace
         system.deviceManagerReady =
             DeviceManager::IsReady();
 
-        // 다른 값들은 현재 DataManager에서 제공하지 않는다.
-        //
-        // system.currentTime
-        // system.heapPercent
-        // system.wifiSignal
-        // system. wifiConnected
-        // system.rs485Ready
-        // system modbusReady
-        // system.deviceManagerReady
-        //
-        // 따라서 현재는 Reset()의 기본값을 유지한다.
+        // Status Text
+        system.rs485Status.text =
+            system.rs485Ready
+                ? "OK"
+                : "FAIL";
+
+        system.rs485Status.color =
+            system.rs485Ready
+                ? DisplayTheme::COLOR_VALUE
+                : DisplayTheme::COLOR_ALARM;
+
+        system.modbusStatus.text =
+            system.modbusReady
+                ? "OK"
+                : "FAIL";
+
+        system.modbusStatus.color =
+            system.modbusReady
+                ? DisplayTheme::COLOR_VALUE
+                : DisplayTheme::COLOR_ALARM;
+
+        system.deviceManagerStatus.text =
+            system.deviceManagerReady
+                ? "OK"
+                : "FAIL";
+
+        system.deviceManagerStatus.color =
+            system.deviceManagerReady
+                ? DisplayTheme::COLOR_VALUE
+                : DisplayTheme::COLOR_ALARM;
     }
 
     void BuildHeader(DisplayModel::Model& model)

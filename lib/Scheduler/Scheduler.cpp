@@ -8,6 +8,7 @@
 //-------------------------------------------------------------
 
 #include "Scheduler.h"
+#include "Config.h"
 #include "Epever.h"
 #include "Logger.h"
 #include "DataManager.h"
@@ -18,6 +19,9 @@
 #include "NtpService.h"
 #include "TouchDevice.h"
 #include "TouchManager.h"
+#include "DisplayLayout.h"
+#include "WidgetEventManager.h"
+#include "UiAction.h"
 
 namespace
 {
@@ -157,6 +161,7 @@ void Scheduler::Run100ms()
             break;
 
         case SVEMS::Touch::Event::Tap:
+        {
             snprintf(
                 message,
                 sizeof(message),
@@ -170,7 +175,43 @@ void Scheduler::Run100ms()
                 "TOUCH",
                 message);
 
+            const SVEMS::UI::Action action =
+                SVEMS::Manager::WidgetEventManager::Process(
+                    event,
+                    point);
+
+            switch (action)
+            {
+                case SVEMS::UI::Action::PreviousPage:
+                    Logger::Info(
+                        "UI",
+                        "Previous Page");
+
+                    Display::PreviousPage();
+                    break;
+
+                case SVEMS::UI::Action::NextPage:
+                    Logger::Info(
+                        "UI",
+                        "Next Page");
+
+                    Display::NextPage();
+                    break;
+
+                case SVEMS::UI::Action::SelectPage:
+                    Logger::Info(
+                        "UI",
+                        "Select Page");
+
+                    // 향후 페이지 선택 Popup 연결
+                    break;
+
+                default:
+                    break;
+            }
+
             break;
+        }
 
         default:
             break;
@@ -181,22 +222,32 @@ void Scheduler::Run100ms()
 void Scheduler::Run1Sec()
 {
     DeviceManager::Update();
-    // PollSolar();
+    
+    if constexpr (ENABLE_EPEVER_POLLING)
+    {
+        PollSolar();
+    }
 }
 
 // 5 Second Tasks
 void Scheduler::Run5Sec()
 {
-    // PollBattery();
-    // PollLoad();
-    // PollChargingStatus();
+    if constexpr (ENABLE_EPEVER_POLLING)
+    {
+        PollBattery();
+        PollLoad();
+        PollChargingStatus();
+    }
 }
 
 // 30 Second Tasks
 void Scheduler::Run30Sec()
 {
-    // PollTemperature();
-    // PollSOC();
+    if constexpr (ENABLE_EPEVER_POLLING)
+    {
+        PollTemperature();
+        PollSOC();
+    }
 }
 
 // 60 Second Tasks

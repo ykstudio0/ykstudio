@@ -11,6 +11,7 @@
 
 #include <stddef.h>
 #include "DisplayPages.h"
+#include "DisplayRect.h"
 
 namespace DisplayLayout
 {
@@ -142,4 +143,40 @@ namespace DisplayLayout
             CONTENT_HEIGHT > 0 &&
             FOOTER_Y > HEADER_DIVIDER_Y;
     }
+
+    constexpr int FOOTER_BUTTON_WIDTH = 72;
+
+    constexpr SVEMS::Display::Rect
+        FOOTER_PREVIOUS_RECT
+    {
+        0,
+        static_cast<int16_t>(FOOTER_Y),
+        FOOTER_BUTTON_WIDTH,
+        static_cast<int16_t>(FOOTER_HEIGHT)
+    };
+
+    constexpr SVEMS::Display::Rect
+        FOOTER_CENTER_RECT
+    {
+        FOOTER_BUTTON_WIDTH,
+        static_cast<int16_t>(FOOTER_Y),
+
+        static_cast<int16_t>(
+            SCREEN_WIDTH -
+            FOOTER_BUTTON_WIDTH * 2),
+
+        static_cast<int16_t>(FOOTER_HEIGHT)
+    };
+
+    constexpr SVEMS::Display::Rect
+        FOOTER_NEXT_RECT
+    {
+        static_cast<int16_t>(
+            SCREEN_WIDTH -
+            FOOTER_BUTTON_WIDTH),
+
+        static_cast<int16_t>(FOOTER_Y),
+        FOOTER_BUTTON_WIDTH,
+        static_cast<int16_t>(FOOTER_HEIGHT)
+    };
 }

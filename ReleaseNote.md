@@ -336,7 +336,7 @@ v0.5.5 WifiServicde
         24시간 자동 재동기화
         오프라인 지속 운전
         RTC 재보정 정책 검증
-v0.5.6 Touch Device
+v0.5.6 Touch Device & System Page Enhancement
     ✅ FT6336G 터치 IC 인식 (0x38)
     ✅ TouchDevice Driver 완료
     ✅ TouchManager Framework 완료
@@ -344,6 +344,21 @@ v0.5.6 Touch Device
     ✅ Pressed / Released 이벤트 완료
     ✅ Tap 이벤트 완료
     ✅ 초기화 중복 제거
+    ✅ 좌표 정규화
+    ✅ Rect HitTest
+    ✅ Footer HitTest
+    ✅ Footer Navigation
+    ✅ UiAction
+    ✅ WidgetEventManager
+    ✅ Footer Previous / Next 페이지 전환
+    ✅ Footer Center Action 예약
+    ✅ 본문 터치와 Footer 터치 분리
+    ✅ RSSI 표시
+    ✅ RS485 / Modbus Status
+    ✅ Heap
+    ✅ Uptime
+    ✅ Polling Enable Switch
+    ✅ Test/Vehicle Mode 분리
     ✅ v0.5.6 빌드 성공
     ✅ 모든 기존 테스트(Display, Theme, Model, Renderer) PASS 유지    
 v0.6.x

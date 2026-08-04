@@ -259,6 +259,10 @@ namespace DisplayModel
         DisplayTypes::DisplayValue wifiSignal;
         DisplayTypes::DisplayValue deviceCount;
 
+        DisplayTypes::DisplayText rs485Status;
+        DisplayTypes::DisplayText modbusStatus;
+        DisplayTypes::DisplayText deviceManagerStatus;
+
         bool wifiConnected;
         bool rs485Ready;
         bool modbusReady;
@@ -283,22 +287,27 @@ namespace DisplayModel
             wifiSignal(
                 DisplayTypes::MakeValue(
                     0.0f,
-                    DisplayTypes::ValueType::Percent)),
+                    DisplayTypes::ValueType::SignalStrength)),
 
             deviceCount(
                 DisplayTypes::MakeValue(
                     0.0f,
                     DisplayTypes::ValueType::Number)),
 
+            rs485Status(),
+            modbusStatus(),
+            deviceManagerStatus(),
+
             wifiConnected(false),
-
             rs485Ready(false),
-
             modbusReady(false),
-
             deviceManagerReady(false)
         {
             currentTime.decimals = 0U;
+
+            uptime.decimals = 0U;
+
+            wifiSignal.decimals = 0U;
             
             deviceCount.type =
                 DisplayTypes::ValueType::None;

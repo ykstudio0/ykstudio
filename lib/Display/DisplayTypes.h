@@ -33,6 +33,8 @@
         Time,
         Duration,
 
+        SignalStrength,
+
         Text
     };
 
@@ -246,6 +248,9 @@
 
             case ValueType::Duration:
                 return "s";
+
+            case ValueType::SignalStrength:
+                return "dBm";
 
             case ValueType::Time:
             case ValueType::Text:

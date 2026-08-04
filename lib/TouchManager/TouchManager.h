@@ -14,6 +14,7 @@
 #include "TouchDevice.h"
 #include "TouchPoint.h"
 #include "TouchEvent.h"
+#include "DisplayRect.h"
 
 namespace SVEMS::Manager
 {
@@ -39,6 +40,9 @@ namespace SVEMS::Manager
             uint16_t y,
             uint16_t width,
             uint16_t height);
+        
+        static bool IsInside(
+            const SVEMS::Display::Rect& rect);
 
     private:
         static void ConvertPoint(

@@ -60,10 +60,12 @@ namespace
 
     const DisplayLayout::StaticRow g_systemRows[] =
     {
-        {0, "Product"},
-        {1, "Version"},
-        {2, "Developer"},
-        {3, "Wifi"}
+        {0, "RSSI"},
+        {1, "RS485"},
+        {2, "MODBUS"},
+        {3, "DEVICES"},
+        {4, "HEAP"},
+        {5, "UPTIME"}
     };
 } // anonymous namespace
 

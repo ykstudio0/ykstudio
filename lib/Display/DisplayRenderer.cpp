@@ -580,9 +580,7 @@ namespace DisplayRenderer
                 data.voltage,
                 lastData.voltage);
 
-        if (m_firstRender ||
-            m_pageChanged ||
-            voltageChanged)
+        if (ShouldDraw(voltageChanged))
         {
             DrawRowValue(
                 data.voltage,
@@ -594,9 +592,7 @@ namespace DisplayRenderer
                 data.current,
                 lastData.current);
 
-        if (m_firstRender ||
-            m_pageChanged ||
-            currentChanged)
+        if (ShouldDraw(currentChanged))
         {
             DrawRowValue(
                 data.current,
@@ -608,9 +604,7 @@ namespace DisplayRenderer
                 data.power,
                 lastData.power);
 
-        if (m_firstRender ||
-            m_pageChanged ||
-            powerChanged)
+        if (ShouldDraw(powerChanged))
         {
             DrawRowValue(
                 data.power,
@@ -629,9 +623,7 @@ namespace DisplayRenderer
                 data.controllerTemperature,
                 lastData.controllerTemperature);    
 
-        if (m_firstRender ||
-            m_pageChanged ||
-            controllerChanged)
+        if (ShouldDraw(controllerChanged))
         {
             DrawRowValue(
                 data.controllerTemperature,
@@ -643,9 +635,7 @@ namespace DisplayRenderer
                 data.batteryTemperature,
                 lastData.batteryTemperature);
 
-        if (m_firstRender ||
-            m_pageChanged ||
-            batteryChanged)
+        if (ShouldDraw(batteryChanged))
         {
             DrawRowValue(
                 data.batteryTemperature,
@@ -657,9 +647,7 @@ namespace DisplayRenderer
                 data.cabinTemperature,
                 lastData.cabinTemperature);
 
-        if (m_firstRender ||
-            m_pageChanged ||
-            cabinChanged)
+        if (ShouldDraw(cabinChanged))
         {
             DrawRowValue(
                 data.cabinTemperature,
@@ -671,9 +659,7 @@ namespace DisplayRenderer
                 data.cabinHumidity,
                 lastData.cabinHumidity);
 
-        if (m_firstRender ||
-            m_pageChanged ||
-            humidityChanged)
+        if (ShouldDraw(humidityChanged))
         {
             DrawRowValue(
                 data.cabinHumidity,
@@ -684,8 +670,88 @@ namespace DisplayRenderer
     void Renderer::DrawSystem(
         const DisplayModel::SystemData& data)
     {
-        // 다음 단계에서 구현한다.
-        (void)data;
+        const DisplayModel::SystemData& lastData =
+            m_lastModel.GetSystem();
+
+        // RSSI
+        const bool wifiSignalChanged =
+            HasValueChanged(
+                data.wifiSignal,
+                lastData.wifiSignal);
+
+        if (ShouldDraw(wifiSignalChanged))
+        {
+            DrawRowValue(
+                data.wifiSignal,
+                0U);
+        }
+
+        // RS485
+        const bool rs485Changed =
+            HasDisplayTextChanged(
+                data.rs485Status,
+                lastData.rs485Status);
+
+        if (ShouldDraw(rs485Changed))
+        {
+            DisplayWidgets::ValueWidget::DrawTextValue(
+                *m_target,
+                1U,
+                data.rs485Status);
+        }
+
+        // MODBUS
+        const bool modbusChanged =
+            HasDisplayTextChanged(
+                data.modbusStatus,
+                lastData.modbusStatus);
+
+        if (ShouldDraw(modbusChanged))
+        {
+            DisplayWidgets::ValueWidget::DrawTextValue(
+                *m_target,
+                2U,
+                data.modbusStatus);
+        }
+
+        // DEVICES
+        const bool deviceCountChanged =
+            HasValueChanged(
+                data.deviceCount,
+                lastData.deviceCount);
+
+        if (ShouldDraw(deviceCountChanged))
+        {
+            DrawRowValue(
+                data.deviceCount,
+                3U);
+        }
+
+        // HEAP
+        const bool heapChanged =
+            HasValueChanged(
+                data.heapPercent,
+                lastData.heapPercent);
+
+        if (ShouldDraw(heapChanged))
+        {
+            DrawRowValue(
+                data.heapPercent,
+                4U);
+        }
+
+        // UPTIME
+        const bool uptimeChanged =
+            HasValueChanged(
+                data.uptime,
+                lastData.uptime);
+
+        if (ShouldDraw(uptimeChanged))
+        {
+            DrawRowValue(
+                data.uptime,
+                5U);
+        }
     }
 
     // Drawing Helpers

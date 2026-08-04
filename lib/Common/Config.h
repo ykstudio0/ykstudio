@@ -38,4 +38,13 @@ constexpr bool LOGGER_ENABLE_DEBUG = true;
 constexpr uint8_t STATUS_LED_COUNT = 1;
 constexpr uint8_t STATUS_LED_BRIGHTNESS = 30;
 
+//-------------------------------
+// 테스트 기기
+//-------------------------------
+constexpr bool ENABLE_EPEVER_POLLING = false;   
+constexpr bool ENABLE_TOUCH = true;
+constexpr bool ENABLE_WIFI = true;
+constexpr bool ENABLE_NTP = true;
+constexpr bool ENABLE_DISPLAY = true;
+
 #endif

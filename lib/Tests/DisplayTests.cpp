@@ -389,6 +389,12 @@ namespace
                 DisplayTypes::GetUnit(ValueType::Percent),
                 "%"),
             "Percent unit is percent");
+        
+        Check(
+            StringEquals(
+                DisplayTypes::GetUnit(ValueType::SignalStrength),
+                "dBm"),
+            "Signal strength unit is dBm");
 
         Check(
             StringEquals(
