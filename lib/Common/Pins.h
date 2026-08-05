@@ -50,4 +50,10 @@ constexpr uint8_t PIN_CTP_INT  = 7;
 // ===========================
 constexpr uint8_t PIN_SD_CS = 5;
 
+// ===========================
+// BMS Sniffer
+// ===========================
+constexpr uint8_t PIN_BMS_RX = 35;
+constexpr uint8_t PIN_BMS_TX = 36;
+
 #endif
