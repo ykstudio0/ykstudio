@@ -67,6 +67,11 @@ void Scheduler::RunInitial()
 
 void Scheduler::Run()
 {
+    if constexpr (ENABLE_BMS_SERVICE)
+    {
+        SVEMS::Service::BMSService::Update();
+    }
+    
     uint32_t now = millis();
 
     while (now - Timer100ms >= 100)
