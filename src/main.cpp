@@ -99,24 +99,26 @@ void setup()
             Logger::Error("BMS", "Init Failed");
         }
     }
-    
+
     RS485::Begin();
     ModbusRTU::Begin();
     DeviceManager::Begin();
     Display::Begin();
     SVEMS::Service::WiFiService::Begin();
     SVEMS::Service::NtpService::Begin();
-    // Scheduler::Begin();
-    // delay(1000);
     TestTFT();
     delay(2000);
-    Tests::RunDisplayTests();
-    Tests::RunDisplayThemeTests();
-    Tests::RunDisplayModelTests();
-    Tests::RunDisplayRendererTests(tftTarget);
+    
+    if constexpr (!ENABLE_BMS_SERVICE)
+    {
+        Tests::RunDisplayTests();
+        Tests::RunDisplayThemeTests();
+        Tests::RunDisplayModelTests();
+        Tests::RunDisplayRendererTests(tftTarget);
 
-    Serial.println();
-    Serial.println("SVEMS Display Test");
+        Serial.println();
+        Serial.println("SVEMS Display Test");
+    }
 
     if (!serialRenderTarget.Begin())
     {

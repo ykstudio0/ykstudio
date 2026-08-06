@@ -32,7 +32,11 @@ namespace SVEMS::Service
             115200,
             SERIAL_8N1,
             PIN_BMS_RX,
-            PIN_BMS_TX);
+            -1);
+
+        pinMode(
+            PIN_BMS_RX,
+            INPUT_PULLUP);
 
         Ready = true;
 
