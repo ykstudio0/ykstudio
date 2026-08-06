@@ -360,7 +360,25 @@ v0.5.6 Touch Device & System Page Enhancement
     ✅ Polling Enable Switch
     ✅ Test/Vehicle Mode 분리
     ✅ v0.5.6 빌드 성공
-    ✅ 모든 기존 테스트(Display, Theme, Model, Renderer) PASS 유지    
+    ✅ 모든 기존 테스트(Display, Theme, Model, Renderer) PASS 유지  
+v0.5.7 implement Quantumcat BMS UART protocol parser
+    Y케이블 설계
+    핀 분석
+    GND 찾기
+    UART 후보 찾기
+    GPIO 변경
+    ESP32 재부팅 해결
+    분압회로 설계
+    96바이트 프레임 정상 수신
+    헤더 동기화 정상
+    Big-endian float 해석 정상
+    셀 4개 전압 정상
+    팩 전압과 셀 합계 일치
+    SOC와 잔여 용량 관계 일치
+    방전 전류 음수 표기 정상
+    세 온도값 정상
+    Touch 및 페이지 전환과 충돌 없음
+    Wi-Fi/NTP와 병행 동작 정상
 v0.6.x
     EPEVER Modbus 통신 완료
     태양광 실시간 데이터
