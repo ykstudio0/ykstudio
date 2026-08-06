@@ -60,6 +60,7 @@ void Logger::Hex(const String& tag, const uint8_t* data, size_t length)
         
     }
     Serial.println();
+    Serial.println();
 }
 
 void Logger::PrintHeader(

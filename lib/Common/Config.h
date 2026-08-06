@@ -41,10 +41,17 @@ constexpr uint8_t STATUS_LED_BRIGHTNESS = 30;
 //-------------------------------
 // 테스트 기기
 //-------------------------------
-constexpr bool ENABLE_EPEVER_POLLING = true;   
+constexpr bool ENABLE_EPEVER_POLLING = false;   
 constexpr bool ENABLE_TOUCH = true;
 constexpr bool ENABLE_WIFI = true;
 constexpr bool ENABLE_NTP = true;
 constexpr bool ENABLE_DISPLAY = true;
 
+//-------------------------------
+// BMS Configuration
+//-------------------------------
+constexpr bool ENABLE_BMS_SERVICE = true;
+// BMS 로그 관리
+constexpr bool ENABLE_BMS_TRACE = true;  
+   
 #endif

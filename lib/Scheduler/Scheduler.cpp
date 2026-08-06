@@ -22,7 +22,7 @@
 #include "DisplayLayout.h"
 #include "WidgetEventManager.h"
 #include "UiAction.h"
-
+#include "BMSService.h"
 namespace
 {
     SVEMS::Device::TouchDevice Touch;
@@ -215,6 +215,11 @@ void Scheduler::Run100ms()
 
         default:
             break;
+    }
+
+    if constexpr (ENABLE_BMS_SERVICE)
+    {
+        SVEMS::Service::BMSService::Update();
     }
 }
 

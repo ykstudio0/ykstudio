@@ -26,6 +26,7 @@
 #include "Scheduler.h"
 #include "WifiService.h"
 #include "NtpService.h"
+#include "BMSService.h"
 
 namespace
 {
@@ -90,6 +91,14 @@ void setup()
         foundCount);
 
     Logger::Info("I2C", result);
+    
+    if constexpr (ENABLE_BMS_SERVICE)
+    {
+        if (!SVEMS::Service::BMSService::Begin())
+        {
+            Logger::Error("BMS", "Init Failed");
+        }
+    }
     
     RS485::Begin();
     ModbusRTU::Begin();
