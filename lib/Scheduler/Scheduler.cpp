@@ -27,11 +27,33 @@ namespace
 {
     SVEMS::Device::TouchDevice Touch;
 
+    constexpr uint32_t EPEVER_BACKOFF_MS = 5000UL;
+
+    bool g_epeverOnline = true;
+
+    uint32_t g_epeverNextProbeTime = 0U;
+
     uint32_t Timer100ms = 0;
     uint32_t Timer1sec  = 0;
     uint32_t Timer5sec  = 0;
     uint32_t Timer30sec = 0;
     uint32_t Timer60sec = 0;
+
+    void SetEpeverOffline(
+        uint32_t now)
+    {
+        g_epeverOnline = false;
+
+        g_epeverNextProbeTime =
+            now + EPEVER_BACKOFF_MS;
+    }
+
+    void SetEpeverOnline()
+    {
+        g_epeverOnline = true;
+
+        g_epeverNextProbeTime = 0U;
+    }
 }
 
 bool Scheduler::Begin()
@@ -221,11 +243,6 @@ void Scheduler::Run100ms()
         default:
             break;
     }
-
-    if constexpr (ENABLE_BMS_SERVICE)
-    {
-        SVEMS::Service::BMSService::Update();
-    }
 }
 
 // 1 Second Tasks
@@ -235,7 +252,54 @@ void Scheduler::Run1Sec()
     
     if constexpr (ENABLE_EPEVER_POLLING)
     {
-        PollSolar();
+        const uint32_t now =
+            millis();
+
+        //-------------------------------------------------
+        // EPEVER Online
+        //-------------------------------------------------
+
+        if (g_epeverOnline)
+        {
+            if (!Epever::ReadSolar())
+            {
+                SetEpeverOffline(now);
+            }
+
+            return;
+        }
+
+        //-------------------------------------------------
+        // EPEVER Offline
+        //
+        // Backoff 기간에는 아무 요청도 하지 않는다.
+        //-------------------------------------------------
+
+        if (static_cast<int32_t>(
+                now -
+                g_epeverNextProbeTime) < 0)
+        {
+            return;
+        }
+
+        //-------------------------------------------------
+        // Recovery Probe
+        //-------------------------------------------------
+
+        if (Epever::ReadSolar())
+        {
+            SetEpeverOnline();
+
+            Logger::Info(
+                "EPEVER",
+                "Communication Restored");
+        }
+        else
+        {
+            g_epeverNextProbeTime =
+                now +
+                EPEVER_BACKOFF_MS;
+        }
     }
 }
 
@@ -244,9 +308,31 @@ void Scheduler::Run5Sec()
 {
     if constexpr (ENABLE_EPEVER_POLLING)
     {
-        PollBattery();
-        PollLoad();
-        PollChargingStatus();
+        if (!g_epeverOnline)
+        {
+            return;
+        }
+
+        const uint32_t now =
+            millis();
+
+        if (!PollBattery())
+        {
+            SetEpeverOffline(now);
+            return;
+        }
+
+        if (!PollLoad())
+        {
+            SetEpeverOffline(now);
+            return;
+        }
+
+        if (!PollChargingStatus())
+        {
+            SetEpeverOffline(now);
+            return;
+        }
     }
 }
 
@@ -255,47 +341,66 @@ void Scheduler::Run30Sec()
 {
     if constexpr (ENABLE_EPEVER_POLLING)
     {
-        PollTemperature();
-        PollSOC();
+        if (!g_epeverOnline)
+        {
+            return;
+        }
+
+        const uint32_t now =
+            millis();
+
+        if (!PollTemperature())
+        {
+            SetEpeverOffline(now);
+            return;
+        }
+
+        if (!PollSOC())
+        {
+            SetEpeverOffline(now);
+            return;
+        }
     }
 }
 
 // 60 Second Tasks
 void Scheduler::Run60Sec()
 {
-    
+    if constexpr (ENABLE_EPEVER_POLLING)
+    {
+    }
 }
 
 // Poll Solar Information
-void Scheduler::PollSolar()
+bool Scheduler::PollSolar()
 {
-    Epever::ReadSolar();
+    return Epever::ReadSolar();
 }
 
 // Poll Battery Information
-void Scheduler::PollBattery()
+bool Scheduler::PollBattery()
 {
-    Epever::ReadBattery();
+    return Epever::ReadBattery();
 }
 
-void Scheduler::PollLoad()
+bool Scheduler::PollLoad()
 {
-    Epever::ReadLoad();
+    return Epever::ReadLoad();
 }
 
 // Poll Temperature Information
-void Scheduler::PollTemperature()
+bool Scheduler::PollTemperature()
 {
-    Epever::ReadTemperature();
+    return Epever::ReadTemperature();
 }
 
 // Poll SOC Information
-void Scheduler::PollSOC()
+bool Scheduler::PollSOC()
 {
-    Epever::ReadSOC();
+    return Epever::ReadSOC();
 }
 
-void Scheduler::PollChargingStatus()
+bool Scheduler::PollChargingStatus()
 {
     Epever::ReadChargingStatus();
 }
@@ -306,6 +411,11 @@ void Scheduler::PollChargingStatus()
 
 void Scheduler::Service()
 {
+    if constexpr (ENABLE_BMS_SERVICE)
+    {
+        SVEMS::Service::BMSService::Update();
+    }
+
     DataManager::UpdateOnlineStatus(millis());
 
     SVEMS::Service::TimeService::Update();

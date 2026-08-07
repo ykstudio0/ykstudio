@@ -26,18 +26,18 @@ private:
     static void Run30Sec();
     static void Run60Sec();
 
-    static void PollSolar();
-    static void PollBattery();
-    static void PollLoad();
-    static void PollTemperature();
-    static void PollSOC();
+    static bool PollSolar();
+    static bool PollBattery();
+    static bool PollLoad();
+    static bool PollTemperature();
+    static bool PollSOC();
 
     static void Service();
     static void ServiceLogger();
     static void ServiceDisplay();
     static void ServiceIoT();
 
-    static void PollChargingStatus();
+    static bool PollChargingStatus();
 };
 
 #endif

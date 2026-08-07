@@ -78,7 +78,8 @@ bool ModbusRTU::ReadInputRegisters(
         if (!RS485::ReceiveFrame(
             response,
             len,
-            responseSize))
+            responseSize,
+            MODBUS_TIMEOUT))
         {
             if (retry < MODBUS_RETRY)
             {

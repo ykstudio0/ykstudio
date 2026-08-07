@@ -8,6 +8,8 @@
 //-------------------------------------------------------------
 
 #include <cstring>
+#include <cmath>
+
 #include "BMSService.h"
 #include "Pins.h"
 #include "Logger.h"
@@ -264,6 +266,37 @@ namespace SVEMS::Service
 
         if (parsed.packVoltage < 0.0f ||
             parsed.packVoltage > 100.0f)
+        {
+            return false;
+        }
+
+        if (!std::isfinite(parsed.socPercent) ||
+            !std::isfinite(parsed.packVoltage) ||
+            !std::isfinite(parsed.packCurrent) ||
+            !std::isfinite(parsed.remainingCapacity) ||
+            !std::isfinite(parsed.batteryTemperature) ||
+            !std::isfinite(parsed.bmsTemperature) ||
+            !std::isfinite(parsed.externalTemperature))
+        {
+            return false;
+        }
+
+        if (!std::isfinite(parsed.cellVoltage1) ||
+            !std::isfinite(parsed.cellVoltage2) ||
+            !std::isfinite(parsed.cellVoltage3) ||
+            !std::isfinite(parsed.cellVoltage4))
+        {
+            return false;
+        }
+
+        if (parsed.cellVoltage1 < 0.0f ||
+            parsed.cellVoltage1 > 5.0f ||
+            parsed.cellVoltage2 < 0.0f ||
+            parsed.cellVoltage2 > 5.0f ||
+            parsed.cellVoltage3 < 0.0f ||
+            parsed.cellVoltage3 > 5.0f ||
+            parsed.cellVoltage4 < 0.0f ||
+            parsed.cellVoltage4 > 5.0f)
         {
             return false;
         }

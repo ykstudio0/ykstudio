@@ -188,18 +188,13 @@ bool Epever::ReadSOC()
     if (!ReadRegisters(
             EpeverRegister::EPEVER_BATTERY_SOC,
             sizeof(soc) / sizeof(uint16_t),
-            (uint16_t*)&soc))
+            reinterpret_cast<uint16_t*>(&soc)))
     {
-        DataManager::Soc.status.updated = false;
-
         return false;
     }
 
-    DataManager::Soc.value = soc.value;
-
-    DataManager::Soc.status.updated = true;
-    DataManager::Soc.status.online = true;
-    DataManager::Soc.status.lastUpdate = millis();
+    DataManager::ControllerBattery.soc =
+        static_cast<uint8_t>(soc.value);
 
     return true;
 }

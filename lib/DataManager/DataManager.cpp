@@ -25,7 +25,6 @@ void DataManager::ClearUpdates()
     Battery.status.updated = false;
     ControllerBattery.status.updated = false;
     Load.status.updated = false;
-    Temperature.cabinStatus.updated = false;
     Temperature.powerBankStatus.updated = false;
     Temperature.controllerStatus.updated = false;
     Soc.status.updated = false;
@@ -33,8 +32,6 @@ void DataManager::ClearUpdates()
 
 void DataManager::UpdateOnlineStatus(uint32_t now)
 {
-    
-
     if (Solar.status.online && 
         now - Solar.status.lastUpdate > SOLAR_TIMEOUT_MS)
     {
@@ -43,7 +40,7 @@ void DataManager::UpdateOnlineStatus(uint32_t now)
     }
 
     if (Battery.status.online && 
-        now - Battery.status.lastUpdate > BATTERY_TIMEOUT_MS)
+        now - Battery.status.lastUpdate > BMS_TIMEOUT_MS)
     {
         Battery.status.online = false;
         Battery.status.updated = true;
@@ -64,17 +61,9 @@ void DataManager::UpdateOnlineStatus(uint32_t now)
         Load.status.updated = true;
     }
 
-    if (Temperature.cabinStatus.online &&
-        now - Temperature.cabinStatus.lastUpdate >
-            TEMPERATURE_TIMEOUT_MS)
-    {
-        Temperature.cabinStatus.online = false;
-        Temperature.cabinStatus.updated = true;
-    }
-
     if (Temperature.powerBankStatus.online &&
         now - Temperature.powerBankStatus.lastUpdate >
-            TEMPERATURE_TIMEOUT_MS)
+            BMS_TIMEOUT_MS)
     {
         Temperature.powerBankStatus.online = false;
         Temperature.powerBankStatus.updated = true;
@@ -89,7 +78,7 @@ void DataManager::UpdateOnlineStatus(uint32_t now)
     }
 
     if (Soc.status.online && 
-        now - Soc.status.lastUpdate > SOC_TIMEOUT_MS)
+        now - Soc.status.lastUpdate > BMS_TIMEOUT_MS)
     {
         Soc.status.online = false;
         Soc.status.updated = true;

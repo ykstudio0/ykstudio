@@ -62,9 +62,6 @@ public:
 
     struct TemperatureData
     {
-        // SHT40 cabin temperature
-        float cabin = 0.0f;
-
         // Quantumcat battery temperature
         float battery = 0.0f;
 
@@ -123,6 +120,8 @@ public:
         float current = 0.0f;
         float power   = 0.0f;
 
+        uint8_t soc = 0U;
+
         Status status;
     };
 
@@ -135,8 +134,6 @@ public:
     static ChargeData Charge;
     static EnvironmentData Environment;
     
-
     static void ClearUpdates();
     static void UpdateOnlineStatus(uint32_t now);
 };
-

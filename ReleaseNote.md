@@ -379,6 +379,14 @@ v0.5.7 implement Quantumcat BMS UART protocol parser
     세 온도값 정상
     Touch 및 페이지 전환과 충돌 없음
     Wi-Fi/NTP와 병행 동작 정상
+v0.5.8 
+    ✅ Temperature 데이터 소스별 Status 분리
+    ✅ Controller / Controller Board 데이터 분리
+    ✅ PowerBank Battery / BMS / External 온도 구조 확보
+    ✅ Temperature 기본 페이지 → Cabin / Battery / BMS / Controller
+    ✅ Overview의 Cabin Temperature / Humidity 유지
+    ✅ ControllerBattery를 EPEVER 진단 데이터로 독립 보존
+    ✅ 빌드 / LCD / Touch / Page 전환 정상
 v0.6.x
     EPEVER Modbus 통신 완료
     태양광 실시간 데이터

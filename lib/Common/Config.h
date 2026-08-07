@@ -24,8 +24,8 @@ constexpr uint16_t BOOT_DELAY_MS = 5000;
 //-------------------------------
 constexpr uint8_t  MODBUS_SLAVE_ID = 1;
 constexpr uint32_t MODBUS_BAUDRATE = 115200;
-constexpr uint16_t MODBUS_TIMEOUT = 500;
-constexpr uint8_t MODBUS_RETRY = 2;
+constexpr uint16_t MODBUS_TIMEOUT = 200;
+constexpr uint8_t MODBUS_RETRY = 0U;
 
 //-------------------------------
 // Logger
@@ -41,7 +41,7 @@ constexpr uint8_t STATUS_LED_BRIGHTNESS = 30;
 //-------------------------------
 // 테스트 기기
 //-------------------------------
-constexpr bool ENABLE_EPEVER_POLLING = false;   
+constexpr bool ENABLE_EPEVER_POLLING = true;   
 constexpr bool ENABLE_TOUCH = true;
 constexpr bool ENABLE_WIFI = true;
 constexpr bool ENABLE_NTP = true;
