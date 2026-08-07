@@ -75,16 +75,79 @@ bool ModbusRTU::ReadInputRegisters(
 
         RS485::Send(frame, sizeof(frame));
 
-        if (!RS485::ReceiveFrame(
-            response,
-            len,
-            responseSize,
-            MODBUS_TIMEOUT))
+        bool received =
+            RS485::ReceiveFrame(
+                response,
+                len,
+                responseSize,
+                MODBUS_TIMEOUT);
+
+        //-------------------------------------------------
+        // Partial Frame Recovery
+        //
+        // 일부 byte가 수신되었지만 완전한 Frame을
+        // 받지 못한 경우 동일 요청을 1회 재전송한다.
+        //
+        // 구형 EPEVER Tracer-BP 통신 대응
+        //-------------------------------------------------
+
+        if (!received && len > 0)
+        {
+            Logger::Warning(
+                "MODBUS",
+                "Partial Frame - Recovery Retry");
+
+            len = 0;
+
+            memset(
+                response,
+                0,
+                responseSize);
+
+            Logger::Hex(
+                "TX RECOVERY",
+                frame,
+                sizeof(frame));
+
+            RS485::Send(
+                frame,
+                sizeof(frame));
+
+            received =
+                RS485::ReceiveFrame(
+                    response,
+                    len,
+                    responseSize,
+                    MODBUS_TIMEOUT);
+
+            if (received)
+            {
+                Logger::Info(
+                    "MODBUS",
+                    "Partial Recovery OK");
+            }
+            else
+            {
+                Logger::Warning(
+                    "MODBUS",
+                    "Partial Recovery Failed");
+            }
+        }
+
+        //-------------------------------------------------
+        // 수신 실패
+        //-------------------------------------------------
+
+        if (!received)
         {
             if (retry < MODBUS_RETRY)
             {
-                Logger::Info("MODBUS", "Retry #" + String(retry + 1));
+                Logger::Info(
+                    "MODBUS",
+                    "Retry #" +
+                    String(retry + 1));
             }
+
             continue;
         }
 

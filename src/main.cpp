@@ -111,13 +111,13 @@ void setup()
     
     if constexpr (!ENABLE_BMS_SERVICE)
     {
-        Tests::RunDisplayTests();
-        Tests::RunDisplayThemeTests();
-        Tests::RunDisplayModelTests();
-        Tests::RunDisplayRendererTests(tftTarget);
+        // Tests::RunDisplayTests();
+        // Tests::RunDisplayThemeTests();
+        // Tests::RunDisplayModelTests();
+        // Tests::RunDisplayRendererTests(tftTarget);
 
-        Serial.println();
-        Serial.println("SVEMS Display Test");
+        // Serial.println();
+        // Serial.println("SVEMS Display Test");
     }
 
     if (!serialRenderTarget.Begin())

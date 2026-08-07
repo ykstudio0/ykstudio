@@ -50,7 +50,7 @@ constexpr bool ENABLE_DISPLAY = true;
 //-------------------------------
 // BMS Configuration
 //-------------------------------
-constexpr bool ENABLE_BMS_SERVICE = false;
+constexpr bool ENABLE_BMS_SERVICE = true;
 // BMS 로그 관리
 constexpr bool ENABLE_BMS_TRACE = true;  
    

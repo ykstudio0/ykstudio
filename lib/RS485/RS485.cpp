@@ -24,17 +24,12 @@ bool RS485::Begin()
 
     RxMode();
 
-    RS485Serial.setRxBufferSize(256);
-
     RS485Serial.begin(
         MODBUS_BAUDRATE,
         SERIAL_8N1,
         PIN_RS485_RX,
         PIN_RS485_TX);
 
-    RS485Serial.setRxTimeout(1);
-    RS485Serial.setRxFIFOFull(1);
-    
     Ready = true;
 
     Logger::Info("RS485", "Ready");

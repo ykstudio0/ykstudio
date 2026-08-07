@@ -312,10 +312,10 @@ bool Scheduler::PollChargingStatus()
 
 void Scheduler::Service()
 {
-    if constexpr (ENABLE_BMS_SERVICE)
-    {
-        SVEMS::Service::BMSService::Update();
-    }
+    // if constexpr (ENABLE_BMS_SERVICE)
+    // {
+    //     SVEMS::Service::BMSService::Update();
+    // }
 
     DataManager::UpdateOnlineStatus(millis());
 
