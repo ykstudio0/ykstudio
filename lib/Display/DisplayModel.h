@@ -222,8 +222,9 @@ namespace DisplayModel
     {
         DisplayTypes::DisplayValue cabinTemperature;
         DisplayTypes::DisplayValue cabinHumidity;
-        DisplayTypes::DisplayValue controllerTemperature;
         DisplayTypes::DisplayValue batteryTemperature;
+        DisplayTypes::DisplayValue bmsTemperature;
+        DisplayTypes::DisplayValue controllerTemperature;
 
         constexpr TemperatureData()
             : cabinTemperature(
@@ -236,17 +237,21 @@ namespace DisplayModel
                     0.0f,
                     DisplayTypes::ValueType::Humidity)),
 
-              controllerTemperature(
+              batteryTemperature(
                 DisplayTypes::MakeValue(
                     0.0f,
                     DisplayTypes::ValueType::Temperature)),
 
-              batteryTemperature(
+              bmsTemperature(
+                DisplayTypes::MakeValue(
+                    0.0f,
+                    DisplayTypes::ValueType::Temperature)),
+
+              controllerTemperature(
                 DisplayTypes::MakeValue(
                     0.0f,
                     DisplayTypes::ValueType::Temperature))
         {
-
         }
     };
 

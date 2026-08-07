@@ -36,6 +36,18 @@ public:
         float current = 0.0f;
         float power   = 0.0f;
 
+        float remainingCapacity = 0.0f;
+
+        float cellVoltage[4] =
+        {
+            0.0f,
+            0.0f,
+            0.0f,
+            0.0f
+        };
+
+        uint8_t cellCount = 0U;
+
         Status status;
     };
 
@@ -50,10 +62,32 @@ public:
 
     struct TemperatureData
     {
-        float battery = 0.0f;
-        float device = 0.0f;
+        // SHT40 cabin temperature
+        float cabin = 0.0f;
 
-        Status status;
+        // Quantumcat battery temperature
+        float battery = 0.0f;
+
+        // Quantumcat BMS temperature
+        float bms = 0.0f;
+
+        // Quantumcat external sensor temperature
+        float powerBankExternal = 0.0f;
+
+        // EPEVER controller temperature sensor
+        float controller = 0.0f;
+
+        // EPEVER controller board temperature
+        float controllerBoard = 0.0f;
+
+        // SHT40 source status
+        Status cabinStatus;
+
+        // Quantumcat BMS source status
+        Status powerBankStatus;
+
+        // EPEVER temperature source status
+        Status controllerStatus;
     };
 
     struct EnvironmentData
@@ -83,13 +117,24 @@ public:
         bool fault = false;
     };
 
+    struct ControllerBatteryData
+    {
+        float voltage = 0.0f;
+        float current = 0.0f;
+        float power   = 0.0f;
+
+        Status status;
+    };
+
     static SolarData Solar;
     static BatteryData Battery;
+    static ControllerBatteryData ControllerBattery;
     static LoadData Load;
     static TemperatureData Temperature;
     static SocData Soc;
     static ChargeData Charge;
     static EnvironmentData Environment;
+    
 
     static void ClearUpdates();
     static void UpdateOnlineStatus(uint32_t now);

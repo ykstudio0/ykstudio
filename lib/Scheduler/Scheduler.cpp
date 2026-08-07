@@ -366,14 +366,14 @@ void Scheduler::ServiceLogger()
         Logger::Info("LOAD", buffer);
     }
 
-    if (DataManager::Temperature.status.updated)
+    if (DataManager::Temperature.controllerStatus.updated)
     {
         snprintf(buffer, sizeof(buffer), "%.1f ℃", 
             DataManager::Temperature.battery);
         Logger::Info("BAT TEMP", buffer);
         
         snprintf(buffer, sizeof(buffer), "%.1f ℃", 
-            DataManager::Temperature.device);
+            DataManager::Temperature.controllerBoard);
         Logger::Info("DEV TEMP", buffer);
     }
 

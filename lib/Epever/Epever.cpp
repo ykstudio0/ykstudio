@@ -72,34 +72,40 @@ bool Epever::ReadSolar()
 bool Epever::ReadBattery()
 {
     EpeverMap::Battery battery;
-    
-    // Read Battery Voltage / Current
+
     if (!ReadRegisters(
-        EpeverRegister::EPEVER_BATTERY_VOLTAGE,
-        sizeof(battery) / sizeof(uint16_t),
-        (uint16_t*)&battery))
+            EpeverRegister::EPEVER_BATTERY_VOLTAGE,
+            sizeof(battery) / sizeof(uint16_t),
+            reinterpret_cast<uint16_t*>(&battery)))
     {
-        DataManager::Battery.status.updated = false;
+        DataManager::ControllerBattery
+            .status.updated = false;
+
         return false;
     }
-    
-    // Battery Voltage
-    DataManager::Battery.voltage = ToVoltage(battery.voltage);
 
-    // Battery Current
-    DataManager::Battery.current = ToCurrent(battery.current);
+    DataManager::ControllerBattery.voltage =
+        ToVoltage(battery.voltage);
 
-    // Battery Power (32bit)
-    uint32_t rawPower =
-        ((uint32_t)battery.powerHigh << 16) |
+    DataManager::ControllerBattery.current =
+        ToCurrent(battery.current);
+
+    const uint32_t rawPower =
+        (static_cast<uint32_t>(
+            battery.powerHigh) << 16) |
         battery.powerLow;
-    
-    DataManager::Battery.power = ToPower(rawPower);
 
-    // Battery Status
-    DataManager::Battery.status.updated = true;
-    DataManager::Battery.status.online = true;
-    DataManager::Battery.status.lastUpdate = millis();
+    DataManager::ControllerBattery.power =
+        ToPower(rawPower);
+
+    DataManager::ControllerBattery
+        .status.updated = true;
+
+    DataManager::ControllerBattery
+        .status.online = true;
+
+    DataManager::ControllerBattery
+        .status.lastUpdate = millis();
 
     return true;
 }
@@ -145,22 +151,32 @@ bool Epever::ReadTemperature()
     if (!ReadRegisters(
             EpeverRegister::EPEVER_BATTERY_TEMPERATURE,
             sizeof(temp) / sizeof(uint16_t),
-            (uint16_t*)&temp))
+            reinterpret_cast<uint16_t*>(&temp)))
     {
-        DataManager::Temperature.status.updated = false;
+        DataManager::Temperature
+            .controllerStatus.updated = false;
 
         return false;
     }
 
-    DataManager::Temperature.battery = 
-        ToTemperature((int16_t)temp.battery);
+    DataManager::Temperature.controller =
+        ToTemperature(
+            static_cast<int16_t>(
+                temp.battery));
 
-    DataManager::Temperature.device = 
-        ToTemperature((int16_t)temp.device);
-    
-    DataManager::Temperature.status.updated = true;
-    DataManager::Temperature.status.online = true;
-    DataManager::Temperature.status.lastUpdate = millis();
+    DataManager::Temperature.controllerBoard =
+        ToTemperature(
+            static_cast<int16_t>(
+                temp.device));
+
+    DataManager::Temperature
+        .controllerStatus.updated = true;
+
+    DataManager::Temperature
+        .controllerStatus.online = true;
+
+    DataManager::Temperature
+        .controllerStatus.lastUpdate = millis();
 
     return true;
 }
@@ -298,6 +314,6 @@ void Epever::ClearUpdates()
     DataManager::Solar.status.updated = false;
     DataManager::Battery.status.updated = false;
     DataManager::Load.status.updated = false;
-    DataManager::Temperature.status.updated = false;
+    DataManager::Temperature.controllerStatus.updated = false;
     DataManager::Soc.status.updated = false;
 }

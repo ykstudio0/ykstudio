@@ -618,18 +618,18 @@ namespace DisplayRenderer
         const DisplayModel::TemperatureData& lastData =
             m_lastModel.GetTemperature();
 
-        const bool controllerChanged =
+        const bool cabinChanged =
             HasValueChanged(
-                data.controllerTemperature,
-                lastData.controllerTemperature);    
+                data.cabinTemperature,
+                lastData.cabinTemperature);
 
-        if (ShouldDraw(controllerChanged))
+        if (ShouldDraw(cabinChanged))
         {
             DrawRowValue(
-                data.controllerTemperature,
+                data.cabinTemperature,
                 0U);
         }
-
+        
         const bool batteryChanged =
             HasValueChanged(
                 data.batteryTemperature,
@@ -642,29 +642,33 @@ namespace DisplayRenderer
                 1U);
         }
 
-        const bool cabinChanged =
+        const bool bmsChanged =
             HasValueChanged(
-                data.cabinTemperature,
-                lastData.cabinTemperature);
+                data.bmsTemperature,
+                lastData.bmsTemperature);
 
-        if (ShouldDraw(cabinChanged))
+        if (ShouldDraw(bmsChanged))
         {
             DrawRowValue(
-                data.cabinTemperature,
+                data.bmsTemperature,
                 2U);
         }
 
-        const bool humidityChanged =
-            HasValueChanged(
-                data.cabinHumidity,
-                lastData.cabinHumidity);
+        const bool controllerChanged =
+        HasValueChanged(
+            data.controllerTemperature,
+            lastData.controllerTemperature);    
 
-        if (ShouldDraw(humidityChanged))
+        if (ShouldDraw(controllerChanged))
         {
             DrawRowValue(
-                data.cabinHumidity,
+                data.controllerTemperature,
                 3U);
         }
+
+        
+
+        
     }
 
     void Renderer::DrawSystem(

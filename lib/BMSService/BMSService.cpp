@@ -12,6 +12,7 @@
 #include "Pins.h"
 #include "Logger.h"
 #include "Config.h"
+#include "DataManager.h"
 
 namespace
 {
@@ -270,6 +271,78 @@ namespace SVEMS::Service
         Data = parsed;
         ValidData = true;
 
+        const uint32_t now =
+            millis();
+
+        // Battery
+        DataManager::Battery.voltage =
+            parsed.packVoltage;
+
+        DataManager::Battery.current =
+            parsed.packCurrent;
+
+        DataManager::Battery.power=
+            parsed.packVoltage *
+            parsed.packCurrent;
+
+        DataManager::Battery.remainingCapacity =
+            parsed.remainingCapacity;
+
+        DataManager::Battery.cellVoltage[0] =
+            parsed.cellVoltage1;
+
+        DataManager::Battery.cellVoltage[1] =
+            parsed.cellVoltage2;
+
+        DataManager::Battery.cellVoltage[2] =
+            parsed.cellVoltage3;
+
+        DataManager::Battery.cellVoltage[3] =
+            parsed.cellVoltage4;
+
+        DataManager::Battery.cellCount =
+            static_cast<uint8_t>(
+                parsed.cellCount);
+
+        DataManager::Battery.status.updated = true;
+        DataManager::Battery.status.online = true;
+        DataManager::Battery.status.lastUpdate = now;
+
+        // SOC
+        float soc =
+            parsed.socPercent;
+
+        if (soc < 0.0f)
+        {
+            soc = 0.0f;
+        }
+        else if (soc > 100.0f)
+        {
+            soc = 100.0f;
+        }
+
+        DataManager::Soc.value =
+            static_cast<uint8_t>(
+                soc + 0.5f);
+
+        DataManager::Soc.status.updated = true;
+        DataManager::Soc.status.online = true;
+        DataManager::Soc.status.lastUpdate = now;
+
+        // Temperature
+        DataManager::Temperature.battery =
+            parsed.batteryTemperature;
+
+        DataManager::Temperature.bms =
+            parsed.bmsTemperature;
+
+        DataManager::Temperature.powerBankExternal =
+            parsed.externalTemperature;
+
+        DataManager::Temperature.powerBankStatus.updated = true;
+        DataManager::Temperature.powerBankStatus.online = true;
+        DataManager::Temperature.powerBankStatus.lastUpdate = now;
+
         return true;
     }
 
@@ -402,6 +475,17 @@ namespace SVEMS::Service
                             Data.externalTemperature,
                             static_cast<unsigned long>(
                                 Data.cellCount));
+
+                        Serial.printf(
+                            "[%08lu] [DATA] "
+                            "BAT=%.3fV %.3fA %.1fW "
+                            "SOC=%u%% TEMP=%.2fC\n",
+                            now,
+                            DataManager::Battery.voltage,
+                            DataManager::Battery.current,
+                            DataManager::Battery.power,
+                            DataManager::Soc.value,
+                            DataManager::Temperature.battery);
                     }
                 }
                 else

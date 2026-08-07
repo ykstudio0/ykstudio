@@ -12,6 +12,7 @@
 
 DataManager::SolarData DataManager::Solar;
 DataManager::BatteryData DataManager::Battery;
+DataManager::ControllerBatteryData DataManager::ControllerBattery;
 DataManager::LoadData DataManager::Load;
 DataManager::TemperatureData DataManager::Temperature;
 DataManager::SocData DataManager::Soc;
@@ -22,8 +23,11 @@ void DataManager::ClearUpdates()
 {
     Solar.status.updated = false;
     Battery.status.updated = false;
+    ControllerBattery.status.updated = false;
     Load.status.updated = false;
-    Temperature.status.updated = false;
+    Temperature.cabinStatus.updated = false;
+    Temperature.powerBankStatus.updated = false;
+    Temperature.controllerStatus.updated = false;
     Soc.status.updated = false;
 }
 
@@ -32,35 +36,60 @@ void DataManager::UpdateOnlineStatus(uint32_t now)
     
 
     if (Solar.status.online && 
-            now - Solar.status.lastUpdate > SOLAR_TIMEOUT_MS)
+        now - Solar.status.lastUpdate > SOLAR_TIMEOUT_MS)
     {
         Solar.status.online = false;
         Solar.status.updated = true;
     }
 
     if (Battery.status.online && 
-            now - Battery.status.lastUpdate > BATTERY_TIMEOUT_MS)
+        now - Battery.status.lastUpdate > BATTERY_TIMEOUT_MS)
     {
         Battery.status.online = false;
         Battery.status.updated = true;
     }
 
+    if (ControllerBattery.status.online &&
+        now - ControllerBattery.status.lastUpdate >
+            BATTERY_TIMEOUT_MS)
+    {
+        ControllerBattery.status.online = false;
+        ControllerBattery.status.updated = true;
+    }
+
     if (Load.status.online && 
-            now - Load.status.lastUpdate > LOAD_TIMEOUT_MS)
+        now - Load.status.lastUpdate > LOAD_TIMEOUT_MS)
     {
         Load.status.online = false;
         Load.status.updated = true;
     }
 
-    if (Temperature.status.online && 
-            now - Temperature.status.lastUpdate > TEMPERATURE_TIMEOUT_MS)
+    if (Temperature.cabinStatus.online &&
+        now - Temperature.cabinStatus.lastUpdate >
+            TEMPERATURE_TIMEOUT_MS)
     {
-        Temperature.status.online = false;
-        Temperature.status.updated = true;
+        Temperature.cabinStatus.online = false;
+        Temperature.cabinStatus.updated = true;
+    }
+
+    if (Temperature.powerBankStatus.online &&
+        now - Temperature.powerBankStatus.lastUpdate >
+            TEMPERATURE_TIMEOUT_MS)
+    {
+        Temperature.powerBankStatus.online = false;
+        Temperature.powerBankStatus.updated = true;
+    }
+
+    if (Temperature.controllerStatus.online &&
+        now - Temperature.controllerStatus.lastUpdate >
+            TEMPERATURE_TIMEOUT_MS)
+    {
+        Temperature.controllerStatus.online = false;
+        Temperature.controllerStatus.updated = true;
     }
 
     if (Soc.status.online && 
-            now - Soc.status.lastUpdate > SOC_TIMEOUT_MS)
+        now - Soc.status.lastUpdate > SOC_TIMEOUT_MS)
     {
         Soc.status.online = false;
         Soc.status.updated = true;

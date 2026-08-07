@@ -52,10 +52,10 @@ namespace
 
     const DisplayLayout::StaticRow g_temperatureRows[] =
     {
-        {0, "Controller"},
+        {0, "Cabin"},
         {1, "Battery"},
-        {2, "Cabin"},
-        {3, "Humidity"}
+        {2, "BMS"},
+        {3, "Controller"}
     };
 
     const DisplayLayout::StaticRow g_systemRows[] =

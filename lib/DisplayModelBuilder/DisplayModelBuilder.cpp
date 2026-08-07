@@ -177,11 +177,11 @@ namespace
 
         ApplyStatus(
             battery.percent,
-            DataManager::Battery.status);
+            DataManager::Soc.status);
 
         ApplyStatus(
             battery.temperature,
-            DataManager::Battery.status);
+            DataManager::Temperature.powerBankStatus);
     }
 
     void BuildLoad(DisplayModel::Model& model)
@@ -225,16 +225,6 @@ namespace
         DisplayModel::TemperatureData& temperature =
             model.GetTemperature();
 
-        temperature.controllerTemperature =
-            DisplayTypes::MakeValue(
-                DataManager::Temperature.device,
-                DisplayTypes::ValueType::Temperature);
-
-        temperature.batteryTemperature =
-            DisplayTypes::MakeValue(
-                DataManager::Temperature.battery,
-                DisplayTypes::ValueType::Temperature);
-
         temperature.cabinTemperature =
             DisplayTypes::MakeValue(
                 DataManager::Environment.temperature,
@@ -245,21 +235,36 @@ namespace
                 DataManager::Environment.humidity,
                 DisplayTypes::ValueType::Humidity);
 
-        ApplyStatus(
-            temperature.controllerTemperature,
-            DataManager::Temperature.status);
+        temperature.batteryTemperature =
+            DisplayTypes::MakeValue(
+                DataManager::Temperature.battery,
+                DisplayTypes::ValueType::Temperature);
 
-        ApplyStatus(
-            temperature.batteryTemperature,
-            DataManager::Temperature.status);
+        temperature.bmsTemperature =
+            DisplayTypes::MakeValue(
+                DataManager::Temperature.bms,
+                DisplayTypes::ValueType::Temperature);
+
+        temperature.controllerTemperature =
+            DisplayTypes::MakeValue(
+                DataManager::Temperature.controllerBoard,
+                DisplayTypes::ValueType::Temperature);
 
         ApplyStatus(
             temperature.cabinTemperature,
             DataManager::Environment.status);
 
         ApplyStatus(
-            temperature.cabinHumidity,
-            DataManager::Environment.status);
+            temperature.batteryTemperature,
+            DataManager::Temperature.powerBankStatus);
+
+        ApplyStatus(
+            temperature.bmsTemperature,
+            DataManager::Temperature.powerBankStatus);
+
+        ApplyStatus(
+            temperature.controllerTemperature,
+            DataManager::Temperature.controllerStatus);
     }
 
     uint8_t CountOnlineDevices()
@@ -281,7 +286,9 @@ namespace
             ++count;
         }
 
-        if (DataManager::Temperature.status.online)
+        if (DataManager::Temperature.cabinStatus.online ||
+            DataManager::Temperature.powerBankStatus.online ||
+            DataManager::Temperature.controllerStatus.online)
         {
             ++count;
         }
