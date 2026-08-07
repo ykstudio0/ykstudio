@@ -402,7 +402,7 @@ bool Scheduler::PollSOC()
 
 bool Scheduler::PollChargingStatus()
 {
-    Epever::ReadChargingStatus();
+    return Epever::ReadChargingStatus();
 }
 // void Scheduler::UpdateDisplay()
 // {
