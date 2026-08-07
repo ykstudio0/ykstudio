@@ -23,7 +23,7 @@ constexpr uint16_t BOOT_DELAY_MS = 5000;
 // Modbus Configuration
 //-------------------------------
 constexpr uint8_t  MODBUS_SLAVE_ID = 1;
-constexpr uint32_t MODBUS_BAUDRATE = 9600;
+constexpr uint32_t MODBUS_BAUDRATE = 115200;
 constexpr uint16_t MODBUS_TIMEOUT = 200;
 constexpr uint8_t MODBUS_RETRY = 0U;
 
