@@ -48,7 +48,7 @@ void DataManager::UpdateOnlineStatus(uint32_t now)
 
     if (ControllerBattery.status.online &&
         now - ControllerBattery.status.lastUpdate >
-            BATTERY_TIMEOUT_MS)
+            CONTROLLER_BATTERY_TIMEOUT_MS)
     {
         ControllerBattery.status.online = false;
         ControllerBattery.status.updated = true;
@@ -71,7 +71,7 @@ void DataManager::UpdateOnlineStatus(uint32_t now)
 
     if (Temperature.controllerStatus.online &&
         now - Temperature.controllerStatus.lastUpdate >
-            TEMPERATURE_TIMEOUT_MS)
+            CONTROLLER_TEMPERATURE_TIMEOUT_MS)
     {
         Temperature.controllerStatus.online = false;
         Temperature.controllerStatus.updated = true;

@@ -38,6 +38,8 @@ private:
     static void ServiceIoT();
 
     static bool PollChargingStatus();
+
+    static void PollEpeverDistributed();
 };
 
 #endif

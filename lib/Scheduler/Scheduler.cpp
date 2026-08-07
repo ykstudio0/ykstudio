@@ -27,11 +27,14 @@ namespace
 {
     SVEMS::Device::TouchDevice Touch;
 
-    constexpr uint32_t EPEVER_BACKOFF_MS = 5000UL;
-
-    bool g_epeverOnline = true;
-
-    uint32_t g_epeverNextProbeTime = 0U;
+    constexpr uint32_t EPEVER_BACKOFF_MS              = 5000UL;
+    constexpr uint32_t EPEVER_MIN_GAP_MS              = 2000UL;
+    constexpr uint32_t EPEVER_SOLAR_INTERVAL_MS       = 3000UL;
+    constexpr uint32_t EPEVER_BATTERY_INTERVAL_MS     = 15000UL;
+    constexpr uint32_t EPEVER_LOAD_INTERVAL_MS        = 15000UL;
+    constexpr uint32_t EPEVER_CHARGE_INTERVAL_MS      = 15000UL;
+    constexpr uint32_t EPEVER_TEMPERATURE_INTERVAL_MS = 60000UL;
+    constexpr uint32_t EPEVER_SOC_INTERVAL_MS         = 60000UL;
 
     uint32_t Timer100ms = 0;
     uint32_t Timer1sec  = 0;
@@ -39,21 +42,19 @@ namespace
     uint32_t Timer30sec = 0;
     uint32_t Timer60sec = 0;
 
-    void SetEpeverOffline(
-        uint32_t now)
+    struct EpeverPollState
     {
-        g_epeverOnline = false;
+        uint32_t lastTransaction = 0U;
 
-        g_epeverNextProbeTime =
-            now + EPEVER_BACKOFF_MS;
-    }
+        uint32_t solar = 0U;
+        uint32_t battery = 0U;
+        uint32_t load = 0U;
+        uint32_t charging = 0U;
+        uint32_t temperature = 0U;
+        uint32_t soc = 0U;
+    };
 
-    void SetEpeverOnline()
-    {
-        g_epeverOnline = true;
-
-        g_epeverNextProbeTime = 0U;
-    }
+    EpeverPollState g_epeverPoll;
 }
 
 bool Scheduler::Begin()
@@ -252,123 +253,23 @@ void Scheduler::Run1Sec()
     
     if constexpr (ENABLE_EPEVER_POLLING)
     {
-        const uint32_t now =
-            millis();
-
-        //-------------------------------------------------
-        // EPEVER Online
-        //-------------------------------------------------
-
-        if (g_epeverOnline)
-        {
-            if (!Epever::ReadSolar())
-            {
-                SetEpeverOffline(now);
-            }
-
-            return;
-        }
-
-        //-------------------------------------------------
-        // EPEVER Offline
-        //
-        // Backoff 기간에는 아무 요청도 하지 않는다.
-        //-------------------------------------------------
-
-        if (static_cast<int32_t>(
-                now -
-                g_epeverNextProbeTime) < 0)
-        {
-            return;
-        }
-
-        //-------------------------------------------------
-        // Recovery Probe
-        //-------------------------------------------------
-
-        if (Epever::ReadSolar())
-        {
-            SetEpeverOnline();
-
-            Logger::Info(
-                "EPEVER",
-                "Communication Restored");
-        }
-        else
-        {
-            g_epeverNextProbeTime =
-                now +
-                EPEVER_BACKOFF_MS;
-        }
+        PollEpeverDistributed();
     }
 }
 
 // 5 Second Tasks
 void Scheduler::Run5Sec()
 {
-    if constexpr (ENABLE_EPEVER_POLLING)
-    {
-        if (!g_epeverOnline)
-        {
-            return;
-        }
-
-        const uint32_t now =
-            millis();
-
-        if (!PollBattery())
-        {
-            SetEpeverOffline(now);
-            return;
-        }
-
-        if (!PollLoad())
-        {
-            SetEpeverOffline(now);
-            return;
-        }
-
-        if (!PollChargingStatus())
-        {
-            SetEpeverOffline(now);
-            return;
-        }
-    }
 }
 
 // 30 Second Tasks
 void Scheduler::Run30Sec()
 {
-    if constexpr (ENABLE_EPEVER_POLLING)
-    {
-        if (!g_epeverOnline)
-        {
-            return;
-        }
-
-        const uint32_t now =
-            millis();
-
-        if (!PollTemperature())
-        {
-            SetEpeverOffline(now);
-            return;
-        }
-
-        if (!PollSOC())
-        {
-            SetEpeverOffline(now);
-            return;
-        }
-    }
 }
 
 // 60 Second Tasks
 void Scheduler::Run60Sec()
 {
-    if constexpr (ENABLE_EPEVER_POLLING)
-    {
-    }
 }
 
 // Poll Solar Information
@@ -517,4 +418,109 @@ void Scheduler::ServiceIoT()
     SVEMS::Service::WiFiService::Update();
 
     SVEMS::Service::NtpService::Update();
+}
+
+void Scheduler::PollEpeverDistributed()
+{
+    static uint8_t nextPoll = 0U;
+
+    const uint32_t now =
+        millis();
+
+    if (now - g_epeverPoll.lastTransaction <
+        EPEVER_MIN_GAP_MS)
+    {
+        return;
+    }
+
+    for (uint8_t i = 0U; i < 6U; i++)
+    {
+        const uint8_t poll =
+            nextPoll;
+
+        nextPoll =
+            static_cast<uint8_t>(
+                (nextPoll + 1U) % 6U);
+
+        switch (poll)
+        {
+            case 0:
+                if (now - g_epeverPoll.solar >=
+                    EPEVER_SOLAR_INTERVAL_MS)
+                {
+                    PollSolar();
+
+                    g_epeverPoll.solar = now;
+                    g_epeverPoll.lastTransaction = now;
+
+                    return;
+                }
+                break;
+
+            case 1:
+                if (now - g_epeverPoll.battery >=
+                    EPEVER_BATTERY_INTERVAL_MS)
+                {
+                    PollBattery();
+
+                    g_epeverPoll.battery = now;
+                    g_epeverPoll.lastTransaction = now;
+
+                    return;
+                }
+                break;
+
+            case 2:
+                if (now - g_epeverPoll.load >=
+                    EPEVER_LOAD_INTERVAL_MS)
+                {
+                    PollLoad();
+
+                    g_epeverPoll.load = now;
+                    g_epeverPoll.lastTransaction = now;
+
+                    return;
+                }
+                break;
+
+            case 3:
+                if (now - g_epeverPoll.charging >=
+                    EPEVER_CHARGE_INTERVAL_MS)
+                {
+                    PollChargingStatus();
+
+                    g_epeverPoll.charging = now;
+                    g_epeverPoll.lastTransaction = now;
+
+                    return;
+                }
+                break;
+
+            case 4:
+                if (now - g_epeverPoll.temperature >=
+                    EPEVER_TEMPERATURE_INTERVAL_MS)
+                {
+                    PollTemperature();
+
+                    g_epeverPoll.temperature = now;
+                    g_epeverPoll.lastTransaction = now;
+
+                    return;
+                }
+                break;
+
+            case 5:
+                if (now - g_epeverPoll.soc >=
+                    EPEVER_SOC_INTERVAL_MS)
+                {
+                    PollSOC();
+
+                    g_epeverPoll.soc = now;
+                    g_epeverPoll.lastTransaction = now;
+
+                    return;
+                }
+                break;
+        }
+    }
 }

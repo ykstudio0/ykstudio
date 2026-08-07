@@ -24,13 +24,17 @@ bool RS485::Begin()
 
     RxMode();
 
+    RS485Serial.setRxBufferSize(256);
+
     RS485Serial.begin(
         MODBUS_BAUDRATE,
         SERIAL_8N1,
         PIN_RS485_RX,
-        PIN_RS485_TX
-    );
+        PIN_RS485_TX);
 
+    RS485Serial.setRxTimeout(1);
+    RS485Serial.setRxFIFOFull(1);
+    
     Ready = true;
 
     Logger::Info("RS485", "Ready");
@@ -60,7 +64,7 @@ void RS485::Send(
     Logger::Info("RS485","SEND");
     
     // RX 버퍼 비우기
-    while (RS485Serial.available())
+    while (RS485Serial.available() > 0)
     {
         RS485Serial.read();
     }
@@ -101,6 +105,11 @@ bool RS485::ReceiveFrame(
         if (static_cast<uint32_t>(
             millis() - startTime) >= timeout)
         {
+            Logger::Info(
+                "RS485",
+                "Timeout Available=" +
+                String(RS485Serial.available()));
+
             if (length > 0)
             {
                 Logger::Hex(
@@ -119,6 +128,9 @@ bool RS485::ReceiveFrame(
 
             return false;
         }
+
+        // delay(3);
+
         // 현재 UART에 들어온 데이터를 모두 읽음
         while (RS485Serial.available() > 0)
         {
