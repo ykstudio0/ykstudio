@@ -387,6 +387,10 @@ v0.5.8
     ✅ Overview의 Cabin Temperature / Humidity 유지
     ✅ ControllerBattery를 EPEVER 진단 데이터로 독립 보존
     ✅ 빌드 / LCD / Touch / Page 전환 정상
+v0.5.9 
+    통신 안정화 + timeout 수정 + Offline 누적 진단
+    12h continuous vehicle test: 0 offline events
+v0.6.0 IoT Service
 v0.6.x
     EPEVER Modbus 통신 완료
     태양광 실시간 데이터
