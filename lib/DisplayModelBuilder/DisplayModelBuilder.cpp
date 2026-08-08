@@ -100,13 +100,29 @@ namespace
             EpeverStatusParser::ToString(
                 DataManager::Charge.stage);
 
-        solar.chargingStage.color = DisplayTheme::COLOR_VALUE;
-
         solar.inputVoltage.text =
             EpeverStatusParser::ToString(
                 DataManager::Charge.inputVoltage);
-            
-        solar.inputVoltage.color = DisplayTheme::COLOR_VALUE;
+        
+        if (!DataManager::Charge.status.online)
+        {
+            solar.chargingStage.text = "OFF";
+            solar.inputVoltage.text = "OFF";
+
+            solar.chargingStage.color =
+                DisplayTheme::COLOR_DISABLED;
+
+            solar.inputVoltage.color =
+                DisplayTheme::COLOR_DISABLED;
+        }
+        else
+        {
+            solar.chargingStage.color =
+                DisplayTheme::COLOR_VALUE;
+
+            solar.inputVoltage.color =
+                DisplayTheme::COLOR_VALUE;
+        }
 
         ApplyStatus(
             solar.voltage,

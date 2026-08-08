@@ -227,7 +227,9 @@ bool Epever::ReadChargingStatus()
     DataManager::Charge.stage        = parsed.stage;
     DataManager::Charge.inputVoltage = parsed.inputVoltage;
     DataManager::Charge.running      = parsed.running;
-    // DataManager::Charge.fault        = parsed.fault;
+    DataManager::Charge.status.updated = true;
+    DataManager::Charge.status.online = true;
+    DataManager::Charge.status.lastUpdate = millis();
 
     snprintf(
         buffer,

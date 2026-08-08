@@ -112,6 +112,8 @@ public:
 
         bool running = false;
         bool fault = false;
+
+        Status status;
     };
 
     struct ControllerBatteryData

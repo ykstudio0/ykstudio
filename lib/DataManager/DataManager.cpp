@@ -28,6 +28,7 @@ void DataManager::ClearUpdates()
     Temperature.powerBankStatus.updated = false;
     Temperature.controllerStatus.updated = false;
     Soc.status.updated = false;
+    Charge.status.updated = false;
 }
 
 void DataManager::UpdateOnlineStatus(uint32_t now)
@@ -37,6 +38,13 @@ void DataManager::UpdateOnlineStatus(uint32_t now)
     {
         Solar.status.online = false;
         Solar.status.updated = true;
+    }
+
+    if (Charge.status.online &&
+        now - Charge.status.lastUpdate > SOLAR_TIMEOUT_MS)
+    {
+        Charge.status.online = false;
+        Charge.status.updated = true;
     }
 
     if (Battery.status.online && 
