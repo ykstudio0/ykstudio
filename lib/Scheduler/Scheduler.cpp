@@ -32,7 +32,7 @@ namespace
     constexpr uint32_t EPEVER_SOLAR_INTERVAL_MS       = 3000UL;
     constexpr uint32_t EPEVER_BATTERY_INTERVAL_MS     = 15000UL;
     constexpr uint32_t EPEVER_LOAD_INTERVAL_MS        = 15000UL;
-    constexpr uint32_t EPEVER_CHARGE_INTERVAL_MS      = 15000UL;
+    constexpr uint32_t EPEVER_CHARGE_INTERVAL_MS      = 5000UL;
     constexpr uint32_t EPEVER_TEMPERATURE_INTERVAL_MS = 60000UL;
     constexpr uint32_t EPEVER_SOC_INTERVAL_MS         = 60000UL;
 

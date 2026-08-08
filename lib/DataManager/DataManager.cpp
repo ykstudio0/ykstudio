@@ -19,6 +19,8 @@ DataManager::SocData DataManager::Soc;
 DataManager::ChargeData DataManager::Charge;
 DataManager::EnvironmentData DataManager::Environment;
 
+DataManager::CommunicationStats DataManager::CommStats;
+
 void DataManager::ClearUpdates()
 {
     Solar.status.updated = false;
@@ -33,25 +35,37 @@ void DataManager::ClearUpdates()
 
 void DataManager::UpdateOnlineStatus(uint32_t now)
 {
-    if (Solar.status.online && 
-        now - Solar.status.lastUpdate > SOLAR_TIMEOUT_MS)
+    if (Solar.status.online &&
+        now - Solar.status.lastUpdate >
+            SOLAR_TIMEOUT_MS)
     {
         Solar.status.online = false;
         Solar.status.updated = true;
+
+        ++CommStats.solarOfflineCount;
+        CommStats.solarLastOffline = now;
     }
 
     if (Charge.status.online &&
-        now - Charge.status.lastUpdate > SOLAR_TIMEOUT_MS)
+        now - Charge.status.lastUpdate >
+            SOLAR_TIMEOUT_MS)
     {
         Charge.status.online = false;
         Charge.status.updated = true;
+
+        ++CommStats.chargeOfflineCount;
+        CommStats.chargeLastOffline = now;
     }
 
-    if (Battery.status.online && 
-        now - Battery.status.lastUpdate > BMS_TIMEOUT_MS)
+    if (Battery.status.online &&
+        now - Battery.status.lastUpdate >
+            BMS_TIMEOUT_MS)
     {
         Battery.status.online = false;
         Battery.status.updated = true;
+
+        ++CommStats.batteryOfflineCount;
+        CommStats.batteryLastOffline = now;
     }
 
     if (ControllerBattery.status.online &&
@@ -60,13 +74,20 @@ void DataManager::UpdateOnlineStatus(uint32_t now)
     {
         ControllerBattery.status.online = false;
         ControllerBattery.status.updated = true;
+
+        ++CommStats.controllerBatteryOfflineCount;
+        CommStats.controllerBatteryLastOffline = now;
     }
 
-    if (Load.status.online && 
-        now - Load.status.lastUpdate > LOAD_TIMEOUT_MS)
+    if (Load.status.online &&
+        now - Load.status.lastUpdate >
+            LOAD_TIMEOUT_MS)
     {
         Load.status.online = false;
         Load.status.updated = true;
+
+        ++CommStats.loadOfflineCount;
+        CommStats.loadLastOffline = now;
     }
 
     if (Temperature.powerBankStatus.online &&
@@ -75,6 +96,9 @@ void DataManager::UpdateOnlineStatus(uint32_t now)
     {
         Temperature.powerBankStatus.online = false;
         Temperature.powerBankStatus.updated = true;
+
+        ++CommStats.powerBankTemperatureOfflineCount;
+        CommStats.powerBankTemperatureLastOffline = now;
     }
 
     if (Temperature.controllerStatus.online &&
@@ -83,12 +107,81 @@ void DataManager::UpdateOnlineStatus(uint32_t now)
     {
         Temperature.controllerStatus.online = false;
         Temperature.controllerStatus.updated = true;
+
+        ++CommStats.controllerTemperatureOfflineCount;
+        CommStats.controllerTemperatureLastOffline = now;
     }
 
-    if (Soc.status.online && 
-        now - Soc.status.lastUpdate > BMS_TIMEOUT_MS)
+    if (Soc.status.online &&
+        now - Soc.status.lastUpdate >
+            BMS_TIMEOUT_MS)
     {
         Soc.status.online = false;
         Soc.status.updated = true;
+
+        ++CommStats.socOfflineCount;
+        CommStats.socLastOffline = now;
     }
 }
+
+// void DataManager::UpdateOnlineStatus(uint32_t now)
+// {
+//     if (Solar.status.online && 
+//         now - Solar.status.lastUpdate > SOLAR_TIMEOUT_MS)
+//     {
+//         Solar.status.online = false;
+//         Solar.status.updated = true;
+//     }
+
+//     if (Charge.status.online &&
+//         now - Charge.status.lastUpdate > CHARGE_TIMEOUT_MS)
+//     {
+//         Charge.status.online = false;
+//         Charge.status.updated = true;
+//     }
+
+//     if (Battery.status.online && 
+//         now - Battery.status.lastUpdate > BMS_TIMEOUT_MS)
+//     {
+//         Battery.status.online = false;
+//         Battery.status.updated = true;
+//     }
+
+//     if (ControllerBattery.status.online &&
+//         now - ControllerBattery.status.lastUpdate >
+//             CONTROLLER_BATTERY_TIMEOUT_MS)
+//     {
+//         ControllerBattery.status.online = false;
+//         ControllerBattery.status.updated = true;
+//     }
+
+//     if (Load.status.online && 
+//         now - Load.status.lastUpdate > LOAD_TIMEOUT_MS)
+//     {
+//         Load.status.online = false;
+//         Load.status.updated = true;
+//     }
+
+//     if (Temperature.powerBankStatus.online &&
+//         now - Temperature.powerBankStatus.lastUpdate >
+//             BMS_TIMEOUT_MS)
+//     {
+//         Temperature.powerBankStatus.online = false;
+//         Temperature.powerBankStatus.updated = true;
+//     }
+
+//     if (Temperature.controllerStatus.online &&
+//         now - Temperature.controllerStatus.lastUpdate >
+//             CONTROLLER_TEMPERATURE_TIMEOUT_MS)
+//     {
+//         Temperature.controllerStatus.online = false;
+//         Temperature.controllerStatus.updated = true;
+//     }
+
+//     if (Soc.status.online && 
+//         now - Soc.status.lastUpdate > SOC_TIMEOUT_MS)
+//     {
+//         Soc.status.online = false;
+//         Soc.status.updated = true;
+//     }
+// }

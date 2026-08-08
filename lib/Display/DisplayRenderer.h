@@ -69,7 +69,8 @@ namespace DisplayRenderer
             const DisplayModel::TemperatureData& data);
 
         void DrawSystem(
-            const DisplayModel::SystemData& data);
+            const DisplayModel::SystemData& data,
+            uint8_t subPage);
 
         // Drawing Helpers
         void DrawRowValue(

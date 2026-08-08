@@ -330,6 +330,14 @@ namespace DisplayModel
         DisplayTypes::DisplayText epeverStatus;
         DisplayTypes::DisplayText bmsStatus;
 
+        // SYSTEM DTL(1) - Communication statistics
+        DisplayTypes::DisplayValue solarOfflineCount;
+        DisplayTypes::DisplayValue chargeOfflineCount;
+        DisplayTypes::DisplayValue bmsOfflineCount;
+        DisplayTypes::DisplayValue loadOfflineCount;
+        DisplayTypes::DisplayValue controllerOfflineCount;
+        DisplayTypes::DisplayValue socOfflineCount;
+
         bool wifiConnected;
         bool rs485Ready;
         bool modbusReady;
@@ -338,7 +346,7 @@ namespace DisplayModel
         bool bmsOnline;
 
         constexpr SystemData()
-            :currentTime(
+            : currentTime(
                 DisplayTypes::MakeValue(
                     0.0f,
                     DisplayTypes::ValueType::Time)),
@@ -358,12 +366,44 @@ namespace DisplayModel
                     0.0f,
                     DisplayTypes::ValueType::SignalStrength)),
 
+            deviceCount(),
+
             rs485Status(),
             modbusStatus(),
             deviceManagerStatus(),
-            deviceCount(),
+
             epeverStatus(),
             bmsStatus(),
+
+            solarOfflineCount(
+                DisplayTypes::MakeValue(
+                    0.0f,
+                    DisplayTypes::ValueType::None)),
+
+            chargeOfflineCount(
+                DisplayTypes::MakeValue(
+                    0.0f,
+                    DisplayTypes::ValueType::None)),
+
+            bmsOfflineCount(
+                DisplayTypes::MakeValue(
+                    0.0f,
+                    DisplayTypes::ValueType::None)),
+
+            loadOfflineCount(
+                DisplayTypes::MakeValue(
+                    0.0f,
+                    DisplayTypes::ValueType::None)),
+
+            controllerOfflineCount(
+                DisplayTypes::MakeValue(
+                    0.0f,
+                    DisplayTypes::ValueType::None)),
+
+            socOfflineCount(
+                DisplayTypes::MakeValue(
+                    0.0f,
+                    DisplayTypes::ValueType::None)),
 
             wifiConnected(false),
             rs485Ready(false),
@@ -373,10 +413,15 @@ namespace DisplayModel
             bmsOnline(false)
         {
             currentTime.decimals = 0U;
-
             uptime.decimals = 0U;
-
             wifiSignal.decimals = 0U;
+
+            solarOfflineCount.decimals = 0U;
+            chargeOfflineCount.decimals = 0U;
+            bmsOfflineCount.decimals = 0U;
+            loadOfflineCount.decimals = 0U;
+            controllerOfflineCount.decimals = 0U;
+            socOfflineCount.decimals = 0U;
         }
     };
 

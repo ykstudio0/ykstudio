@@ -120,6 +120,9 @@ namespace DisplayPages
             case Page::Battery:
                 return 2U;
 
+            case Page::System:
+                return 2U;
+
             default:
                 return 1U;
         }

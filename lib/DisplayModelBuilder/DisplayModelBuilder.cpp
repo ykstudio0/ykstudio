@@ -483,6 +483,49 @@ namespace
                 ? DisplayTheme::COLOR_VALUE
                 : DisplayTheme::COLOR_WARNING;
 
+        system.solarOfflineCount =
+            DisplayTypes::MakeValue(
+                static_cast<float>(
+                    DataManager::CommStats.solarOfflineCount),
+                DisplayTypes::ValueType::None);
+
+        system.chargeOfflineCount =
+            DisplayTypes::MakeValue(
+                static_cast<float>(
+                    DataManager::CommStats.chargeOfflineCount),
+                DisplayTypes::ValueType::None);
+
+        system.bmsOfflineCount =
+            DisplayTypes::MakeValue(
+                static_cast<float>(
+                    DataManager::CommStats.batteryOfflineCount),
+                DisplayTypes::ValueType::None);
+
+        system.loadOfflineCount =
+            DisplayTypes::MakeValue(
+                static_cast<float>(
+                    DataManager::CommStats.loadOfflineCount),
+                DisplayTypes::ValueType::None);
+
+        system.controllerOfflineCount =
+            DisplayTypes::MakeValue(
+                static_cast<float>(
+                    DataManager::CommStats.controllerBatteryOfflineCount),
+                DisplayTypes::ValueType::None);
+
+        system.socOfflineCount =
+            DisplayTypes::MakeValue(
+                static_cast<float>(
+                    DataManager::CommStats.socOfflineCount),
+                DisplayTypes::ValueType::None);
+
+        system.solarOfflineCount.decimals = 0U;
+        system.chargeOfflineCount.decimals = 0U;
+        system.bmsOfflineCount.decimals = 0U;
+        system.loadOfflineCount.decimals = 0U;
+        system.controllerOfflineCount.decimals = 0U;
+        system.socOfflineCount.decimals = 0U;
+
         // Heap Usage
         const uint32_t totalHeap =
             ESP.getHeapSize();

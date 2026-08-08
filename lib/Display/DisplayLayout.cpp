@@ -53,6 +53,16 @@ namespace
         { 5U, "Capacity", true }
     };
 
+    static constexpr DisplayLayout::StaticRow g_systemDetailRows[] =
+    {
+        { 0U, "SOLAR OFF",  true },
+        { 1U, "CHARGE OFF", true },
+        { 2U, "BMS OFF",    true },
+        { 3U, "LOAD OFF",   true },
+        { 4U, "CTRL OFF",   true },
+        { 5U, "SOC OFF",    true }
+    };
+
     const DisplayLayout::StaticRow g_loadRows[] =
     {
         {0, "Voltage"},
@@ -134,11 +144,22 @@ const DisplayLayout::StaticRow*
                 return g_temperatureRows;
 
             case DisplayPages::Page::System:
+            {
+                if (subPage == 1U)
+                {
+                    count =
+                        sizeof(g_systemDetailRows) /
+                        sizeof(g_systemDetailRows[0]);
+
+                    return g_systemDetailRows;
+                }
+
                 count =
                     sizeof(g_systemRows) /
                     sizeof(g_systemRows[0]);
 
                 return g_systemRows;
+            }
 
             default:
                 count = 0;

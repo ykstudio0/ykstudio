@@ -369,7 +369,8 @@ namespace DisplayRenderer
 
             case DisplayPages::Page::System:
                 DrawSystem(
-                    model.GetSystem());
+                    model.GetSystem(),
+                    subPage);
                 break;
         }
     }
@@ -805,10 +806,92 @@ namespace DisplayRenderer
     }
 
     void Renderer::DrawSystem(
-        const DisplayModel::SystemData& data)
+        const DisplayModel::SystemData& data,
+        uint8_t subPage)
     {
         const DisplayModel::SystemData& lastData =
             m_lastModel.GetSystem();
+
+        //-------------------------------------------------
+        // SYSTEM DTL(1)
+        //-------------------------------------------------
+
+        if (subPage == 1U)
+        {
+            const bool solarChanged =
+                HasValueChanged(
+                    data.solarOfflineCount,
+                    lastData.solarOfflineCount);
+
+            if (ShouldDraw(solarChanged))
+            {
+                DrawRowValue(
+                    data.solarOfflineCount,
+                    0U);
+            }
+
+            const bool chargeChanged =
+                HasValueChanged(
+                    data.chargeOfflineCount,
+                    lastData.chargeOfflineCount);
+
+            if (ShouldDraw(chargeChanged))
+            {
+                DrawRowValue(
+                    data.chargeOfflineCount,
+                    1U);
+            }
+
+            const bool bmsChanged =
+                HasValueChanged(
+                    data.bmsOfflineCount,
+                    lastData.bmsOfflineCount);
+
+            if (ShouldDraw(bmsChanged))
+            {
+                DrawRowValue(
+                    data.bmsOfflineCount,
+                    2U);
+            }
+
+            const bool loadChanged =
+                HasValueChanged(
+                    data.loadOfflineCount,
+                    lastData.loadOfflineCount);
+
+            if (ShouldDraw(loadChanged))
+            {
+                DrawRowValue(
+                    data.loadOfflineCount,
+                    3U);
+            }
+
+            const bool controllerChanged =
+                HasValueChanged(
+                    data.controllerOfflineCount,
+                    lastData.controllerOfflineCount);
+
+            if (ShouldDraw(controllerChanged))
+            {
+                DrawRowValue(
+                    data.controllerOfflineCount,
+                    4U);
+            }
+
+            const bool socChanged =
+                HasValueChanged(
+                    data.socOfflineCount,
+                    lastData.socOfflineCount);
+
+            if (ShouldDraw(socChanged))
+            {
+                DrawRowValue(
+                    data.socOfflineCount,
+                    5U);
+            }
+
+            return;
+        }
 
         // RSSI
         const bool wifiSignalChanged =

@@ -21,6 +21,34 @@ public:
         uint32_t lastUpdate = 0;
     };
 
+    // 통신 확인용 구조체
+    struct CommunicationStats
+    {
+        uint32_t solarOfflineCount = 0;
+        uint32_t solarLastOffline = 0;
+
+        uint32_t chargeOfflineCount = 0;
+        uint32_t chargeLastOffline = 0;
+
+        uint32_t batteryOfflineCount = 0;
+        uint32_t batteryLastOffline = 0;
+
+        uint32_t controllerBatteryOfflineCount = 0;
+        uint32_t controllerBatteryLastOffline = 0;
+
+        uint32_t loadOfflineCount = 0;
+        uint32_t loadLastOffline = 0;
+
+        uint32_t powerBankTemperatureOfflineCount = 0;
+        uint32_t powerBankTemperatureLastOffline = 0;
+
+        uint32_t controllerTemperatureOfflineCount = 0;
+        uint32_t controllerTemperatureLastOffline = 0;
+
+        uint32_t socOfflineCount = 0;
+        uint32_t socLastOffline = 0;
+    };
+
     struct SolarData
     {
         float voltage = 0.0f;
@@ -135,6 +163,8 @@ public:
     static SocData Soc;
     static ChargeData Charge;
     static EnvironmentData Environment;
+    
+    static CommunicationStats CommStats;
     
     static void ClearUpdates();
     static void UpdateOnlineStatus(uint32_t now);
