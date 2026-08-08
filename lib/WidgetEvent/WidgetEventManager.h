@@ -23,7 +23,10 @@ namespace SVEMS::Manager
             const SVEMS::Touch::TouchPoint& point);
 
     private:
-            static SVEMS::UI::Action ProcessFooter(
-                const SVEMS::Touch::TouchPoint& point);
+        static SVEMS::UI::Action ProcessFooter(
+            const SVEMS::Touch::TouchPoint& point);
+        
+        static SVEMS::UI::Action ProcessContent(
+            const SVEMS::Touch::TouchPoint& point);
     };
 }

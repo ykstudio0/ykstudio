@@ -35,6 +35,7 @@ namespace DisplayRenderer
         // 지정한 페이지를 랜더링한다.
         bool RenderPage(
             DisplayPages::Page page,
+            uint8_t subPage,
             const DisplayModel::Model& model);
 
     private:
@@ -48,6 +49,7 @@ namespace DisplayRenderer
 
         void DrawContent(
             DisplayPages::Page page,
+            uint8_t subPage,
             const DisplayModel::Model& model);
 
         // Individual Pages
@@ -87,6 +89,8 @@ namespace DisplayRenderer
         // Members
         IRenderTarget* m_target;
 
+        uint8_t m_lastSubPage = 0U;
+
         bool m_ready;
 
         static constexpr size_t VALUE_BUFFER_SIZE = 32U;
@@ -100,10 +104,12 @@ namespace DisplayRenderer
         bool m_pageChanged = false;
 
         void DrawStatic(
-            DisplayPages::Page page);
+            DisplayPages::Page page,
+            uint8_t subPage);
 
         void DrawDynamic(
             DisplayPages::Page page,
+            uint8_t subPage,
             const DisplayModel::Model& model);
 
         bool HasValueChanged(
@@ -119,9 +125,13 @@ namespace DisplayRenderer
             const DisplayTypes::DisplayText& previous) const;
 
         void DrawContentStatic(
-            DisplayPages::Page page);
+            DisplayPages::Page page,
+            uint8_t subPage);
 
         bool ShouldDraw(
             bool changed) const;
+
+        void DrawBatteryDetail(
+            const DisplayModel::BatteryData& data);
     };
 }

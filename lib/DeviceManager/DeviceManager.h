@@ -17,6 +17,9 @@ public:
     static bool Update();
     static bool IsReady();
 
+    static bool IsRTCOnline();
+    static bool IsSHT40Online();
+
 private:
     static bool Ready;
 };

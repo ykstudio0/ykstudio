@@ -18,6 +18,8 @@ public:
     static void NextPage();
     static void PreviousPage();
 
+    static void NextSubPage();
+
 private:
     static bool InitializeLCD();    
 };

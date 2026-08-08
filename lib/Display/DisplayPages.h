@@ -112,4 +112,43 @@ namespace DisplayPages
 
         return static_cast<Page>(value);
     }
+
+    inline uint8_t GetSubPageCount(Page page)
+    {
+        switch (page)
+        {
+            case Page::Battery:
+                return 2U;
+
+            default:
+                return 1U;
+        }
+    }
+
+    inline const char* GetDetailTitle(Page page)
+    {
+        switch (page)
+        {
+            case Page::Overview:
+                return "OVR";
+
+            case Page::Solar:
+                return "SOLAR";
+
+            case Page::Battery:
+                return "BATTERY";
+
+            case Page::Load:
+                return "LOAD";
+
+            case Page::Temperature:
+                return "TEMP";
+
+            case Page::System:
+                return "SYSTEM";
+
+            default:
+                return "PAGE";
+        }
+    }
 }

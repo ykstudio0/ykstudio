@@ -39,6 +39,8 @@ namespace PageManager
         //     ToIndex(m_currentPage);
         m_currentPage =
             static_cast<DisplayPages::Page>(page);
+
+        m_subPage = 0U;
     }
 
     void Manager::Previous()
@@ -58,5 +60,32 @@ namespace PageManager
         //     ToIndex(m_currentPage);
         m_currentPage =
             static_cast<DisplayPages::Page>(page);
+
+        m_subPage = 0U;
+    }
+
+    uint8_t Manager::SubPage() const
+    {
+        return m_subPage;
+    }
+
+    void Manager::NextSubPage()
+    {
+        const uint8_t count =
+            DisplayPages::GetSubPageCount(
+                m_currentPage);
+
+        if (count <= 1U)
+        {
+            m_subPage = 0U;
+            return;
+        }
+
+        ++m_subPage;
+
+        if (m_subPage >= count)
+        {
+            m_subPage = 0U;
+        }
     }
 }

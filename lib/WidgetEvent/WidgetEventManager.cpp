@@ -10,6 +10,7 @@
 #include "WidgetEventManager.h"
 #include "DisplayLayout.h"
 #include "TouchManager.h"
+#include "Logger.h"
 
 namespace SVEMS::Manager
 {
@@ -25,7 +26,24 @@ namespace SVEMS::Manager
                 SVEMS::UI::Action::None;
         }
 
-        return ProcessFooter(
+        //-------------------------------------------------
+        // Footer 우선 처리
+        //-------------------------------------------------
+
+        const SVEMS::UI::Action footerAction =
+            ProcessFooter(
+                point);
+
+        if (footerAction !=
+            SVEMS::UI::Action::None)
+        {
+            return footerAction;
+        }
+
+        //-------------------------------------------------
+        // Content Area
+        //-------------------------------------------------
+        return ProcessContent(
             point);
     }
 
@@ -59,5 +77,54 @@ namespace SVEMS::Manager
 
         return
             SVEMS::UI::Action::None;
+    }
+
+    // SVEMS::UI::Action WidgetEventManager::ProcessContent(
+    //     const SVEMS::Touch::TouchPoint& point)
+    // {
+    //     if (point.y < DisplayLayout::CONTENT_Y ||
+    //         point.y >= DisplayLayout::FOOTER_Y)
+    //     {
+    //         return
+    //             SVEMS::UI::Action::None;
+    //     }
+
+    //     return
+    //         SVEMS::UI::Action::NextSubPage;
+    // }
+    SVEMS::UI::Action WidgetEventManager::ProcessContent(
+        const SVEMS::Touch::TouchPoint& point)
+    {
+        char message[80];
+
+        snprintf(
+            message,
+            sizeof(message),
+            "Y=%u CONTENT_Y=%d FOOTER_Y=%d",
+            static_cast<unsigned int>(point.y),
+            DisplayLayout::CONTENT_Y,
+            DisplayLayout::FOOTER_Y);
+
+        Logger::Info(
+            "CONTENT",
+            message);
+
+        if (point.y < DisplayLayout::CONTENT_Y ||
+            point.y >= DisplayLayout::FOOTER_Y)
+        {
+            Logger::Info(
+                "CONTENT",
+                "Outside");
+
+            return
+                SVEMS::UI::Action::None;
+        }
+
+        Logger::Info(
+            "CONTENT",
+            "Inside");
+
+        return
+            SVEMS::UI::Action::NextSubPage;
     }
 }

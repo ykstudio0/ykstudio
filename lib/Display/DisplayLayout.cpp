@@ -43,6 +43,16 @@ namespace
         // {5, "Status"}
     };
 
+    constexpr StaticRow g_batteryDetailRows[] =
+    {
+        { 0U, "Cell 1",   true },
+        { 1U, "Cell 2",   true },
+        { 2U, "Cell 3",   true },
+        { 3U, "Cell 4",   true },
+        { 4U, "Delta",    true },
+        { 5U, "Capacity", true }
+    };
+
     const DisplayLayout::StaticRow g_loadRows[] =
     {
         {0, "Voltage"},
@@ -61,8 +71,8 @@ namespace
     const DisplayLayout::StaticRow g_systemRows[] =
     {
         {0, "RSSI"},
-        {1, "RS485"},
-        {2, "MODBUS"},
+        {1, "EPEVER"},
+        {2, "BMS"},
         {3, "DEVICES"},
         {4, "HEAP"},
         {5, "UPTIME"}
@@ -72,6 +82,7 @@ namespace
 const DisplayLayout::StaticRow*
     DisplayLayout::GetStaticRows(
         DisplayPages::Page page,
+        uint8_t subPage,
         size_t& count)
     {
         switch(page)
@@ -91,11 +102,22 @@ const DisplayLayout::StaticRow*
                 return g_solarRows;
 
             case DisplayPages::Page::Battery:
+            {
+                if (subPage == 1U)
+                {
+                    count =
+                        sizeof(g_batteryDetailRows) /
+                        sizeof(g_batteryDetailRows[0]);
+
+                    return g_batteryDetailRows;
+                }
+
                 count =
                     sizeof(g_batteryRows) /
                     sizeof(g_batteryRows[0]);
 
                 return g_batteryRows;
+            }
 
             case DisplayPages::Page::Load:
                 count =

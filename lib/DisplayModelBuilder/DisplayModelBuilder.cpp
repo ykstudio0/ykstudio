@@ -179,6 +179,76 @@ namespace
 
         // battery.status.color = DisplayTheme::COLOR_VALUE;
 
+        battery.remainingCapacity =
+            DisplayTypes::MakeValue(
+                DataManager::Battery.remainingCapacity,
+                DisplayTypes::ValueType::Capacity);
+
+        battery.remainingCapacity.decimals = 1U;
+
+        battery.cellVoltage1 =
+            DisplayTypes::MakeValue(
+                DataManager::Battery.cellVoltage[0],
+                DisplayTypes::ValueType::Voltage);
+
+        battery.cellVoltage2 =
+            DisplayTypes::MakeValue(
+                DataManager::Battery.cellVoltage[1],
+                DisplayTypes::ValueType::Voltage);
+
+        battery.cellVoltage3 =
+            DisplayTypes::MakeValue(
+                DataManager::Battery.cellVoltage[2],
+                DisplayTypes::ValueType::Voltage);
+
+        battery.cellVoltage4 =
+            DisplayTypes::MakeValue(
+                DataManager::Battery.cellVoltage[3],
+                DisplayTypes::ValueType::Voltage);
+
+        battery.cellVoltage1.decimals = 3U;
+        battery.cellVoltage2.decimals = 3U;
+        battery.cellVoltage3.decimals = 3U;
+        battery.cellVoltage4.decimals = 3U;
+
+        battery.bmsTemperature =
+            DisplayTypes::MakeValue(
+                DataManager::Temperature.bms,
+                DisplayTypes::ValueType::Temperature);
+
+        battery.externalTemperature =
+            DisplayTypes::MakeValue(
+                DataManager::Temperature.powerBankExternal,
+                DisplayTypes::ValueType::Temperature);
+
+        float cellMin =
+            DataManager::Battery.cellVoltage[0];
+
+        float cellMax =
+            DataManager::Battery.cellVoltage[0];
+
+        for (uint8_t i = 1U; i < 4U; ++i)
+        {
+            if (DataManager::Battery.cellVoltage[i] < cellMin)
+            {
+                cellMin =
+                    DataManager::Battery.cellVoltage[i];
+            }
+
+            if (DataManager::Battery.cellVoltage[i] > cellMax)
+            {
+                cellMax =
+                    DataManager::Battery.cellVoltage[i];
+            }
+        }
+
+        battery.cellDelta =
+            DisplayTypes::MakeValue(
+                cellMax - cellMin,
+                DisplayTypes::ValueType::Voltage);
+
+        battery.cellDelta.decimals = 3U;
+
         ApplyStatus(
             battery.voltage,
             DataManager::Battery.status);
@@ -197,6 +267,38 @@ namespace
 
         ApplyStatus(
             battery.temperature,
+            DataManager::Temperature.powerBankStatus);
+
+        ApplyStatus(
+            battery.remainingCapacity,
+            DataManager::Battery.status);
+
+        ApplyStatus(
+            battery.cellVoltage1,
+            DataManager::Battery.status);
+
+        ApplyStatus(
+            battery.cellVoltage2,
+            DataManager::Battery.status);
+
+        ApplyStatus(
+            battery.cellVoltage3,
+            DataManager::Battery.status);
+
+        ApplyStatus(
+            battery.cellVoltage4,
+            DataManager::Battery.status);
+
+        ApplyStatus(
+            battery.cellDelta,
+            DataManager::Battery.status);
+
+        ApplyStatus(
+            battery.bmsTemperature,
+            DataManager::Temperature.powerBankStatus);
+
+        ApplyStatus(
+            battery.externalTemperature,
             DataManager::Temperature.powerBankStatus);
     }
 
@@ -287,29 +389,26 @@ namespace
     {
         uint8_t count = 0U;
 
+        // EPEVER MPPT
         if (DataManager::Solar.status.online)
         {
             ++count;
         }
 
+        // PowerBank BMS
         if (DataManager::Battery.status.online)
         {
             ++count;
         }
 
-        if (DataManager::Load.status.online)
+        // SHT40 Cabin Sensor
+        if (DeviceManager::IsSHT40Online())
         {
             ++count;
         }
 
-        if (DataManager::Temperature.cabinStatus.online ||
-            DataManager::Temperature.powerBankStatus.online ||
-            DataManager::Temperature.controllerStatus.online)
-        {
-            ++count;
-        }
-
-        if (DataManager::Soc.status.online)
+        // DS3231 RTC
+        if (DeviceManager::IsRTCOnline())
         {
             ++count;
         }
@@ -345,14 +444,6 @@ namespace
                 uptimeSeconds,
                 DisplayTypes::ValueType::Duration);
 
-        system.deviceCount =
-            DisplayTypes::MakeValue(
-                static_cast<float>(CountOnlineDevices()),
-                DisplayTypes::ValueType::None);
-
-
-        system.deviceCount.decimals = 0U;
-
         // WiFi RSSI
         system.wifiConnected =
             SVEMS::Service::WiFiService::IsConnected();
@@ -371,6 +462,26 @@ namespace
             system.wifiSignal.state =
                 DisplayTypes::WidgetState::Offline;
         }
+
+        const uint8_t onlineDevices =
+            CountOnlineDevices();
+
+        static char deviceCountText[8];
+
+        snprintf(
+            deviceCountText,
+            sizeof(deviceCountText),
+            "%u/%u",
+            static_cast<unsigned>(onlineDevices),
+            static_cast<unsigned>(SYSTEM_DEVICE_COUNT));
+
+        system.deviceCount.text =
+            deviceCountText;
+
+        system.deviceCount.color =
+            (onlineDevices == SYSTEM_DEVICE_COUNT)
+                ? DisplayTheme::COLOR_VALUE
+                : DisplayTheme::COLOR_WARNING;
 
         // Heap Usage
         const uint32_t totalHeap =
@@ -397,6 +508,12 @@ namespace
                 DisplayTypes::ValueType::Percent);
 
         system.heapPercent.decimals = 0U;
+
+        system.epeverOnline =
+            DataManager::Solar.status.online;
+
+        system.bmsOnline =
+            DataManager::Battery.status.online;
 
         // Communication / Manager State
         system.rs485Ready =
@@ -438,6 +555,26 @@ namespace
             system.deviceManagerReady
                 ? DisplayTheme::COLOR_VALUE
                 : DisplayTheme::COLOR_ALARM;
+
+        system.epeverStatus.text =
+            system.epeverOnline
+                ? "ONLINE"
+                : "OFF";
+
+        system.epeverStatus.color =
+            system.epeverOnline
+                ? DisplayTheme::COLOR_VALUE
+                : DisplayTheme::COLOR_DISABLED;
+
+        system.bmsStatus.text =
+            system.bmsOnline
+                ? "ONLINE"
+                : "OFF";
+
+        system.bmsStatus.color =
+            system.bmsOnline
+                ? DisplayTheme::COLOR_VALUE
+                : DisplayTheme::COLOR_DISABLED;
     }
 
     void BuildHeader(DisplayModel::Model& model)

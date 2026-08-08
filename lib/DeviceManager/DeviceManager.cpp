@@ -138,3 +138,13 @@ bool DeviceManager::IsReady()
 {
     return Ready;
 }
+
+bool DeviceManager::IsRTCOnline()
+{
+    return g_ds3231.IsOnline();
+}
+
+bool DeviceManager::IsSHT40Online()
+{
+    return g_sht40.IsOnline();
+}

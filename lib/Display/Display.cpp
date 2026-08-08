@@ -91,6 +91,7 @@ void Display::Update()
 
     g_renderer.RenderPage(
         g_pageManager.Current(),
+        g_pageManager.SubPage(),
         g_model);
 }
 
@@ -112,4 +113,14 @@ void Display::PreviousPage()
     }
 
     g_pageManager.Previous();
+}
+
+void Display::NextSubPage()
+{
+    if (!g_initialized)
+    {
+        return;
+    }
+
+    g_pageManager.NextSubPage();
 }

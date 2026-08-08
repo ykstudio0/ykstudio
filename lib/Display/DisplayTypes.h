@@ -18,23 +18,18 @@
     enum class ValueType : uint8_t
     {
         None = 0,
-
         Number,
-        
         Voltage,
         Current,
         Power,
         Energy,
-
         Temperature,
         Humidity,
         Percent,
-
         Time,
         Duration,
-
         SignalStrength,
-
+        Capacity,
         Text
     };
 
@@ -252,6 +247,8 @@
             case ValueType::SignalStrength:
                 return "dBm";
 
+            case ValueType::Capacity:
+                return "Ah";
             case ValueType::Time:
             case ValueType::Text:
             case ValueType::None:

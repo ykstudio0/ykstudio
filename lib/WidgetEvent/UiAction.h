@@ -20,6 +20,8 @@ namespace SVEMS::UI
         NextPage,
         SelectPage,
 
+        NextSubPage,
+
         OpenMenu,
         CloseMenu,
 

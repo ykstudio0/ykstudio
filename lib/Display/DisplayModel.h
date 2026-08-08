@@ -148,9 +148,21 @@ namespace DisplayModel
         DisplayTypes::DisplayValue power;
         DisplayTypes::DisplayValue percent;
         DisplayTypes::DisplayValue temperature;
-        // DisplayTypes::DisplayValue status;
 
         DisplayTypes::DisplayText status;
+
+        // BMS Detail
+        DisplayTypes::DisplayValue remainingCapacity;
+
+        DisplayTypes::DisplayValue cellVoltage1;
+        DisplayTypes::DisplayValue cellVoltage2;
+        DisplayTypes::DisplayValue cellVoltage3;
+        DisplayTypes::DisplayValue cellVoltage4;
+
+        DisplayTypes::DisplayValue cellDelta;
+
+        DisplayTypes::DisplayValue bmsTemperature;
+        DisplayTypes::DisplayValue externalTemperature;
 
         constexpr BatteryData()
             : voltage(
@@ -158,29 +170,76 @@ namespace DisplayModel
                     0.0f,
                     DisplayTypes::ValueType::Voltage)),
 
-              current(
+            current(
                 DisplayTypes::MakeValue(
                     0.0f,
                     DisplayTypes::ValueType::Current)),
 
-              power(
+            power(
                 DisplayTypes::MakeValue(
                     0.0f,
                     DisplayTypes::ValueType::Power)),
 
-              percent(
+            percent(
                 DisplayTypes::MakeValue(
                     0.0f,
                     DisplayTypes::ValueType::Percent)),
 
-              temperature(
+            temperature(
                 DisplayTypes::MakeValue(
                     0.0f,
                     DisplayTypes::ValueType::Temperature)),
 
-              status()
-        {
+            status(),
 
+            remainingCapacity(
+                DisplayTypes::MakeValue(
+                    0.0f,
+                    DisplayTypes::ValueType::Capacity)),
+
+            cellVoltage1(
+                DisplayTypes::MakeValue(
+                    0.0f,
+                    DisplayTypes::ValueType::Voltage)),
+
+            cellVoltage2(
+                DisplayTypes::MakeValue(
+                    0.0f,
+                    DisplayTypes::ValueType::Voltage)),
+
+            cellVoltage3(
+                DisplayTypes::MakeValue(
+                    0.0f,
+                    DisplayTypes::ValueType::Voltage)),
+
+            cellVoltage4(
+                DisplayTypes::MakeValue(
+                    0.0f,
+                    DisplayTypes::ValueType::Voltage)),
+
+            cellDelta(
+                DisplayTypes::MakeValue(
+                    0.0f,
+                    DisplayTypes::ValueType::Voltage)),
+
+            bmsTemperature(
+                DisplayTypes::MakeValue(
+                    0.0f,
+                    DisplayTypes::ValueType::Temperature)),
+
+            externalTemperature(
+                DisplayTypes::MakeValue(
+                    0.0f,
+                    DisplayTypes::ValueType::Temperature))
+        {
+            remainingCapacity.decimals = 1U;
+
+            cellVoltage1.decimals = 3U;
+            cellVoltage2.decimals = 3U;
+            cellVoltage3.decimals = 3U;
+            cellVoltage4.decimals = 3U;
+
+            cellDelta.decimals = 3U;
         }
     };
 
@@ -262,16 +321,21 @@ namespace DisplayModel
         DisplayTypes::DisplayValue uptime;
         DisplayTypes::DisplayValue heapPercent;
         DisplayTypes::DisplayValue wifiSignal;
-        DisplayTypes::DisplayValue deviceCount;
+        DisplayTypes::DisplayText deviceCount;
 
         DisplayTypes::DisplayText rs485Status;
         DisplayTypes::DisplayText modbusStatus;
         DisplayTypes::DisplayText deviceManagerStatus;
 
+        DisplayTypes::DisplayText epeverStatus;
+        DisplayTypes::DisplayText bmsStatus;
+
         bool wifiConnected;
         bool rs485Ready;
         bool modbusReady;
         bool deviceManagerReady;
+        bool epeverOnline;
+        bool bmsOnline;
 
         constexpr SystemData()
             :currentTime(
@@ -294,30 +358,25 @@ namespace DisplayModel
                     0.0f,
                     DisplayTypes::ValueType::SignalStrength)),
 
-            deviceCount(
-                DisplayTypes::MakeValue(
-                    0.0f,
-                    DisplayTypes::ValueType::Number)),
-
             rs485Status(),
             modbusStatus(),
             deviceManagerStatus(),
+            deviceCount(),
+            epeverStatus(),
+            bmsStatus(),
 
             wifiConnected(false),
             rs485Ready(false),
             modbusReady(false),
-            deviceManagerReady(false)
+            deviceManagerReady(false),
+            epeverOnline(false),
+            bmsOnline(false)
         {
             currentTime.decimals = 0U;
 
             uptime.decimals = 0U;
 
             wifiSignal.decimals = 0U;
-            
-            deviceCount.type =
-                DisplayTypes::ValueType::None;
-
-            deviceCount.decimals = 0U;
         }
     };
 

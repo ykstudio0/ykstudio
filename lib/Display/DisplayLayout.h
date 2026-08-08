@@ -24,6 +24,7 @@ namespace DisplayLayout
 
     const StaticRow* GetStaticRows(
         DisplayPages::Page page,
+        uint8_t subPage,
         size_t& count);
 
     // LCD Size
@@ -117,6 +118,9 @@ namespace DisplayLayout
         CONTENT_X + CONTENT_WIDTH - 1;
     constexpr int16_t FOOTER_RIGHT =
         FOOTER_X + FOOTER_WIDTH - 1;
+
+    constexpr int16_t CONTENT_BOTTOM =
+        CONTENT_Y + CONTENT_HEIGHT - 1;
 
     // Content Dynamic 영역
     constexpr int16_t CONTENT_DYNAMIC_X = CONTENT_LABEL_X + 55;

@@ -234,6 +234,14 @@ void Scheduler::Run100ms()
                     // 향후 페이지 선택 Popup 연결
                     break;
 
+                case SVEMS::UI::Action::NextSubPage:
+                    Logger::Info(
+                        "UI",
+                        "Next Sub Page");
+
+                    Display::NextSubPage();
+                    break;
+
                 default:
                     break;
             }

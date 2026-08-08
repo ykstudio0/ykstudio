@@ -39,6 +39,11 @@ constexpr uint8_t STATUS_LED_COUNT = 1;
 constexpr uint8_t STATUS_LED_BRIGHTNESS = 30;
 
 //-------------------------------
+// DEVICE COUNT
+//-------------------------------
+constexpr uint8_t SYSTEM_DEVICE_COUNT = 4U;
+
+//-------------------------------
 // 테스트 기기
 //-------------------------------
 constexpr bool ENABLE_EPEVER_POLLING = true;   

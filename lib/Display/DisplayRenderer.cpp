@@ -103,6 +103,7 @@ namespace DisplayRenderer
     
     bool Renderer::RenderPage(
         DisplayPages::Page page,
+        uint8_t subPage,
         const DisplayModel::Model& model)
     {
         if (!IsReady())
@@ -117,7 +118,8 @@ namespace DisplayRenderer
 
         m_pageChanged =
             m_firstRender ||
-            (page != m_lastPage);
+            (page != m_lastPage) ||
+            (subPage != m_lastSubPage);
 
         m_target->BeginFrame();
 
@@ -126,39 +128,47 @@ namespace DisplayRenderer
             m_target->Clear(
                 DisplayTheme::COLOR_BACKGROUND);
 
-            DrawStatic(page);
+            DrawStatic(page, subPage);
         }
 
         DrawDynamic(
             page,
+            subPage,
             model);
 
         m_target->EndFrame();
-        
+
         m_lastModel = model;
         m_lastPage = page;
+        m_lastSubPage = subPage;
         m_firstRender = false;
 
         return true;
     }
 
     void Renderer::DrawContentStatic(
-        DisplayPages::Page page)
+        DisplayPages::Page page,
+        uint8_t subPage)
     {
         size_t count = 0;
 
         auto rows =
             DisplayLayout::GetStaticRows(
                 page,
+                subPage,
                 count);
 
-        if(rows == nullptr)
-            return;
-
-        for(size_t i=0;i<count;i++)
+        if (rows == nullptr)
         {
-            if(!rows[i].visible)
+            return;
+        }
+
+        for (size_t i = 0; i < count; i++)
+        {
+            if (!rows[i].visible)
+            {
                 continue;
+            }
 
             DisplayWidgets::ValueWidget::DrawStatic(
                 *m_target,
@@ -168,21 +178,46 @@ namespace DisplayRenderer
     }
     
     void Renderer::DrawStatic(
-        DisplayPages::Page page)
+        DisplayPages::Page page,
+        uint8_t subPage)
     {
         Serial.println("DrawStatic()");
 
+        const char* title =
+            DisplayPages::GetTitle(page);
+
+        char detailTitle[24];
+
+        //-------------------------------------------------
+        // Sub Page Title
+        //-------------------------------------------------
+
+        if (subPage > 0U)
+        {
+            snprintf(
+                detailTitle,
+                sizeof(detailTitle),
+                "%s DTL(%u)",
+                DisplayPages::GetDetailTitle(page),
+                static_cast<unsigned>(subPage));
+
+            title = detailTitle;
+        }
+
         DisplayWidgets::HeaderWidget::DrawStatic(
             *m_target,
-            DisplayPages::GetTitle(page));
+            title);
 
-        DrawContentStatic(page);
+        DrawContentStatic(
+            page,
+            subPage);
 
         DrawFooter(page);
     }
 
     void Renderer::DrawDynamic(
         DisplayPages::Page page,
+        uint8_t subPage,
         const DisplayModel::Model& model)
     {
         DrawHeader(
@@ -191,6 +226,7 @@ namespace DisplayRenderer
 
         DrawContent(
             page,
+            subPage,
             model);
     }
 
@@ -280,7 +316,7 @@ namespace DisplayRenderer
                 DisplayPages::GetPageNumber(page)),
             static_cast<unsigned>(
                 DisplayPages::PAGE_COUNT));
-                
+
         DisplayWidgets::FooterWidget::Draw(
             *m_target,
             "< Prev",
@@ -290,6 +326,7 @@ namespace DisplayRenderer
 
     void Renderer::DrawContent(
         DisplayPages::Page page,
+        uint8_t subPage,
         const DisplayModel::Model& model)
     {
         switch (page)
@@ -305,9 +342,20 @@ namespace DisplayRenderer
                 break;
 
             case DisplayPages::Page::Battery:
-                DrawBattery(
-                    model.GetBattery());
+            {
+                if (subPage == 0U)
+                {
+                    DrawBattery(
+                        model.GetBattery());
+                }
+                else
+                {
+                    DrawBatteryDetail(
+                        model.GetBattery());
+                }
+
                 break;
+            }
 
             case DisplayPages::Page::Load:
                 DrawLoad(
@@ -569,6 +617,91 @@ namespace DisplayRenderer
         // }
     }
 
+    void Renderer::DrawBatteryDetail(
+        const DisplayModel::BatteryData& data)
+    {
+        const DisplayModel::BatteryData& lastData =
+            m_lastModel.GetBattery();
+
+        // Cell 1
+        const bool cell1Changed =
+            HasValueChanged(
+                data.cellVoltage1,
+                lastData.cellVoltage1);
+
+        if (ShouldDraw(cell1Changed))
+        {
+            DrawRowValue(
+                data.cellVoltage1,
+                0U);
+        }
+
+        // Cell 2
+        const bool cell2Changed =
+            HasValueChanged(
+                data.cellVoltage2,
+                lastData.cellVoltage2);
+
+        if (ShouldDraw(cell2Changed))
+        {
+            DrawRowValue(
+                data.cellVoltage2,
+                1U);
+        }
+
+        // Cell 3
+        const bool cell3Changed =
+            HasValueChanged(
+                data.cellVoltage3,
+                lastData.cellVoltage3);
+
+        if (ShouldDraw(cell3Changed))
+        {
+            DrawRowValue(
+                data.cellVoltage3,
+                2U);
+        }
+
+        // Cell 4
+        const bool cell4Changed =
+            HasValueChanged(
+                data.cellVoltage4,
+                lastData.cellVoltage4);
+
+        if (ShouldDraw(cell4Changed))
+        {
+            DrawRowValue(
+                data.cellVoltage4,
+                3U);
+        }
+
+        // Cell Delta
+        const bool deltaChanged =
+            HasValueChanged(
+                data.cellDelta,
+                lastData.cellDelta);
+
+        if (ShouldDraw(deltaChanged))
+        {
+            DrawRowValue(
+                data.cellDelta,
+                4U);
+        }
+
+        // Remaining Capacity
+        const bool capacityChanged =
+            HasValueChanged(
+                data.remainingCapacity,
+                lastData.remainingCapacity);
+
+        if (ShouldDraw(capacityChanged))
+        {
+            DrawRowValue(
+                data.remainingCapacity,
+                5U);
+        }
+    }
+
     void Renderer::DrawLoad(
         const DisplayModel::LoadData& data)
     {
@@ -690,45 +823,46 @@ namespace DisplayRenderer
                 0U);
         }
 
-        // RS485
-        const bool rs485Changed =
+        // EPEVER
+        const bool epeverChanged =
             HasDisplayTextChanged(
-                data.rs485Status,
-                lastData.rs485Status);
+                data.epeverStatus,
+                lastData.epeverStatus);
 
-        if (ShouldDraw(rs485Changed))
+        if (ShouldDraw(epeverChanged))
         {
             DisplayWidgets::ValueWidget::DrawTextValue(
                 *m_target,
                 1U,
-                data.rs485Status);
+                data.epeverStatus);
         }
 
-        // MODBUS
-        const bool modbusChanged =
+        // BMS
+        const bool bmsChanged =
             HasDisplayTextChanged(
-                data.modbusStatus,
-                lastData.modbusStatus);
+                data.bmsStatus,
+                lastData.bmsStatus);
 
-        if (ShouldDraw(modbusChanged))
+        if (ShouldDraw(bmsChanged))
         {
             DisplayWidgets::ValueWidget::DrawTextValue(
                 *m_target,
                 2U,
-                data.modbusStatus);
+                data.bmsStatus);
         }
 
         // DEVICES
         const bool deviceCountChanged =
-            HasValueChanged(
+            HasDisplayTextChanged(
                 data.deviceCount,
                 lastData.deviceCount);
 
         if (ShouldDraw(deviceCountChanged))
         {
-            DrawRowValue(
-                data.deviceCount,
-                3U);
+            DisplayWidgets::ValueWidget::DrawTextValue(
+                *m_target,
+                3U,
+                data.deviceCount);
         }
 
         // HEAP

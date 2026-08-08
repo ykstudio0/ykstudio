@@ -56,6 +56,7 @@ namespace
 
         if (!renderer.RenderPage(
                 DisplayPages::Page::Overview,
+                0U,
                 model))
         {
             Serial.println(
@@ -66,6 +67,20 @@ namespace
 
         Serial.println(
             F("[PASS] [DISPLAY RENDERER] Overview rendered"));
+
+        if (!renderer.RenderPage(
+                DisplayPages::Page::Battery,
+                1U,
+                model))
+        {
+            Serial.println(
+                F("[FAIL] [DISPLAY SUBPAGE] Render failed"));
+
+            return;
+        }
+
+        Serial.println(
+            F("[PASS] [DISPLAY SUBPAGE] Battery rendered"));
     }
 }
 

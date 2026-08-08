@@ -24,9 +24,16 @@ namespace PageManager
 
         DisplayPages::Page Current() const;
 
+        uint8_t SubPage() const;
+
+        void NextSubPage();
+        void ResetSubPage();
+
     private:
         DisplayPages::Page m_currentPage =
             DisplayPages::Page::Overview;
+
+        uint8_t m_subPage = 0U;
         
         // static uint8_t ToIndex(
         //     DisplayPages::Page page)
