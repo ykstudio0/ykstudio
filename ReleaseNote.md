@@ -390,8 +390,47 @@ v0.5.8
 v0.5.9 
     통신 안정화 + timeout 수정 + Offline 누적 진단
     12h continuous vehicle test: 0 offline events
-v0.6.0 IoT Service
-v0.6.1 JSON Schema
+    정상 Poll 지연
+        ↓
+    허용된 Timeout 범위 안
+        ↓
+    Online 유지
+
+    실제 통신 단절
+        ↓
+    Timeout 초과
+        ↓
+    Offline 전환
+        ↓
+    SYSTEM DTL 카운터 +1
+
+    통신 복구
+        ↓
+    Online 자동 복귀
+v0.6.0 IoT Service & JSON Schema
+    1. Telemetry Debug Snapshot 확장
+    - Solar + Online
+    - Battery/BMS + Online
+    - Environment
+    - Wi-Fi/RSSI
+    - RS485 / Modbus
+    - Offline Counters
+    2. 실제 값 검증
+    3. JSON Serializer 설계
+    4. 이후 HTTP / MQTT 전송 방식 검토
+
+    TelemetryData Framework → TelemetryBuilder → TelemetryJson → HttpTransport까지 기반 계층 완성.
+    v0.6.0 — HTTP Transport Phase 2
+    1. Windows PC에 Python SVEMS Test Server 구성
+    2. /telemetry POST 엔드포인트 생성
+    3. JSON 수신 → 콘솔 출력
+    4. 200 OK 응답
+    5. HttpTransport에 실제 HTTPClient POST 구현
+    6. ESP32 → Wi-Fi → PC 전송 실증
+    
+    HTTP  python test server에 실제 전송 성공
+v0.6.1
+
 v0.6.x
     EPEVER Modbus 통신 완료
     태양광 실시간 데이터
@@ -413,4 +452,4 @@ DeviceManager   █████████░  90%
 Scheduler       █████████░  90%
 DataManager     █████████░  90%
 Display Engine  ██████████ 100%
-IoT             ░░░░░░░░░░   0%
+IoT             ███░░░░░░░  30%

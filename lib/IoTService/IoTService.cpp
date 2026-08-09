@@ -172,13 +172,13 @@ namespace SVEMS::Service
                 "IOT JSON",
                 json);
 
-            if (!SVEMS::Transport::HttpTransport::Send(
-                    json))
-            {
-                Logger::Warning(
-                    "IOT",
-                    "HTTP Send Failed");
-            }
+            // if (!SVEMS::Transport::HttpTransport::Send(
+            //         json))
+            // {
+            //     Logger::Warning(
+            //         "IOT",
+            //         "HTTP Send Failed");
+            // }
         }
         else
         {

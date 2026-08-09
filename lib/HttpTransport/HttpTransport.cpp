@@ -7,12 +7,18 @@
 // Description : HTTP Transport Layer
 //-------------------------------------------------------------
 
+#include <HTTPClient.h>
+
 #include "HttpTransport.h"
 #include "Logger.h"
 #include "WiFiService.h"
+#include <HTTPClient.h>
 
 namespace SVEMS::Transport
 {
+    constexpr const char* TELEMETRY_URL =
+        "http://192.168.0.10:8080/telemetry";
+
     bool HttpTransport::Ready = false;
 
     bool HttpTransport::Begin()
@@ -44,7 +50,7 @@ namespace SVEMS::Transport
             Logger::Warning(
                 "HTTP",
                 "WiFi Offline");
-            
+
             return false;
         }
 
@@ -57,11 +63,50 @@ namespace SVEMS::Transport
             return false;
         }
 
-        // Actual HTTP POST will be implemented later.
-        Logger::Info(
-            "HTTP",
-            "Payload Ready");
+        HTTPClient http;
 
-        return true;
+        if (!http.begin(
+                TELEMETRY_URL))
+        {
+            Logger::Warning(
+                "HTTP",
+                "Begin Failed");
+
+            return false;
+        }
+
+        http.addHeader(
+            "Content-Type",
+            "application/json");
+
+        const int httpCode =
+                http.POST(payload);
+
+        if (httpCode > 0)
+        {
+            char message[48];
+
+            snprintf(
+                message,
+                sizeof(message),
+                "Response = %d",
+                httpCode);
+
+            Logger::Info(
+                "HTTP",
+                message);
+        }
+        else
+        {
+            Logger::Warning(
+                "HTTP",
+                "POST Failed");
+        }
+
+        http.end();
+
+        return
+            httpCode >= 200 &&
+            httpCode < 300;
     }
 }
