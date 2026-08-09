@@ -17,7 +17,7 @@
 namespace SVEMS::Transport
 {
     constexpr const char* TELEMETRY_URL =
-        "http://192.168.0.10:8080/telemetry";
+        "http://192.168.0.78:8080/telemetry";
 
     bool HttpTransport::Ready = false;
 
