@@ -11,13 +11,32 @@
 
 #include <Arduino.h>
 
+#include "EpeverStatusParser.h"
+
 namespace SVEMS::Telemetry
 {
+    struct TimestampData
+    {
+        uint16_t year = 0U;
+        uint8_t month = 0U;
+        uint8_t day = 0U;
+
+        uint8_t hour = 0U;
+        uint8_t minute = 0U;
+        uint8_t second = 0U;
+    };
+
     struct SolarData
     {
         float voltage = 0.0f;
         float current = 0.0f;
         float power = 0.0f;
+
+        EpeverStatusParser::ChargingStage stage =
+            EpeverStatusParser::ChargingStage::NotCharging;
+
+        EpeverStatusParser::InputVoltageStatus inputVoltage =
+            EpeverStatusParser::InputVoltageStatus::Normal;
 
         bool online = false;
     };
@@ -64,6 +83,8 @@ namespace SVEMS::Telemetry
 
     struct TelemetryData
     {
+        TimestampData timestamp;
+        
         SolarData solar;
         BatteryData battery;
         EnvironmentData environment;

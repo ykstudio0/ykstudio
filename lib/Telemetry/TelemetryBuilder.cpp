@@ -12,6 +12,7 @@
 #include "RS485.h"
 #include "ModbusRTU.h"
 #include "WiFiService.h"
+#include "TimeService.h"
 
 
 namespace SVEMS::Telemetry
@@ -19,6 +20,27 @@ namespace SVEMS::Telemetry
     void TelemetryBuilder::Build(
         TelemetryData& data)
     {
+        const SVEMS::Device::RTCDateTime& now =
+            SVEMS::Service::TimeService::Now();
+
+        data.timestamp.year =
+            now.year;
+
+        data.timestamp.month =
+            now.month;
+
+        data.timestamp.day =
+            now.day;
+
+        data.timestamp.hour =
+            now.hour;
+
+        data.timestamp.minute =
+            now.minute;
+
+        data.timestamp.second =
+            now.second;
+
         // Solar
         data.solar.voltage =
             DataManager::Solar.voltage;
@@ -31,6 +53,12 @@ namespace SVEMS::Telemetry
 
         data.solar.online =
             DataManager::Solar.status.online;
+
+        data.solar.stage =
+            DataManager::Charge.stage;
+
+        data.solar.inputVoltage =
+            DataManager::Charge.inputVoltage;
 
         // Battery / BMS
         data.battery.voltage =
@@ -53,10 +81,16 @@ namespace SVEMS::Telemetry
 
         // Environment
         data.environment.cabinTemperature =
-            DataManager::Environment.temperature;
+            roundf(
+                DataManager::Environment.temperature *
+                10.0f) /
+            10.0f;
             
         data.environment.cabinHumidity =
-            DataManager::Environment.humidity;
+            roundf(
+                DataManager::Environment.humidity *
+                10.0f) /
+            10.0f;
 
         data.environment.online =
             DataManager::Environment.status.online;

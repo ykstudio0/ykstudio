@@ -391,6 +391,7 @@ v0.5.9
     통신 안정화 + timeout 수정 + Offline 누적 진단
     12h continuous vehicle test: 0 offline events
 v0.6.0 IoT Service
+v0.6.1 JSON Schema
 v0.6.x
     EPEVER Modbus 통신 완료
     태양광 실시간 데이터
