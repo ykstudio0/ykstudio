@@ -23,6 +23,8 @@
 #include "WidgetEventManager.h"
 #include "UiAction.h"
 #include "BMSService.h"
+#include "IoTService.h"
+
 namespace
 {
     SVEMS::Device::TouchDevice Touch;
@@ -71,6 +73,13 @@ bool Scheduler::Begin()
         Logger::Error(
             "SCHEDULER",
             "Touch manager failed");
+    }
+
+    if (!SVEMS::Service::IoTService::Begin())
+    {
+        Logger::Error(
+            "SCHEDULER",
+            "IoT service failed");
     }
 
     uint32_t now = millis();
@@ -426,6 +435,8 @@ void Scheduler::ServiceIoT()
     SVEMS::Service::WiFiService::Update();
 
     SVEMS::Service::NtpService::Update();
+
+    SVEMS::Service::IoTService::Update();
 }
 
 void Scheduler::PollEpeverDistributed()

@@ -8,6 +8,7 @@
 //-------------------------------------------------------------
 
 #pragma once
+
 #include "TelemetryData.h"
 
 namespace SVEMS::Telemetry

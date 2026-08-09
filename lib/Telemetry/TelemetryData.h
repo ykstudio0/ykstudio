@@ -24,7 +24,7 @@ namespace SVEMS::Telemetry
 
     struct BatteryData
     {
-        float volttage = 0.0f;
+        float voltage = 0.0f;
         float current = 0.0f;
         float power = 0.0f;
 
@@ -49,7 +49,7 @@ namespace SVEMS::Telemetry
         uint32_t chargeOfflineCount = 0U;
         uint32_t bmsOfflineCount = 0U;
 
-        bool rs485Read = false;
+        bool rs485Ready = false;
         bool modbusReady = false;
     };
 
