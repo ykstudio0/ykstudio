@@ -25,12 +25,26 @@ namespace
     //         SVEMS::Transport::HttpTransport::
     //             MAX_PAYLOAD_SIZE];
     // };
-
 }
 
 namespace SVEMS::Transport
 {
+    HttpTransport::State
+        HttpTransport::CurrentState =
+            HttpTransport::State::Ready;
 
+    uint32_t
+        HttpTransport::SuccessCount = 0U;
+
+    uint32_t
+        HttpTransport::FailureCount = 0U;
+
+    uint32_t
+        HttpTransport::ConsecutiveFailures = 0U;
+
+    uint32_t
+        HttpTransport::LastFailureMs = 0U;
+    
     bool HttpTransport::Ready = false;
 
     QueueHandle_t HttpTransport::Queue = nullptr;
@@ -39,6 +53,14 @@ namespace SVEMS::Transport
 
     bool HttpTransport::Begin()
     {
+        CurrentState =
+            State::Ready;
+
+        SuccessCount = 0U;
+        FailureCount = 0U;
+        ConsecutiveFailures = 0U;
+        LastFailureMs = 0U;
+
         if (Ready)
         {
             return true;
@@ -120,6 +142,41 @@ namespace SVEMS::Transport
             return false;
         }
 
+        const uint32_t now =
+            millis();
+
+        //---------------------------------------------------------
+        // HTTP request already in progress.
+        // Skip this telemetry snapshot.
+        //---------------------------------------------------------
+
+        if (CurrentState ==
+            State::Sending)
+        {
+            return true;
+        }
+
+        //---------------------------------------------------------
+        // Retry backoff.
+        //---------------------------------------------------------
+
+        if (CurrentState ==
+            State::RetryWaiting)
+        {
+            if (now - LastFailureMs <
+                RETRY_INTERVAL_MS)
+            {
+                return true;
+            }
+
+            CurrentState =
+                State::Ready;
+        }
+
+        //---------------------------------------------------------
+        // Prepare payload.
+        //---------------------------------------------------------
+
         HttpMessage message{};
 
         payload.toCharArray(
@@ -127,8 +184,14 @@ namespace SVEMS::Transport
             MAX_PAYLOAD_SIZE);
 
         //---------------------------------------------------------
-        // Do not block Scheduler.
+        // Mark as in-flight BEFORE queueing.
+        //
+        // This prevents another telemetry snapshot from being
+        // queued while the worker is waiting for HTTP timeout.
         //---------------------------------------------------------
+
+        CurrentState =
+            State::Sending;
 
         const BaseType_t result =
             xQueueSend(
@@ -138,6 +201,9 @@ namespace SVEMS::Transport
 
         if (result != pdPASS)
         {
+            CurrentState =
+                State::Ready;
+
             Logger::Warning(
                 "HTTP",
                 "Queue Full");
@@ -152,18 +218,6 @@ namespace SVEMS::Transport
         void* parameter)
     {
         (void)parameter;
-
-        // char coreMessage[32];
-
-        // snprintf(
-        //     coreMessage,
-        //     sizeof(coreMessage),
-        //     "Worker Core = %d",
-        //     xPortGetCoreID());
-
-        // Logger::Info(
-        //     "HTTP",
-        //     coreMessage);
 
         HttpMessage message{};
 
@@ -189,8 +243,21 @@ namespace SVEMS::Transport
             return false;
         }
 
+        //---------------------------------------------------------
+        // WiFi Check
+        //---------------------------------------------------------
+
         if (!SVEMS::Service::WiFiService::IsConnected())
         {
+            ++FailureCount;
+            ++ConsecutiveFailures;
+
+            LastFailureMs =
+                millis();
+
+            CurrentState =
+                State::RetryWaiting;
+
             Logger::Warning(
                 "HTTP",
                 "WiFi Offline");
@@ -198,11 +265,24 @@ namespace SVEMS::Transport
             return false;
         }
 
+        //---------------------------------------------------------
+        // HTTP Begin
+        //---------------------------------------------------------
+
         HTTPClient http;
 
         if (!http.begin(
                 TELEMETRY_URL))
         {
+            ++FailureCount;
+            ++ConsecutiveFailures;
+
+            LastFailureMs =
+                millis();
+
+            CurrentState =
+                State::RetryWaiting;
+
             Logger::Warning(
                 "HTTP",
                 "Begin Failed");
@@ -214,12 +294,31 @@ namespace SVEMS::Transport
             "Content-Type",
             "application/json");
 
+        //---------------------------------------------------------
+        // HTTP POST
+        //
+        // Blocking is allowed here because this function runs
+        // only inside HttpWorker on Core 0.
+        //---------------------------------------------------------
+
         const int httpCode =
             http.POST(
                 String(payload));
 
-        if (httpCode > 0)
+        //---------------------------------------------------------
+        // Success
+        //---------------------------------------------------------
+
+        if (httpCode >= 200 &&
+            httpCode < 300)
         {
+            ++SuccessCount;
+
+            ConsecutiveFailures = 0U;
+
+            CurrentState =
+                State::Ready;
+
             char message[48];
 
             snprintf(
@@ -231,18 +330,39 @@ namespace SVEMS::Transport
             Logger::Info(
                 "HTTP",
                 message);
+
+            http.end();
+
+            return true;
         }
-        else
-        {
-            Logger::Warning(
-                "HTTP",
-                "POST Failed");
-        }
+
+        //---------------------------------------------------------
+        // Failure
+        //---------------------------------------------------------
+
+        ++FailureCount;
+        ++ConsecutiveFailures;
+
+        LastFailureMs =
+            millis();
+
+        CurrentState =
+            State::RetryWaiting;
+
+        char message[48];
+
+        snprintf(
+            message,
+            sizeof(message),
+            "POST Failed (%d)",
+            httpCode);
+
+        Logger::Warning(
+            "HTTP",
+            message);
 
         http.end();
 
-        return
-            httpCode >= 200 &&
-            httpCode < 300;
+        return false;
     }
 }

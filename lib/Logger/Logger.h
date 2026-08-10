@@ -10,6 +10,9 @@
 
 #include <Arduino.h>
 
+#include "FreeRTOS.h"
+#include "semphr.h"
+
 class Logger
 {
 public:
@@ -32,9 +35,20 @@ public:
         size_t length);
 
 private:
+    static SemaphoreHandle_t Mutex;
+
+    static bool Lock();
+
+    static void Unlock();
+
+    static void Print(
+        const String& level,
+        const String& tag,
+        const String& message);
+
     static void PrintHeader(
         const String& level,
-        const String& tag = "");
+        const String& tag);
 };
 
 #endif

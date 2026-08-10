@@ -431,6 +431,7 @@ v0.6.0 IoT Service & JSON Schema
     HTTP  python test server에 실제 전송 성공
     2026-08-10
     HTTP Worker 분리 PASS
+    Mutex 적용으로 SVEMS Logger 내부 동시 출력 보호 완료
 v0.6.1
 
 v0.6.x

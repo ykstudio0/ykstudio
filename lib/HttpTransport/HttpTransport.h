@@ -17,7 +17,6 @@
 
 namespace SVEMS::Transport
 {
-
     class HttpTransport
     {
     public:
@@ -30,6 +29,21 @@ namespace SVEMS::Transport
         // Payload is copied into the queue.
         static bool Send(
             const String& payload);
+
+    public:
+
+        enum class State : uint8_t
+        {
+            Ready,
+            Sending,
+            RetryWaiting
+        };
+
+        static State GetState();
+
+        static uint32_t GetSuccessCount();
+        static uint32_t GetFailureCount();
+        static uint32_t GetConsecutiveFailures();
 
     private:
 
@@ -58,6 +72,19 @@ namespace SVEMS::Transport
             char payload[
                 MAX_PAYLOAD_SIZE];
         };
+
+    private:
+
+        static State CurrentState;
+
+        static uint32_t SuccessCount;
+        static uint32_t FailureCount;
+        static uint32_t ConsecutiveFailures;
+
+        static uint32_t LastFailureMs;
+
+        static constexpr uint32_t
+            RETRY_INTERVAL_MS = 30000UL;
     };
 
 }
