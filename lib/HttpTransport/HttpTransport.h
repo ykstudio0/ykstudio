@@ -12,6 +12,7 @@
 #include <Arduino.h>
 
 #include "FreeRTOS.h"
+#include "freertos/portmacro.h"
 #include "queue.h"
 #include "task.h"
 
@@ -29,8 +30,6 @@ namespace SVEMS::Transport
         // Payload is copied into the queue.
         static bool Send(
             const String& payload);
-
-    public:
 
         enum class State : uint8_t
         {
@@ -53,8 +52,6 @@ namespace SVEMS::Transport
         static bool SendHttp(
             const char* payload);
 
-    private:
-
         static bool Ready;
 
         static QueueHandle_t Queue;
@@ -73,8 +70,6 @@ namespace SVEMS::Transport
                 MAX_PAYLOAD_SIZE];
         };
 
-    private:
-
         static State CurrentState;
 
         static uint32_t SuccessCount;
@@ -85,6 +80,8 @@ namespace SVEMS::Transport
 
         static constexpr uint32_t
             RETRY_INTERVAL_MS = 30000UL;
+
+        static portMUX_TYPE StateMux;
     };
 
 }

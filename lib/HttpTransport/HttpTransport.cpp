@@ -51,6 +51,9 @@ namespace SVEMS::Transport
 
     TaskHandle_t HttpTransport::WorkerTaskHandle = nullptr;
 
+    portMUX_TYPE HttpTransport::StateMux =
+        portMUX_INITIALIZER_UNLOCKED;
+
     bool HttpTransport::Begin()
     {
         CurrentState =
@@ -150,27 +153,42 @@ namespace SVEMS::Transport
         // Skip this telemetry snapshot.
         //---------------------------------------------------------
 
+        bool skipSend = false;
+
+        portENTER_CRITICAL(
+            &StateMux);
+        
         if (CurrentState ==
             State::Sending)
         {
-            return true;
+            skipSend = true;
         }
 
         //---------------------------------------------------------
         // Retry backoff.
         //---------------------------------------------------------
 
-        if (CurrentState ==
+        else if (CurrentState ==
             State::RetryWaiting)
         {
             if (now - LastFailureMs <
                 RETRY_INTERVAL_MS)
             {
-                return true;
+                skipSend = true;
             }
+            else
+            {
+                CurrentState =
+                    State::Ready;
+            }
+        }
 
-            CurrentState =
-                State::Ready;
+        portEXIT_CRITICAL(
+            &StateMux);
+
+        if (skipSend)
+        {
+            return true;
         }
 
         //---------------------------------------------------------
@@ -190,8 +208,14 @@ namespace SVEMS::Transport
         // queued while the worker is waiting for HTTP timeout.
         //---------------------------------------------------------
 
+        portENTER_CRITICAL(
+            &StateMux);
+
         CurrentState =
             State::Sending;
+
+        portEXIT_CRITICAL(
+            &StateMux);
 
         const BaseType_t result =
             xQueueSend(
@@ -201,8 +225,14 @@ namespace SVEMS::Transport
 
         if (result != pdPASS)
         {
+            portENTER_CRITICAL(
+                &StateMux);
+
             CurrentState =
                 State::Ready;
+
+            portEXIT_CRITICAL(
+                &StateMux);
 
             Logger::Warning(
                 "HTTP",
@@ -210,8 +240,6 @@ namespace SVEMS::Transport
 
             return false;
         }
-
-        return true;
     }
 
     void HttpTransport::WorkerTask(
@@ -249,14 +277,23 @@ namespace SVEMS::Transport
 
         if (!SVEMS::Service::WiFiService::IsConnected())
         {
+            const uint32_t now =
+                millis();
+
+            portENTER_CRITICAL(
+                &StateMux);
+
             ++FailureCount;
             ++ConsecutiveFailures;
 
             LastFailureMs =
-                millis();
+                now;
 
             CurrentState =
                 State::RetryWaiting;
+
+            portEXIT_CRITICAL(
+                &StateMux);
 
             Logger::Warning(
                 "HTTP",
@@ -274,14 +311,23 @@ namespace SVEMS::Transport
         if (!http.begin(
                 TELEMETRY_URL))
         {
+            const uint32_t now =
+                millis();
+
+            portENTER_CRITICAL(
+                &StateMux);
+
             ++FailureCount;
             ++ConsecutiveFailures;
 
             LastFailureMs =
-                millis();
+                now;
 
             CurrentState =
                 State::RetryWaiting;
+            
+            portEXIT_CRITICAL(
+                &StateMux);
 
             Logger::Warning(
                 "HTTP",
@@ -312,12 +358,18 @@ namespace SVEMS::Transport
         if (httpCode >= 200 &&
             httpCode < 300)
         {
+            portENTER_CRITICAL(
+                &StateMux); 
+
             ++SuccessCount;
 
             ConsecutiveFailures = 0U;
 
             CurrentState =
                 State::Ready;
+
+            portEXIT_CRITICAL(
+                &StateMux);
 
             char message[48];
 
@@ -339,16 +391,24 @@ namespace SVEMS::Transport
         //---------------------------------------------------------
         // Failure
         //---------------------------------------------------------
+        const uint32_t now =
+            millis();
+
+        portENTER_CRITICAL(
+            &StateMux);
 
         ++FailureCount;
         ++ConsecutiveFailures;
 
         LastFailureMs =
-            millis();
+            now;
 
         CurrentState =
             State::RetryWaiting;
 
+        portEXIT_CRITICAL(
+            &StateMux);
+            
         char message[48];
 
         snprintf(
