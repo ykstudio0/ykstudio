@@ -15,7 +15,7 @@
 //-------------------------------
 // Project
 //-------------------------------
-constexpr char SVEMS_VERSION[] = "0.1.9";
+constexpr char SVEMS_VERSION[] = "0.6.0";
 constexpr char DEVICE_NAME[] = "SVEMS";
 constexpr uint16_t BOOT_DELAY_MS = 5000;
 
@@ -58,5 +58,11 @@ constexpr bool ENABLE_DISPLAY = true;
 constexpr bool ENABLE_BMS_SERVICE = true;
 // BMS 로그 관리
 constexpr bool ENABLE_BMS_TRACE = true;  
+
+//-------------------------------
+// HTTP / Telemetry Configuration
+//-------------------------------
+constexpr char TELEMETRY_URL[] =
+    "http://192.168.0.10:8080/telemetry";
    
 #endif

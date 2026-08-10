@@ -58,6 +58,30 @@ namespace SVEMS::Service
         SVEMS::Telemetry::TelemetryBuilder::Build(
             m_data);
 
+        const auto httpState =
+            SVEMS::Transport::
+                HttpTransport::GetState();
+
+        m_data.communication.http.online =
+            SVEMS::Transport::
+                HttpTransport::IsOnline();
+
+        m_data.communication.http.state =
+            static_cast<uint8_t>(
+                httpState);
+
+        m_data.communication.http.successCount =
+            SVEMS::Transport::
+                HttpTransport::GetSuccessCount();
+
+        m_data.communication.http.failureCount =
+            SVEMS::Transport::
+                HttpTransport::GetFailureCount();
+
+        m_data.communication.http.consecutiveFailures =
+            SVEMS::Transport::
+                HttpTransport::GetConsecutiveFailures();
+
         // Temporary Telemetry Debug Output
         char buffer[128];
 

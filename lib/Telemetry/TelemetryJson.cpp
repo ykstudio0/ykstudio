@@ -13,6 +13,28 @@
 
 #include "EpeverStatusParser.h"
 
+namespace
+{
+    const char* HttpStateToString(
+        uint8_t state)
+    {
+        switch (state)
+        {
+            case 0U:
+                return "Ready";
+
+            case 1U:
+                return "Sending";
+
+            case 2U:
+                return "Retry";
+
+            default:
+                return "Unknown";
+        }
+    }
+}
+
 namespace SVEMS::Telemetry
 {
 
@@ -133,6 +155,25 @@ namespace SVEMS::Telemetry
 
         communication["bmsOffline"] =
             data.communication.bmsOfflineCount;
+
+        JsonObject http =
+            communication["http"].to<JsonObject>();
+
+        http["online"] =
+            data.communication.http.online;
+
+        http["state"] =
+            HttpStateToString(
+                data.communication.http.state);
+        
+        http["success"] =
+            data.communication.http.successCount;
+
+        http["failure"] =
+            data.communication.http.failureCount;
+
+        http["consecutiveFailures"] =
+            data.communication.http.consecutiveFailures;
 
         //---------------------------------------------------------
         // System

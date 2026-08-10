@@ -407,7 +407,7 @@ v0.5.9
     통신 복구
         ↓
     Online 자동 복귀
-v0.6.0 IoT Service & JSON Schema
+v0.6.0 IoT Service & HttpTransport Framework
     1. Telemetry Debug Snapshot 확장
     - Solar + Online
     - Battery/BMS + Online
@@ -430,8 +430,16 @@ v0.6.0 IoT Service & JSON Schema
     
     HTTP  python test server에 실제 전송 성공
     2026-08-10
-    HTTP Worker 분리 PASS
-    Mutex 적용으로 SVEMS Logger 내부 동시 출력 보호 완료
+    FreeRTOS Worker Task ✅
+    Queue 기반 비동기 전송 ✅
+    Core 분리 ✅
+    HTTP blocking 격리 ✅
+    멀티코어 공유 상태 보호 ✅
+    Retry/Backoff ✅
+    Telemetry HTTP 상태 노출 ✅
+    서버 장애 감지 ✅
+    Scheduler 영향 없음 ✅
+    서버 복구 후 자동 Recovery ✅
 v0.6.1
 
 v0.6.x

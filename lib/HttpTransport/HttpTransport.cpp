@@ -12,13 +12,10 @@
 #include "HttpTransport.h"
 #include "Logger.h"
 #include "WiFiService.h"
-// #include <HTTPClient.h>
+#include "Config.h"
 
 namespace
 {
-    constexpr const char* TELEMETRY_URL =
-        "http://192.168.0.10:8080/telemetry";
-
     // struct HttpMessage
     // {
     //     char payload[
@@ -56,6 +53,22 @@ namespace SVEMS::Transport
 
     bool HttpTransport::Begin()
     {
+        //---------------------------------------------------------
+        // Already initialized
+        //---------------------------------------------------------
+
+        if (Ready)
+        {
+            return true;
+        }
+
+        //---------------------------------------------------------
+        // Initialize state
+        //---------------------------------------------------------
+
+        portENTER_CRITICAL(
+            &StateMux);
+
         CurrentState =
             State::Ready;
 
@@ -64,10 +77,12 @@ namespace SVEMS::Transport
         ConsecutiveFailures = 0U;
         LastFailureMs = 0U;
 
-        if (Ready)
-        {
-            return true;
-        }
+        portEXIT_CRITICAL(
+            &StateMux);
+
+        //---------------------------------------------------------
+        // Create Queue
+        //---------------------------------------------------------
 
         Queue =
             xQueueCreate(
@@ -82,6 +97,10 @@ namespace SVEMS::Transport
 
             return false;
         }
+
+        //---------------------------------------------------------
+        // Create HTTP Worker
+        //---------------------------------------------------------
 
         const BaseType_t result =
             xTaskCreatePinnedToCore(
@@ -121,6 +140,21 @@ namespace SVEMS::Transport
         return Ready;
     }
 
+    bool HttpTransport::IsOnline()
+    {
+        portENTER_CRITICAL(
+            &StateMux);
+
+        const bool online =
+            CurrentState !=
+                State::RetryWaiting;
+
+        portEXIT_CRITICAL(
+            &StateMux);
+
+        return online;
+    }
+
     bool HttpTransport::Send(
         const String& payload)
     {
@@ -153,40 +187,36 @@ namespace SVEMS::Transport
         // Skip this telemetry snapshot.
         //---------------------------------------------------------
 
-        bool skipSend = false;
+        bool canSend = false;
 
         portENTER_CRITICAL(
             &StateMux);
-        
+
         if (CurrentState ==
-            State::Sending)
+            State::Ready)
         {
-            skipSend = true;
+            CurrentState =
+                State::Sending;
+
+            canSend = true;
         }
-
-        //---------------------------------------------------------
-        // Retry backoff.
-        //---------------------------------------------------------
-
         else if (CurrentState ==
-            State::RetryWaiting)
+                State::RetryWaiting)
         {
-            if (now - LastFailureMs <
+            if (now - LastFailureMs >=
                 RETRY_INTERVAL_MS)
             {
-                skipSend = true;
-            }
-            else
-            {
                 CurrentState =
-                    State::Ready;
+                    State::Sending;
+
+                canSend = true;
             }
         }
 
         portEXIT_CRITICAL(
             &StateMux);
 
-        if (skipSend)
+        if (!canSend)
         {
             return true;
         }
@@ -207,15 +237,6 @@ namespace SVEMS::Transport
         // This prevents another telemetry snapshot from being
         // queued while the worker is waiting for HTTP timeout.
         //---------------------------------------------------------
-
-        portENTER_CRITICAL(
-            &StateMux);
-
-        CurrentState =
-            State::Sending;
-
-        portEXIT_CRITICAL(
-            &StateMux);
 
         const BaseType_t result =
             xQueueSend(
@@ -240,6 +261,8 @@ namespace SVEMS::Transport
 
             return false;
         }
+
+        return true;
     }
 
     void HttpTransport::WorkerTask(
@@ -424,5 +447,100 @@ namespace SVEMS::Transport
         http.end();
 
         return false;
+    }
+
+    HttpTransport::State
+    HttpTransport::GetState()
+    {
+        portENTER_CRITICAL(
+            &StateMux);
+
+        const State value =
+            CurrentState;
+
+        portEXIT_CRITICAL(
+            &StateMux);
+
+        return value;
+    }
+
+    uint32_t
+    HttpTransport::GetSuccessCount()
+    {
+        portENTER_CRITICAL(
+            &StateMux);
+
+        const uint32_t value =
+            SuccessCount;
+
+        portEXIT_CRITICAL(
+            &StateMux);
+
+        return value;
+    }
+
+    uint32_t
+    HttpTransport::GetFailureCount()
+    {
+        portENTER_CRITICAL(
+            &StateMux);
+
+        const uint32_t value =
+            FailureCount;
+
+        portEXIT_CRITICAL(
+            &StateMux);
+
+        return value;
+    }
+
+    uint32_t
+    HttpTransport::GetConsecutiveFailures()
+    {
+        portENTER_CRITICAL(
+            &StateMux);
+
+        const uint32_t value =
+            ConsecutiveFailures;
+
+        portEXIT_CRITICAL(
+            &StateMux);
+
+        return value;
+    }
+
+    uint32_t
+    HttpTransport::GetLastFailureMs()
+    {
+        portENTER_CRITICAL(
+            &StateMux);
+
+        const uint32_t value =
+            LastFailureMs;
+
+        portEXIT_CRITICAL(
+            &StateMux);
+
+        return value;
+    }
+
+    const char*
+    HttpTransport::StateToString(
+        State state)
+    {
+        switch (state)
+        {
+            case State::Ready:
+                return "Ready";
+
+            case State::Sending:
+                return "Sending";
+
+            case State::RetryWaiting:
+                return "Retry";
+
+            default:
+                return "Unknown";
+        }
     }
 }

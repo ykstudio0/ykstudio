@@ -21,6 +21,12 @@ namespace SVEMS::Transport
     class HttpTransport
     {
     public:
+        enum class State : uint8_t
+        {
+            Ready,
+            Sending,
+            RetryWaiting
+        };
 
         static bool Begin();
 
@@ -31,18 +37,20 @@ namespace SVEMS::Transport
         static bool Send(
             const String& payload);
 
-        enum class State : uint8_t
-        {
-            Ready,
-            Sending,
-            RetryWaiting
-        };
-
         static State GetState();
 
+        static bool IsOnline();
+
         static uint32_t GetSuccessCount();
+
         static uint32_t GetFailureCount();
+
         static uint32_t GetConsecutiveFailures();
+
+        static uint32_t GetLastFailureMs();
+
+        static const char* StateToString(
+            State state);
 
     private:
 
@@ -83,5 +91,4 @@ namespace SVEMS::Transport
 
         static portMUX_TYPE StateMux;
     };
-
 }

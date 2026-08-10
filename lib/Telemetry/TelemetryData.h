@@ -62,6 +62,17 @@ namespace SVEMS::Telemetry
         bool online = false;
     };
 
+    struct HttpData
+    {
+        bool online = false;
+
+        uint8_t state = 0U;
+
+        uint32_t successCount = 0U;
+        uint32_t failureCount = 0U;
+        uint32_t consecutiveFailures = 0U;
+    };
+
     struct CommunicationData
     {
         uint32_t solarOfflineCount = 0U;
@@ -70,6 +81,8 @@ namespace SVEMS::Telemetry
 
         bool rs485Ready = false;
         bool modbusReady = false;
+
+        HttpData http;
     };
 
     struct SystemData
