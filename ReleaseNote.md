@@ -429,6 +429,8 @@ v0.6.0 IoT Service & JSON Schema
     6. ESP32 → Wi-Fi → PC 전송 실증
     
     HTTP  python test server에 실제 전송 성공
+    2026-08-10
+    HTTP Worker 분리 PASS
 v0.6.1
 
 v0.6.x

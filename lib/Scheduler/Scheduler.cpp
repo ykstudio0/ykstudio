@@ -61,6 +61,18 @@ namespace
 
 bool Scheduler::Begin()
 {
+    // char coreMessage[32];
+
+    // snprintf(
+    //     coreMessage,
+    //     sizeof(coreMessage),
+    //     "Core = %d",
+    //     xPortGetCoreID());
+
+    // Logger::Info(
+    //     "SCHEDULER",
+    //     coreMessage);
+
     if (!Touch.Begin())
     {
         Logger::Error(

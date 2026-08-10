@@ -172,6 +172,36 @@ namespace SVEMS::Service
                 "IOT JSON",
                 json);
 
+            // const uint32_t sendStart =
+            //     millis();
+
+            // const bool queued =
+            //     SVEMS::Transport::HttpTransport::Send(
+            //         json);
+
+            // const uint32_t sendElapsed =
+            //     millis() - sendStart;
+
+            // char sendMessage[48];
+
+            // snprintf(
+            //     sendMessage,
+            //     sizeof(sendMessage),
+            //     "Queue Send = %lu ms",
+            //     static_cast<unsigned long>(
+            //         sendElapsed));
+
+            // Logger::Info(
+            //     "IOT",
+            //     sendMessage);
+
+            // if (!queued)
+            // {
+            //     Logger::Warning(
+            //         "IOT",
+            //         "HTTP Queue Failed");
+            // }
+
             if (!SVEMS::Transport::HttpTransport::Send(
                     json))
             {
