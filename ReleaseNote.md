@@ -407,7 +407,7 @@ v0.5.9
     통신 복구
         ↓
     Online 자동 복귀
-v0.6.0 IoT Service & HttpTransport Framework
+v0.6.0 Phase 1 : IoT Service & HttpTransport Framework
     1. Telemetry Debug Snapshot 확장
     - Solar + Online
     - Battery/BMS + Online
@@ -440,6 +440,67 @@ v0.6.0 IoT Service & HttpTransport Framework
     서버 장애 감지 ✅
     Scheduler 영향 없음 ✅
     서버 복구 후 자동 Recovery ✅
+    DataManager
+        ↓
+    TelemetryBuilder
+        ↓
+    TelemetryData
+        ↓
+    IoTService
+        ↓
+    TelemetryJson
+        ↓
+    HttpTransport
+        ↓
+    FreeRTOS Queue
+        ↓
+    HttpWorker (Core 0)
+        ↓
+    Python HTTP Server
+v0.6.0 Phase 2 : Server-side Telemetry Framework
+    HTTP Server Framework       ✅
+    POST /telemetry             ✅
+    GET /health                 ✅
+    GET /telemetry/latest       ✅
+    Thread-safe Latest Data     ✅
+    SQLite DB 생성              ✅
+    Telemetry Schema            ✅
+    Timestamp / ReceivedAt      ✅
+    Telemetry INSERT            ✅
+    실제 데이터 저장 검증       ✅
+    POST /telemetry
+        → ESP32 Telemetry 수신
+        → latest_telemetry 갱신
+        → SQLite 저장
+
+    GET /health
+        → 서버 상태 확인
+
+    GET /telemetry/latest
+        → 최신 Telemetry 조회
+
+    GET /telemetry/history
+        → 최근 100건
+
+    GET /telemetry/history?limit=50
+        → 최근 50건
+
+    GET /telemetry/history?from=...
+        → 지정 시각 이후
+
+    GET /telemetry/history?from=...&to=...
+        → 지정 시간 범위
+    Server REST API Framework
+    ├─ SQLite Telemetry 저장
+    ├─ Latest API
+    ├─ Raw History API
+    ├─ Aggregate History API
+    ├─ Metric Framework
+    ├─ Range Framework
+    ├─ Solar Power History
+    ├─ Cabin Temperature History
+    ├─ Cabin Humidity History
+    └─ refreshHistory()
 v0.6.1
 
 v0.6.x

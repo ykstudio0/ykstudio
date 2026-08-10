@@ -159,7 +159,6 @@ void TestTFT()
     lcd.fillRect(88, 10, 67, 40, TFT_GREEN);
     lcd.fillRect(165, 10, 67, 40, TFT_BLUE);
     lcd.fillRect(242, 10, 67, 40, TFT_WHITE);
-
     lcd.setTextColor(TFT_WHITE, TFT_BLACK);
     lcd.setTextSize(2);
     // lcd.setFont(&fonts::efontKR_16);
