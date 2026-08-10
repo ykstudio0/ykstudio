@@ -17,7 +17,7 @@
 namespace
 {
     constexpr const char* TELEMETRY_URL =
-        "http://ykstudio.iptime.org:8080/telemetry";
+        "http://192.168.0.10:80/telemetry";
 
     // struct HttpMessage
     // {
