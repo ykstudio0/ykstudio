@@ -30,7 +30,7 @@ namespace
     SVEMS::Device::TouchDevice Touch;
 
     constexpr uint32_t EPEVER_BACKOFF_MS              = 5000UL;
-    constexpr uint32_t EPEVER_MIN_GAP_MS              = 2000UL;
+    constexpr uint32_t EPEVER_MIN_GAP_MS              = 1000UL;
     constexpr uint32_t EPEVER_SOLAR_INTERVAL_MS       = 3000UL;
     constexpr uint32_t EPEVER_BATTERY_INTERVAL_MS     = 15000UL;
     constexpr uint32_t EPEVER_LOAD_INTERVAL_MS        = 15000UL;

@@ -30,7 +30,7 @@ namespace
         {2, "PV Power"},
         {3, "Stage"},
         {4, "Input"},
-        {5, "DailyEnergy"}
+        {5, "Daily Eng"}
     };
 
     const DisplayLayout::StaticRow g_batteryRows[] =
