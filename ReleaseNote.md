@@ -501,8 +501,47 @@ v0.6.0 Phase 2 : Server-side Telemetry Framework
     ├─ Cabin Temperature History
     ├─ Cabin Humidity History
     └─ refreshHistory()
-v0.6.1
-
+v0.6.1 python http server
+    **2026-08-11**
+    **SQLite 저장 → History API → 시간 범위 조회 → Aggregation → 공통 Metric → Chart.js → 10분/1시간/6시간/24시간 → Solar/온도/습도 History → 공통 Loader → refreshHistory()
+    과거 날짜 → 해당 날짜 전체 기준 Samples / Coverage
+    오늘 → 자정부터 현재 시각까지의 기대 샘플 기준
+    최초 Dashboard 진입 → 오늘 값 자동 표시
+    < > 이동 → 해당 날짜에 맞게 자동 변경
+    달력 선택 / 직접 입력 → 정상 변경
+    오늘 버튼 → LIVE Counter로 복귀하면서 오늘 Coverage 표시
+    모바일/PC 동일 동작
+    Solar → 실시간 Voltage / Current / Power / Charge Stage
+    Environment → 실시간 Temperature / Humidity
+    Battery/BMS → 아직 미연결이지만 데이터 구조와 카드까지 준비 완료
+    System → RS485 / Modbus / WiFi / HTTP / BMS 상태
+    Communication → Offline/HTTP Counter + 날짜별 통계
+    DATA → Samples / Coverage
+    History → 10분 / 1시간 / 6시간 / 24시간 + 과거 날짜 조회
+    과거 날짜와 Communication 통계 연동
+    오늘 복귀 시 실시간 Counter/History 자동 복귀
+    SYSTEM OK / WARNING / ERROR 판정
+    BMS History용 DB/Raw/Aggregate 구조까지 준비
+    DB events 테이블 생성 및 상태 변화 감지
+    /telemetry/events API, Dashboard 표시
+    Event Type 색상
+    30초 실시간 갱신
+    날짜별 조회까지 모두 연결
+    **2026-08-12**
+    Event Framework
+    State 변화 Event
+    ✓ RS485
+    ✓ MODBUS
+    ✓ WiFi
+    ✓ HTTP
+    ✓ BMS
+    Counter 증가 Event
+    ✓ Solar Offline
+    ✓ Charge Offline
+    테스트 endpoint
+    ✓ 검증 완료
+    ✓ 모두 제거
+    ✓ 실사용 서버 재기동 정상
 v0.6.x
     EPEVER Modbus 통신 완료
     태양광 실시간 데이터
@@ -524,4 +563,4 @@ DeviceManager   █████████░  90%
 Scheduler       █████████░  90%
 DataManager     █████████░  90%
 Display Engine  ██████████ 100%
-IoT             ███░░░░░░░  30%
+IoT             ██████░░░░  50%

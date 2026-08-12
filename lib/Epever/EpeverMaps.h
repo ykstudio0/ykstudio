@@ -57,6 +57,21 @@ namespace EpeverMap
     {
         uint16_t value;
     };
+
+    struct Energy
+    {
+        uint16_t dailyLow;
+        uint16_t dailyHigh;
+
+        uint16_t monthLow;
+        uint16_t monthHigh;
+
+        uint16_t yearLow;
+        uint16_t yearHigh;
+
+        uint16_t totalLow;
+        uint16_t totalHigh;
+    };
 }
 
 #endif

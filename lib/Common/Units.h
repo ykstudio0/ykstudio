@@ -13,7 +13,6 @@
 //------------------------------------------
 // EPEVER Scaling
 //------------------------------------------
-
 inline float ToVoltage(uint16_t value)
 {
     return value * 0.01f;
@@ -31,7 +30,13 @@ inline float ToPower(uint32_t value)
 
 inline float ToTemperature(int16_t value)
 {
+
     return value * 0.01f;
+}
+
+inline float ToEnergy(uint32_t value)
+{
+    return value * 10.0f;
 }
 
 #endif

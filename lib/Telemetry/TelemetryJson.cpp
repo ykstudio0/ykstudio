@@ -82,6 +82,12 @@ namespace SVEMS::Telemetry
         solar["power"] =
             data.solar.power;
 
+        doc["solar"]["dailyEnergy"] =
+            data.solar.dailyEnergy;
+
+        doc["solar"]["totalEnergy"] =
+            data.solar.totalEnergy;
+
         solar["stage"] =
             EpeverStatusParser::ToString(
                 data.solar.stage);

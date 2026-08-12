@@ -31,6 +31,7 @@ private:
     static bool PollLoad();
     static bool PollTemperature();
     static bool PollSOC();
+    static bool PollEnergy();
 
     static void Service();
     static void ServiceLogger();

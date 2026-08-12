@@ -37,6 +37,7 @@ namespace
     constexpr uint32_t EPEVER_CHARGE_INTERVAL_MS      = 5000UL;
     constexpr uint32_t EPEVER_TEMPERATURE_INTERVAL_MS = 60000UL;
     constexpr uint32_t EPEVER_SOC_INTERVAL_MS         = 60000UL;
+    constexpr uint32_t EPEVER_ENERGY_INTERVAL_MS      = 60000UL;
 
     uint32_t Timer100ms = 0;
     uint32_t Timer1sec  = 0;
@@ -54,6 +55,7 @@ namespace
         uint32_t charging = 0U;
         uint32_t temperature = 0U;
         uint32_t soc = 0U;
+        uint32_t energy = 0U;
     };
 
     EpeverPollState g_epeverPoll;
@@ -307,6 +309,17 @@ bool Scheduler::PollSolar()
     return Epever::ReadSolar();
 }
 
+// Poll Energy Information
+bool Scheduler::PollEnergy()
+{
+    Logger::Info(
+        "ENERGY",
+        "PollEnergy called"
+    );
+
+    return Epever::ReadEnergy();
+}
+
 // Poll Battery Information
 bool Scheduler::PollBattery()
 {
@@ -464,14 +477,14 @@ void Scheduler::PollEpeverDistributed()
         return;
     }
 
-    for (uint8_t i = 0U; i < 6U; i++)
+    for (uint8_t i = 0U; i < 7U; i++)
     {
         const uint8_t poll =
             nextPoll;
 
         nextPoll =
             static_cast<uint8_t>(
-                (nextPoll + 1U) % 6U);
+                (nextPoll + 1U) % 7U);
 
         switch (poll)
         {
@@ -547,6 +560,19 @@ void Scheduler::PollEpeverDistributed()
                     PollSOC();
 
                     g_epeverPoll.soc = now;
+                    g_epeverPoll.lastTransaction = now;
+
+                    return;
+                }
+                break;
+
+            case 6:
+                if (now - g_epeverPoll.energy >=
+                    EPEVER_ENERGY_INTERVAL_MS)
+                {
+                    PollEnergy();
+
+                    g_epeverPoll.energy = now;
                     g_epeverPoll.lastTransaction = now;
 
                     return;

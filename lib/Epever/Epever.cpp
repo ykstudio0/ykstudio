@@ -199,6 +199,57 @@ bool Epever::ReadSOC()
     return true;
 }
 
+bool Epever::ReadEnergy()
+{
+    EpeverMap::Energy energy;
+
+    if (!ReadRegisters(
+        EpeverRegister::GENERATED_ENERGY_TODAY,
+        sizeof(energy) / sizeof(uint16_t),
+        (uint16_t*)&energy))
+    {
+        return false;
+    }
+
+    uint32_t rawDaily =
+        ((uint32_t)energy.dailyHigh << 16) |
+        energy.dailyLow;
+
+    uint32_t rawTotal =
+        ((uint32_t)energy.totalHigh << 16) |
+        energy.totalLow;
+
+    DataManager::Solar.dailyEnergy =
+        ToEnergy(
+            rawDaily
+        );
+
+    DataManager::Solar.totalEnergy =
+        ToEnergy(
+            rawTotal
+        );
+
+    Logger::Info(
+        "ENERGY",
+        String("Daily = ") +
+        String(
+            DataManager::Solar.dailyEnergy,
+            1
+        ) + "Wh"
+    );
+
+    Logger::Info(
+        "ENERGY",
+        String("Total = ") +
+        String(
+            DataManager::Solar.totalEnergy,
+            1
+        ) + "Wh"
+    );
+
+    return true;
+}
+
 bool Epever::ReadChargingStatus()
 {
     EpeverMap::ChargingStatus status;

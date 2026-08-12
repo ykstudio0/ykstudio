@@ -67,6 +67,7 @@ public:
     static bool ReadSOC();
     static void ClearUpdates();
     static bool ReadChargingStatus();
+    static bool ReadEnergy();
 
 private:
     static bool ReadRegisters(

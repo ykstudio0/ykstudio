@@ -96,6 +96,16 @@ namespace
                 DataManager::Solar.power,
                 DisplayTypes::ValueType::Power);
 
+        solar.dailyEnergy =
+            DisplayTypes::MakeValue(
+                DataManager::Solar.dailyEnergy,
+                DisplayTypes::ValueType::Energy);
+
+        solar.totalEnergy =
+            DisplayTypes::MakeValue(
+                DataManager::Solar.totalEnergy,
+                DisplayTypes::ValueType::Energy);
+                
         solar.chargingStage.text = 
             EpeverStatusParser::ToString(
                 DataManager::Charge.stage);
@@ -136,8 +146,13 @@ namespace
             solar.power,
             DataManager::Solar.status);
 
-        // DataManager 에 아직 누적 발전량 데이터가 없으므로
-        // dailyEnergy와 totalEnergy는 Reset() 기본값을 유지한다.
+        ApplyStatus(
+            solar.dailyEnergy,
+            DataManager::Solar.status);
+
+        ApplyStatus(
+            solar.totalEnergy,
+            DataManager::Solar.status);
     }
 
     void BuildBattery(DisplayModel::Model& model)

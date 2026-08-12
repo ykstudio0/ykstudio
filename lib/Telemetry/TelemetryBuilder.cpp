@@ -51,6 +51,12 @@ namespace SVEMS::Telemetry
         data.solar.power =
             DataManager::Solar.power;
 
+        data.solar.dailyEnergy =
+            DataManager::Solar.dailyEnergy;
+
+        data.solar.totalEnergy =
+            DataManager::Solar.totalEnergy;
+
         data.solar.online =
             DataManager::Solar.status.online;
 

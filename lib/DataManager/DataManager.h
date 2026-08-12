@@ -54,6 +54,8 @@ public:
         float voltage = 0.0f;
         float current = 0.0f;
         float power   = 0.0f;
+        float dailyEnergy = 0.0f;
+        float totalEnergy = 0.0f;
 
         Status status;
     };

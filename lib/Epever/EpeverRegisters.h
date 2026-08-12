@@ -40,6 +40,8 @@ namespace EpeverRegister
     constexpr uint16_t BATTERY_STATUS               = 0x3200;
     constexpr uint16_t CHARGING_EQUIPMENT_STATUS    = 0x3201;
     constexpr uint16_t DISCHARGING_EQUIPMENT_STATUS = 0x3202;
+
+    constexpr uint16_t GENERATED_ENERGY_TODAY       = 0x330C;
 }
 
 #endif
