@@ -123,7 +123,7 @@ namespace DisplayLayout
         CONTENT_Y + CONTENT_HEIGHT - 1;
 
     // Content Dynamic 영역
-    constexpr int16_t CONTENT_DYNAMIC_X = CONTENT_LABEL_X + 55;
+    constexpr int16_t CONTENT_DYNAMIC_X = CONTENT_LABEL_X + 65;
     constexpr int16_t CONTENT_DYNAMIC_WIDTH = CONTENT_WIDTH - (CONTENT_DYNAMIC_X - CONTENT_X);
 
     // 행 번호를 실제 Y 좌표로 변환
