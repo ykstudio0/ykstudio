@@ -13,6 +13,7 @@
 #include "Logger.h"
 #include "WiFiService.h"
 #include "Config.h"
+#include "Secrets.h"
 
 namespace
 {
@@ -332,7 +333,7 @@ namespace SVEMS::Transport
         HTTPClient http;
 
         if (!http.begin(
-                TELEMETRY_URL))
+                SVEMS::Config::TELEMETRY_URL))
         {
             const uint32_t now =
                 millis();
@@ -362,6 +363,10 @@ namespace SVEMS::Transport
         http.addHeader(
             "Content-Type",
             "application/json");
+        
+        http.addHeader(
+            "X-SVEMS-API-Key",
+            SVEMS::Config::SVEMS_API_KEY);
 
         //---------------------------------------------------------
         // HTTP POST

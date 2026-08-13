@@ -542,6 +542,15 @@ v0.6.1 python http server
     ✓ 검증 완료
     ✓ 모두 제거
     ✓ 실사용 서버 재기동 정상
+    **2026-08-23** daily Summary
+    daily_summary 테이블 생성 ← 지금 여기부터
+    update_daily_summary() 함수 작성
+    save_telemetry()의 같은 DB transaction에서 Summary 갱신
+    save_event()에서 event_count 갱신
+    기존 /telemetry/summary/daily의 무거운 전체조회 계산 제거
+    daily_summary 한 행만 반환하도록 변경
+    Dashboard에서 loadDailySummary() 다시 연결
+    마지막으로 기존 날짜를 위한 rebuild_daily_summary() 작성
 v0.6.x
     EPEVER Modbus 통신 완료
     태양광 실시간 데이터

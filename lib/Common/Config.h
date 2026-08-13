@@ -58,11 +58,5 @@ constexpr bool ENABLE_DISPLAY = true;
 constexpr bool ENABLE_BMS_SERVICE = true;
 // BMS 로그 관리
 constexpr bool ENABLE_BMS_TRACE = true;  
-
-//-------------------------------
-// HTTP / Telemetry Configuration
-//-------------------------------
-constexpr char TELEMETRY_URL[] =
-    "http://192.168.0.10:8080/telemetry";
    
 #endif
