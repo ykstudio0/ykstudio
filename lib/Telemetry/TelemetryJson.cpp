@@ -153,8 +153,14 @@ namespace SVEMS::Telemetry
         communication["modbus"] =
             data.communication.modbusReady;
 
+        communication["solarTimeout"] =
+            data.communication.solarTimeoutCount;
+
         communication["solarOffline"] =
             data.communication.solarOfflineCount;
+
+        communication["chargeTimeout"] =
+            data.communication.chargeTimeoutCount;
 
         communication["chargeOffline"] =
             data.communication.chargeOfflineCount;

@@ -24,9 +24,11 @@ public:
     // 통신 확인용 구조체
     struct CommunicationStats
     {
+        uint32_t solarTimeoutCount = 0;
         uint32_t solarOfflineCount = 0;
         uint32_t solarLastOffline = 0;
 
+        uint32_t chargeTimeoutCount = 0;
         uint32_t chargeOfflineCount = 0;
         uint32_t chargeLastOffline = 0;
 

@@ -102,9 +102,15 @@ namespace SVEMS::Telemetry
             DataManager::Environment.status.online;
 
         // Communication
+        data.communication.solarTimeoutCount =
+            DataManager::CommStats.solarTimeoutCount;
+        
         data.communication.solarOfflineCount =
             DataManager::CommStats.solarOfflineCount;
 
+        data.communication.chargeTimeoutCount =
+            DataManager::CommStats.chargeTimeoutCount;
+        
         data.communication.chargeOfflineCount =
             DataManager::CommStats.chargeOfflineCount;
 

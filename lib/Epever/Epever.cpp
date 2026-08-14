@@ -41,6 +41,8 @@ bool Epever::ReadSolar()
         sizeof(solar) / sizeof(uint16_t),
         (uint16_t*)&solar))
     {
+        ++DataManager::CommStats.solarTimeoutCount;
+
         DataManager::Solar.status.updated = false;
         return false;
     }
@@ -259,6 +261,10 @@ bool Epever::ReadChargingStatus()
             sizeof(status) /sizeof(uint16_t),
             (uint16_t*)&status))
     {
+        ++DataManager::CommStats.chargeTimeoutCount;
+
+        DataManager::Charge.status.updated = false;
+
         return false;
     }
 

@@ -184,6 +184,20 @@ namespace SVEMS::Service
         Logger::Info(
             "IOT",
             buffer);
+            
+        // Timeout counters
+        snprintf(
+            buffer,
+            sizeof(buffer),
+            "TIMEOUT SOLAR=%lu CHARGE=%lu",
+            static_cast<unsigned long>(
+                m_data.communication.solarTimeoutCount),
+            static_cast<unsigned long>(
+                m_data.communication.chargeTimeoutCount));
+
+        Logger::Info(
+            "IOT",
+            buffer);
 
         // Temporary JSON Output
         String json;
@@ -195,36 +209,6 @@ namespace SVEMS::Service
             Logger::Info(
                 "IOT JSON",
                 json);
-
-            // const uint32_t sendStart =
-            //     millis();
-
-            // const bool queued =
-            //     SVEMS::Transport::HttpTransport::Send(
-            //         json);
-
-            // const uint32_t sendElapsed =
-            //     millis() - sendStart;
-
-            // char sendMessage[48];
-
-            // snprintf(
-            //     sendMessage,
-            //     sizeof(sendMessage),
-            //     "Queue Send = %lu ms",
-            //     static_cast<unsigned long>(
-            //         sendElapsed));
-
-            // Logger::Info(
-            //     "IOT",
-            //     sendMessage);
-
-            // if (!queued)
-            // {
-            //     Logger::Warning(
-            //         "IOT",
-            //         "HTTP Queue Failed");
-            // }
 
             if (!SVEMS::Transport::HttpTransport::Send(
                     json))

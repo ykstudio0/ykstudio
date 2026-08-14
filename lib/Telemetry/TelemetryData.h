@@ -77,7 +77,9 @@ namespace SVEMS::Telemetry
 
     struct CommunicationData
     {
+        uint32_t solarTimeoutCount = 0U;
         uint32_t solarOfflineCount = 0U;
+        uint32_t chargeTimeoutCount = 0U;
         uint32_t chargeOfflineCount = 0U;
         uint32_t bmsOfflineCount = 0U;
 
