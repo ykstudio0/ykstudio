@@ -102,6 +102,50 @@ namespace SVEMS::Telemetry
         data.battery.online =
             DataManager::Battery.status.online;
 
+        // Load
+        data.load.voltage =
+            DataManager::Load.voltage;
+
+        data.load.current =
+            DataManager::Load.current;
+
+        data.load.power =
+            DataManager::Load.power;
+
+        data.load.online =
+            DataManager::Load.status.online;
+
+        // Temperature
+        data.temperature.battery =
+            DataManager::Temperature.battery;
+
+        data.temperature.bms =
+            DataManager::Temperature.bms;
+
+        data.temperature.powerBankExternal =
+            DataManager::Temperature.powerBankExternal;
+
+        data.temperature.controller =
+            DataManager::Temperature.controller;
+
+        data.temperature.controllerBoard =
+            DataManager::Temperature.controllerBoard;
+
+        data.temperature.cabinState =
+            ToTelemetryState(
+                DataManager::Temperature.cabinStatus.state
+            );
+
+        data.temperature.powerBankState =
+            ToTelemetryState(
+                DataManager::Temperature.powerBankStatus.state
+            );
+
+        data.temperature.controllerState =
+            ToTelemetryState(
+                DataManager::Temperature.controllerStatus.state
+            );
+            
         // Environment
         data.environment.cabinTemperature =
             roundf(

@@ -141,6 +141,62 @@ namespace SVEMS::Telemetry
             data.battery.online;
 
         //---------------------------------------------------------
+        // Load
+        //---------------------------------------------------------
+
+        JsonObject load =
+            doc["load"].to<JsonObject>();
+
+        load["voltage"] =
+            data.load.voltage;
+
+        load["current"] =
+            data.load.current;
+
+        load["power"] =
+            data.load.power;
+
+        load["online"] =
+            data.load.online;
+
+        //---------------------------------------------------------
+        // Temperature
+        //---------------------------------------------------------
+
+        JsonObject temperature =
+            doc["temperature"].to<JsonObject>();
+
+        temperature["battery"] =
+            data.temperature.battery;
+
+        temperature["bms"] =
+            data.temperature.bms;
+
+        temperature["powerBankExternal"] =
+            data.temperature.powerBankExternal;
+
+        temperature["controller"] =
+            data.temperature.controller;
+
+        temperature["controllerBoard"] =
+            data.temperature.controllerBoard;
+
+        temperature["cabinState"] =
+            ToString(
+                data.temperature.cabinState
+            );
+
+        temperature["powerBankState"] =
+            ToString(
+                data.temperature.powerBankState
+            );
+
+        temperature["controllerState"] =
+            ToString(
+                data.temperature.controllerState
+            );
+            
+        //---------------------------------------------------------
         // Environment
         //---------------------------------------------------------
 

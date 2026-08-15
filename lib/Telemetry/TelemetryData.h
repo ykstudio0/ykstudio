@@ -63,6 +63,34 @@ namespace SVEMS::Telemetry
         bool online = false;
     };
 
+    struct LoadData
+    {
+        float voltage = 0.0f;
+        float current = 0.0f;
+        float power = 0.0f;
+
+        bool online = false;
+    };
+
+    struct TemperatureData
+    {
+        float battery = 0.0f;
+        float bms = 0.0f;
+        float powerBankExternal = 0.0f;
+
+        float controller = 0.0f;
+        float controllerBoard = 0.0f;
+
+        TelemetryState cabinState =
+            TelemetryState::Offline;
+
+        TelemetryState powerBankState =
+            TelemetryState::Offline;
+
+        TelemetryState controllerState =
+            TelemetryState::Offline;
+    };
+
     struct EnvironmentData
     {
         float cabinTemperature = 0.0f;
@@ -93,7 +121,7 @@ namespace SVEMS::Telemetry
             TelemetryState::Offline;
         uint32_t chargeTimeoutCount = 0U;
         uint32_t chargeOfflineCount = 0U;
-        
+
         uint32_t bmsOfflineCount = 0U;
 
         bool rs485Ready = false;
@@ -117,6 +145,8 @@ namespace SVEMS::Telemetry
         
         SolarData solar;
         BatteryData battery;
+        LoadData load;
+        TemperatureData temperature;
         EnvironmentData environment;
         CommunicationData communication;
         SystemData system;
