@@ -54,6 +54,10 @@ constexpr uint8_t PIN_SD_CS = 5;
 // BMS Sniffer
 // ===========================
 constexpr uint8_t PIN_BMS_RX = 4;
-// constexpr uint8_t PIN_BMS_TX = 3;
+
+// ===========================
+// Vehicle Signal Input
+// ===========================
+constexpr uint8_t PIN_IG2 = 3;
 
 #endif

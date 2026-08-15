@@ -11,7 +11,11 @@
 #define CONSTANTS_H
 
 constexpr uint32_t SOLAR_TIMEOUT_MS                  = 15000UL;
+constexpr uint32_t SOLAR_STALE_TIMEOUT_MS            = 15000UL;
+constexpr uint32_t SOLAR_OFFLINE_TIMEOUT_MS          = 60000UL;
 constexpr uint32_t CHARGE_TIMEOUT_MS                 = 15000UL;
+constexpr uint32_t CHARGE_STALE_TIMEOUT_MS           = 15000UL;
+constexpr uint32_t CHARGE_OFFLINE_TIMEOUT_MS         = 60000UL;
 constexpr uint32_t CONTROLLER_BATTERY_TIMEOUT_MS     = 30000UL;
 constexpr uint32_t LOAD_TIMEOUT_MS                   = 30000UL;
 constexpr uint32_t CONTROLLER_TEMPERATURE_TIMEOUT_MS = 120000UL;

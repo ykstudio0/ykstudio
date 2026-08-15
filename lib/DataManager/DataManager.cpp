@@ -35,26 +35,85 @@ void DataManager::ClearUpdates()
 
 void DataManager::UpdateOnlineStatus(uint32_t now)
 {
-    if (Solar.status.online &&
-        now - Solar.status.lastUpdate >
-            SOLAR_TIMEOUT_MS)
-    {
-        Solar.status.online = false;
-        Solar.status.updated = true;
+    // Solar
+    const uint32_t solarAge =
+        now - Solar.status.lastUpdate;
 
-        ++CommStats.solarOfflineCount;
-        CommStats.solarLastOffline = now;
+    if (
+        Solar.status.state ==
+            CommunicationState::Online &&
+        solarAge >
+            SOLAR_STALE_TIMEOUT_MS
+    )
+    {
+        Solar.status.state =
+            CommunicationState::Stale;
+
+        Solar.status.updated =
+            true;
     }
 
-    if (Charge.status.online &&
-        now - Charge.status.lastUpdate >
-            SOLAR_TIMEOUT_MS)
+    if (
+        Solar.status.state !=
+            CommunicationState::Offline &&
+        solarAge >
+            SOLAR_OFFLINE_TIMEOUT_MS
+    )
     {
-        Charge.status.online = false;
-        Charge.status.updated = true;
+        Solar.status.state =
+            CommunicationState::Offline;
+
+        Solar.status.online =
+            false;
+
+        Solar.status.updated =
+            true;
+
+        ++CommStats.solarOfflineCount;
+
+        CommStats.solarLastOffline =
+            now;
+    }
+
+    // Charge
+
+    const uint32_t chargeAge =
+        now - Charge.status.lastUpdate;
+
+    if (
+        Charge.status.state ==
+            CommunicationState::Online &&
+        chargeAge >
+            CHARGE_STALE_TIMEOUT_MS
+    )
+    {
+        Charge.status.state =
+            CommunicationState::Stale;
+
+        Charge.status.updated =
+            true;
+    }
+
+    if (
+        Charge.status.state !=
+            CommunicationState::Offline &&
+        chargeAge >
+            CHARGE_OFFLINE_TIMEOUT_MS
+    )
+    {
+        Charge.status.state =
+            CommunicationState::Offline;
+
+        Charge.status.online =
+            false;
+
+        Charge.status.updated =
+            true;
 
         ++CommStats.chargeOfflineCount;
-        CommStats.chargeLastOffline = now;
+
+        CommStats.chargeLastOffline =
+            now;
     }
 
     if (Battery.status.online &&
@@ -123,65 +182,3 @@ void DataManager::UpdateOnlineStatus(uint32_t now)
         CommStats.socLastOffline = now;
     }
 }
-
-// void DataManager::UpdateOnlineStatus(uint32_t now)
-// {
-//     if (Solar.status.online && 
-//         now - Solar.status.lastUpdate > SOLAR_TIMEOUT_MS)
-//     {
-//         Solar.status.online = false;
-//         Solar.status.updated = true;
-//     }
-
-//     if (Charge.status.online &&
-//         now - Charge.status.lastUpdate > CHARGE_TIMEOUT_MS)
-//     {
-//         Charge.status.online = false;
-//         Charge.status.updated = true;
-//     }
-
-//     if (Battery.status.online && 
-//         now - Battery.status.lastUpdate > BMS_TIMEOUT_MS)
-//     {
-//         Battery.status.online = false;
-//         Battery.status.updated = true;
-//     }
-
-//     if (ControllerBattery.status.online &&
-//         now - ControllerBattery.status.lastUpdate >
-//             CONTROLLER_BATTERY_TIMEOUT_MS)
-//     {
-//         ControllerBattery.status.online = false;
-//         ControllerBattery.status.updated = true;
-//     }
-
-//     if (Load.status.online && 
-//         now - Load.status.lastUpdate > LOAD_TIMEOUT_MS)
-//     {
-//         Load.status.online = false;
-//         Load.status.updated = true;
-//     }
-
-//     if (Temperature.powerBankStatus.online &&
-//         now - Temperature.powerBankStatus.lastUpdate >
-//             BMS_TIMEOUT_MS)
-//     {
-//         Temperature.powerBankStatus.online = false;
-//         Temperature.powerBankStatus.updated = true;
-//     }
-
-//     if (Temperature.controllerStatus.online &&
-//         now - Temperature.controllerStatus.lastUpdate >
-//             CONTROLLER_TEMPERATURE_TIMEOUT_MS)
-//     {
-//         Temperature.controllerStatus.online = false;
-//         Temperature.controllerStatus.updated = true;
-//     }
-
-//     if (Soc.status.online && 
-//         now - Soc.status.lastUpdate > SOC_TIMEOUT_MS)
-//     {
-//         Soc.status.online = false;
-//         Soc.status.updated = true;
-//     }
-// }

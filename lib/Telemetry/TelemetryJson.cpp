@@ -37,6 +37,22 @@ namespace
 
 namespace SVEMS::Telemetry
 {
+    static const char* ToString(
+        TelemetryState state)
+    {
+        switch (state)
+        {
+            case TelemetryState::Online:
+                return "Online";
+
+            case TelemetryState::Stale:
+                return "Stale";
+
+            case TelemetryState::Offline:
+            default:
+                return "Offline";
+        }
+    }
 
     bool TelemetryJson::Serialize(
         const TelemetryData& data,
@@ -153,11 +169,21 @@ namespace SVEMS::Telemetry
         communication["modbus"] =
             data.communication.modbusReady;
 
+        communication["solarState"] =
+            ToString(
+                data.communication.solarState
+            );
+
         communication["solarTimeout"] =
             data.communication.solarTimeoutCount;
 
         communication["solarOffline"] =
             data.communication.solarOfflineCount;
+
+        communication["chargeState"] =
+            ToString(
+                data.communication.chargeState
+            );
 
         communication["chargeTimeout"] =
             data.communication.chargeTimeoutCount;

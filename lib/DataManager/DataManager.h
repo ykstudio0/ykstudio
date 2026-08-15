@@ -14,10 +14,22 @@
 class DataManager
 {
 public:
+
+    enum class CommunicationState
+    {
+        Online,
+        Stale,
+        Offline
+    };
+
     struct Status
     {
         bool updated = false;
         bool online = false;
+
+        CommunicationState state =
+            CommunicationState::Offline;
+
         uint32_t lastUpdate = 0;
     };
 

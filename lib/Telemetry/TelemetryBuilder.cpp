@@ -17,6 +17,23 @@
 
 namespace SVEMS::Telemetry
 {
+    TelemetryState ToTelemetryState(
+        DataManager::CommunicationState state)
+    {
+        switch (state)
+        {
+            case DataManager::CommunicationState::Online:
+                return TelemetryState::Online;
+
+            case DataManager::CommunicationState::Stale:
+                return TelemetryState::Stale;
+
+            case DataManager::CommunicationState::Offline:
+            default:
+                return TelemetryState::Offline;
+        }
+    }
+    
     void TelemetryBuilder::Build(
         TelemetryData& data)
     {
@@ -102,15 +119,25 @@ namespace SVEMS::Telemetry
             DataManager::Environment.status.online;
 
         // Communication
+        data.communication.solarState =
+            ToTelemetryState(
+                DataManager::Solar.status.state
+            );
+
         data.communication.solarTimeoutCount =
             DataManager::CommStats.solarTimeoutCount;
-        
+
         data.communication.solarOfflineCount =
             DataManager::CommStats.solarOfflineCount;
 
+        data.communication.chargeState =
+            ToTelemetryState(
+                DataManager::Charge.status.state
+            );
+
         data.communication.chargeTimeoutCount =
             DataManager::CommStats.chargeTimeoutCount;
-        
+
         data.communication.chargeOfflineCount =
             DataManager::CommStats.chargeOfflineCount;
 

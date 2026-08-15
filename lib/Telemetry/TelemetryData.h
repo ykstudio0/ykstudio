@@ -15,6 +15,13 @@
 
 namespace SVEMS::Telemetry
 {
+    enum class TelemetryState : uint8_t
+    {
+        Online,
+        Stale,
+        Offline
+    };
+
     struct TimestampData
     {
         uint16_t year = 0U;
@@ -77,10 +84,16 @@ namespace SVEMS::Telemetry
 
     struct CommunicationData
     {
+        TelemetryState solarState =
+            TelemetryState::Offline;
         uint32_t solarTimeoutCount = 0U;
         uint32_t solarOfflineCount = 0U;
+
+        TelemetryState chargeState =
+            TelemetryState::Offline;
         uint32_t chargeTimeoutCount = 0U;
         uint32_t chargeOfflineCount = 0U;
+        
         uint32_t bmsOfflineCount = 0U;
 
         bool rs485Ready = false;

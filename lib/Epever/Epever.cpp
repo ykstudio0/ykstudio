@@ -63,6 +63,8 @@ bool Epever::ReadSolar()
     // Solar Status
     DataManager::Solar.status.updated = true;
     DataManager::Solar.status.online = true;
+    DataManager::Solar.status.state =
+        DataManager::CommunicationState::Online;
     DataManager::Solar.status.lastUpdate = millis();
 
     Logger::Info("SOLAR", "Read OK");
@@ -286,6 +288,8 @@ bool Epever::ReadChargingStatus()
     DataManager::Charge.running      = parsed.running;
     DataManager::Charge.status.updated = true;
     DataManager::Charge.status.online = true;
+    DataManager::Charge.status.state =
+            DataManager::CommunicationState::Online;
     DataManager::Charge.status.lastUpdate = millis();
 
     snprintf(
@@ -303,14 +307,6 @@ bool Epever::ReadChargingStatus()
         parsed.running ? "YES" : "NO");
 
     Logger::Info("EPEVER", buffer);
-
-    // snprintf(
-    //     buffer,
-    //     sizeof(buffer),
-    //     "Fault = %s",
-    //     parsed.fault ? "YES" : "NO");
-
-    // Logger::Info("EPEVER", buffer);
 
     snprintf(
         buffer,
