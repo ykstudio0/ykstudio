@@ -72,6 +72,12 @@ namespace SVEMS::Service
             DataManager::CommunicationState::Online;
         DataManager::Environment.status.lastUpdate = millis();
 
+        DataManager::Temperature.cabinStatus.updated = true;
+        DataManager::Temperature.cabinStatus.online = true;
+        DataManager::Temperature.cabinStatus.state =
+            DataManager::CommunicationState::Online;
+        DataManager::Temperature.cabinStatus.lastUpdate = millis();
+
         return true;
     }
 
