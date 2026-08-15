@@ -374,6 +374,8 @@ namespace SVEMS::Service
 
         DataManager::Temperature.powerBankStatus.updated = true;
         DataManager::Temperature.powerBankStatus.online = true;
+        DataManager::Temperature.powerBankStatus.state =
+            DataManager::CommunicationState::Online;
         DataManager::Temperature.powerBankStatus.lastUpdate = now;
 
         return true;

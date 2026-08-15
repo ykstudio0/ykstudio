@@ -68,6 +68,8 @@ namespace SVEMS::Service
 
         DataManager::Environment.status.updated = true;
         DataManager::Environment.status.online = true;
+        DataManager::Environment.status.state =
+            DataManager::CommunicationState::Online;
         DataManager::Environment.status.lastUpdate = millis();
 
         return true;

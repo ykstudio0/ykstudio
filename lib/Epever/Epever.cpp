@@ -180,6 +180,10 @@ bool Epever::ReadTemperature()
         .controllerStatus.online = true;
 
     DataManager::Temperature
+        .controllerStatus.state =
+            DataManager::CommunicationState::Online;
+
+    DataManager::Temperature
         .controllerStatus.lastUpdate = millis();
 
     return true;
