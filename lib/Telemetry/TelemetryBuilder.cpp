@@ -96,6 +96,12 @@ namespace SVEMS::Telemetry
         data.battery.soc =
             DataManager::Soc.value;
 
+        data.battery.remainingCapacity =
+            DataManager::Battery.remainingCapacity;
+
+        data.battery.totalCapacity =
+            DataManager::Battery.totalCapacity;
+
         data.battery.temperature =
             DataManager::Temperature.battery;
 

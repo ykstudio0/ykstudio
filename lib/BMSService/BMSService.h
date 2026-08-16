@@ -32,6 +32,7 @@ namespace SVEMS::Service
         uint32_t cellCount;
 
         float remainingCapacity;
+        float totalCapacity;
 
         BMSData()
             : socPercent(0.0f),
@@ -45,7 +46,8 @@ namespace SVEMS::Service
               bmsTemperature(0.0f),
               externalTemperature(0.0f),
               cellCount(0U),
-              remainingCapacity(0.0f)
+              remainingCapacity(0.0f),
+              totalCapacity(0.0f)
         {
         }
     };

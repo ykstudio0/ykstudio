@@ -81,6 +81,7 @@ public:
         float power   = 0.0f;
 
         float remainingCapacity = 0.0f;
+        float totalCapacity = 0.0f;
 
         float cellVoltage[4] =
         {

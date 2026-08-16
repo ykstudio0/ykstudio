@@ -134,6 +134,12 @@ namespace SVEMS::Telemetry
         battery["soc"] =
             data.battery.soc;
 
+        battery["remainingCapacity"] =
+            data.battery.remainingCapacity;
+
+        battery["totalCapacity"] =
+            data.battery.totalCapacity;
+
         battery["temperature"] =
             data.battery.temperature;
 

@@ -190,6 +190,34 @@ namespace SVEMS::Service
             return false;
         }
 
+        // if constexpr (ENABLE_BMS_TRACE)
+        // {
+        //     Serial.print("[BMS RAW] LEN=");
+        //     Serial.println(length);
+
+        //     for (size_t i = 0; i < length; ++i)
+        //     {
+        //         if ((i % 16U) == 0U)
+        //         {
+        //             Serial.printf(
+        //                 "%04X: ",
+        //                 static_cast<unsigned>(i)
+        //             );
+        //         }
+
+        //         Serial.printf(
+        //             "%02X ",
+        //             frame[i]
+        //         );
+
+        //         if ((i % 16U) == 15U ||
+        //             i == length - 1U)
+        //         {
+        //             Serial.println();
+        //         }
+        //     }
+        // }
+
         if (frame[0] != BMS_HEADER[0] ||
             frame[1] != BMS_HEADER[1] ||
             frame[2] != BMS_HEADER[2] ||
@@ -248,6 +276,14 @@ namespace SVEMS::Service
             ReadFloatBE(
                 &frame[0x5C]);
 
+        if (parsed.socPercent > 0.0f)
+        {
+            parsed.totalCapacity =
+                parsed.remainingCapacity *
+                100.0f /
+                parsed.socPercent;
+        }
+
         //-----------------------------------------------------
         // 최소 유효성 검사
         //-----------------------------------------------------
@@ -274,6 +310,7 @@ namespace SVEMS::Service
             !std::isfinite(parsed.packVoltage) ||
             !std::isfinite(parsed.packCurrent) ||
             !std::isfinite(parsed.remainingCapacity) ||
+            !std::isfinite(parsed.totalCapacity) ||
             !std::isfinite(parsed.batteryTemperature) ||
             !std::isfinite(parsed.bmsTemperature) ||
             !std::isfinite(parsed.externalTemperature))
@@ -321,6 +358,9 @@ namespace SVEMS::Service
         DataManager::Battery.remainingCapacity =
             parsed.remainingCapacity;
 
+        DataManager::Battery.totalCapacity =
+            parsed.totalCapacity;
+
         DataManager::Battery.cellVoltage[0] =
             parsed.cellVoltage1;
 
@@ -339,6 +379,8 @@ namespace SVEMS::Service
 
         DataManager::Battery.status.updated = true;
         DataManager::Battery.status.online = true;
+        DataManager::Battery.status.state =
+            DataManager::CommunicationState::Online;
         DataManager::Battery.status.lastUpdate = now;
 
         // SOC
@@ -360,6 +402,8 @@ namespace SVEMS::Service
 
         DataManager::Soc.status.updated = true;
         DataManager::Soc.status.online = true;
+        DataManager::Soc.status.state =
+            DataManager::CommunicationState::Online;
         DataManager::Soc.status.lastUpdate = now;
 
         // Temperature
@@ -484,12 +528,14 @@ namespace SVEMS::Service
                             "SOC=%.2f%% "
                             "PACK=%.3fV "
                             "CURRENT=%.3fA "
-                            "CAP=%.2fAh\n",
+                            "REM=%.2fAh "
+                            "TOTAL=%.2fAh\n",
                             now,
                             Data.socPercent,
                             Data.packVoltage,
                             Data.packCurrent,
-                            Data.remainingCapacity);
+                            Data.remainingCapacity,
+                            Data.totalCapacity);
 
                         Serial.printf(
                             "[%08lu] [BMS] "
