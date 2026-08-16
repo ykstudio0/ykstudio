@@ -542,6 +542,116 @@ namespace DisplayRenderer
         const DisplayModel::BatteryData& lastData =
             m_lastModel.GetBattery();
 
+        //---------------------------------------------------------
+        // Row 0 : SOC
+        //---------------------------------------------------------
+
+        const bool socChanged =
+            HasValueChanged(
+                data.percent,
+                lastData.percent);
+
+        if (ShouldDraw(socChanged))
+        {
+            DrawRowValue(
+                data.percent,
+                0U);
+        }
+
+
+        //---------------------------------------------------------
+        // Row 1 : Remaining Capacity
+        //---------------------------------------------------------
+
+        const bool remainingChanged =
+            HasValueChanged(
+                data.remainingCapacity,
+                lastData.remainingCapacity);
+
+        if (ShouldDraw(remainingChanged))
+        {
+            DrawRowValue(
+                data.remainingCapacity,
+                1U);
+        }
+
+
+        //---------------------------------------------------------
+        // Row 2 : Power
+        //---------------------------------------------------------
+
+        const bool powerChanged =
+            HasValueChanged(
+                data.power,
+                lastData.power);
+
+        if (ShouldDraw(powerChanged))
+        {
+            DrawRowValue(
+                data.power,
+                2U);
+        }
+
+
+        //---------------------------------------------------------
+        // Row 3 : Current
+        //---------------------------------------------------------
+
+        const bool currentChanged =
+            HasValueChanged(
+                data.current,
+                lastData.current);
+
+        if (ShouldDraw(currentChanged))
+        {
+            DrawRowValue(
+                data.current,
+                3U);
+        }
+
+
+        //---------------------------------------------------------
+        // Row 4 : Temperature
+        //---------------------------------------------------------
+
+        const bool tempChanged =
+            HasValueChanged(
+                data.temperature,
+                lastData.temperature);
+
+        if (ShouldDraw(tempChanged))
+        {
+            DrawRowValue(
+                data.temperature,
+                4U);
+        }
+
+
+        //---------------------------------------------------------
+        // Row 5 : BMS Communication Status
+        //---------------------------------------------------------
+
+        const bool statusChanged =
+            HasDisplayTextChanged(
+                data.communicationStatus,
+                lastData.communicationStatus);
+
+        if (ShouldDraw(statusChanged))
+        {
+            DisplayWidgets::ValueWidget::DrawTextValue(
+                *m_target,
+                5U,
+                data.communicationStatus);
+        }
+    }
+
+    void Renderer::DrawBatteryDetail(
+        const DisplayModel::BatteryData& data)
+    {
+        const DisplayModel::BatteryData& lastData =
+            m_lastModel.GetBattery();
+
+        // Voltage
         const bool voltageChanged =
             HasValueChanged(
                 data.voltage,
@@ -554,76 +664,6 @@ namespace DisplayRenderer
                 0U);
         }
 
-        const bool currentChanged =
-            HasValueChanged(
-                data.current,
-                lastData.current);
-
-        if (ShouldDraw(currentChanged))
-        {
-            DrawRowValue(
-                data.current,
-                1U);
-        }
-
-        const bool powerChanged =
-            HasValueChanged(
-                data.power,
-                lastData.power);
-
-        if (ShouldDraw(powerChanged))
-        {
-            DrawRowValue(
-                data.power,
-                2U);
-        }    
-
-        const bool socChanged =
-            HasValueChanged(
-                data.percent,
-                lastData.percent);
-
-        if (ShouldDraw(socChanged))
-        {
-            DrawRowValue(
-                data.percent,
-                3U);
-        }    
-
-        const bool tempChanged =
-            HasValueChanged(
-                data.temperature,
-                lastData.temperature);
-
-        if (ShouldDraw(tempChanged))
-        {
-            DrawRowValue(
-                data.temperature,
-                4U);
-        }    
-
-        // 배터리 상태는 파워뱅크 적산계 연동시 활성화한다.
-        // const bool statusChanged =
-        //     HasDisplayTextChanged(
-        //         data.status,
-        //         lastData.status);
-        // if (m_firstRender ||
-        //     m_pageChanged ||
-        //     statusChanged)
-        // {
-        //     DisplayWidgets::ValueWidget::DrawTextValue(
-        //         *m_target,
-        //         5U,
-        //         data.status);
-        // }
-    }
-
-    void Renderer::DrawBatteryDetail(
-        const DisplayModel::BatteryData& data)
-    {
-        const DisplayModel::BatteryData& lastData =
-            m_lastModel.GetBattery();
-
         // Cell 1
         const bool cell1Changed =
             HasValueChanged(
@@ -634,7 +674,7 @@ namespace DisplayRenderer
         {
             DrawRowValue(
                 data.cellVoltage1,
-                0U);
+                1U);
         }
 
         // Cell 2
@@ -647,7 +687,7 @@ namespace DisplayRenderer
         {
             DrawRowValue(
                 data.cellVoltage2,
-                1U);
+                2U);
         }
 
         // Cell 3
@@ -660,7 +700,7 @@ namespace DisplayRenderer
         {
             DrawRowValue(
                 data.cellVoltage3,
-                2U);
+                3U);
         }
 
         // Cell 4
@@ -673,7 +713,7 @@ namespace DisplayRenderer
         {
             DrawRowValue(
                 data.cellVoltage4,
-                3U);
+                4U);
         }
 
         // Cell Delta
@@ -686,19 +726,6 @@ namespace DisplayRenderer
         {
             DrawRowValue(
                 data.cellDelta,
-                4U);
-        }
-
-        // Remaining Capacity
-        const bool capacityChanged =
-            HasValueChanged(
-                data.remainingCapacity,
-                lastData.remainingCapacity);
-
-        if (ShouldDraw(capacityChanged))
-        {
-            DrawRowValue(
-                data.remainingCapacity,
                 5U);
         }
     }

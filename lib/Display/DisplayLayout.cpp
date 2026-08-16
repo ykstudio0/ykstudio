@@ -35,22 +35,22 @@ namespace
 
     const DisplayLayout::StaticRow g_batteryRows[] =
     {
-        {0, "Voltage"},
-        {1, "Current"},
+        {0, "SOC"},
+        {1, "Remaining"},
         {2, "Power"},
-        {3, "SOC"},
-        {4, "Temp"}
-        // {5, "Status"}
+        {3, "Current"},
+        {4, "Temp"},
+        {5, "Status"}
     };
 
     constexpr StaticRow g_batteryDetailRows[] =
     {
-        { 0U, "Cell 1",   true },
-        { 1U, "Cell 2",   true },
-        { 2U, "Cell 3",   true },
-        { 3U, "Cell 4",   true },
-        { 4U, "Delta",    true },
-        { 5U, "Capacity", true }
+        { 0U, "Voltage",   true },
+        { 1U, "Cell 1",   true },
+        { 2U, "Cell 2",   true },
+        { 3U, "Cell 3",   true },
+        { 4U, "Cell 4",    true },
+        { 5U, "Delta", true }
     };
 
     static constexpr DisplayLayout::StaticRow g_systemDetailRows[] =

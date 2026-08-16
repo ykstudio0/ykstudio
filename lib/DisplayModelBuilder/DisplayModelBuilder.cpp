@@ -201,6 +201,31 @@ namespace
 
         battery.remainingCapacity.decimals = 1U;
 
+        battery.totalCapacity =
+            DisplayTypes::MakeValue(
+                DataManager::Battery.totalCapacity,
+                DisplayTypes::ValueType::Capacity);
+
+        battery.totalCapacity.decimals =
+            1U;
+
+        if (DataManager::Battery.status.online)
+        {
+            battery.communicationStatus.text =
+                "ONLINE";
+
+            battery.communicationStatus.color =
+                DisplayTheme::COLOR_VALUE;
+        }
+        else
+        {
+            battery.communicationStatus.text =
+                "OFFLINE";
+
+            battery.communicationStatus.color =
+                DisplayTheme::COLOR_DISABLED;
+        }
+
         battery.cellVoltage1 =
             DisplayTypes::MakeValue(
                 DataManager::Battery.cellVoltage[0],
@@ -286,6 +311,10 @@ namespace
 
         ApplyStatus(
             battery.remainingCapacity,
+            DataManager::Battery.status);
+
+        ApplyStatus(
+            battery.totalCapacity,
             DataManager::Battery.status);
 
         ApplyStatus(

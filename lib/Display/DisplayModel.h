@@ -149,10 +149,12 @@ namespace DisplayModel
         DisplayTypes::DisplayValue percent;
         DisplayTypes::DisplayValue temperature;
 
-        DisplayTypes::DisplayText status;
+        // DisplayTypes::DisplayText status;
 
         // BMS Detail
         DisplayTypes::DisplayValue remainingCapacity;
+        DisplayTypes::DisplayValue totalCapacity;
+        DisplayTypes::DisplayText communicationStatus;
 
         DisplayTypes::DisplayValue cellVoltage1;
         DisplayTypes::DisplayValue cellVoltage2;
@@ -190,12 +192,19 @@ namespace DisplayModel
                     0.0f,
                     DisplayTypes::ValueType::Temperature)),
 
-            status(),
+            // status(),
 
             remainingCapacity(
                 DisplayTypes::MakeValue(
                     0.0f,
                     DisplayTypes::ValueType::Capacity)),
+
+            totalCapacity(
+                DisplayTypes::MakeValue(
+                    0.0f,
+                    DisplayTypes::ValueType::Capacity)),
+
+            communicationStatus(),
 
             cellVoltage1(
                 DisplayTypes::MakeValue(
@@ -233,6 +242,7 @@ namespace DisplayModel
                     DisplayTypes::ValueType::Temperature))
         {
             remainingCapacity.decimals = 1U;
+            totalCapacity.decimals = 1U;
 
             cellVoltage1.decimals = 3U;
             cellVoltage2.decimals = 3U;

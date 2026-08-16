@@ -30,6 +30,7 @@
         Duration,
         SignalStrength,
         Capacity,
+        TotalCapacity,
         Text
     };
 
