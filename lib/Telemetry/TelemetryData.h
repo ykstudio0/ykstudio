@@ -63,6 +63,14 @@ namespace SVEMS::Telemetry
 
         float temperature = 0.0f;
 
+        float cellVoltage[4] =
+        {
+            0.0f,
+            0.0f,
+            0.0f,
+            0.0f
+        };
+
         bool online = false;
     };
 

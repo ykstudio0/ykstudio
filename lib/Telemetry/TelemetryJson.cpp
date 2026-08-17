@@ -143,6 +143,18 @@ namespace SVEMS::Telemetry
         battery["temperature"] =
             data.battery.temperature;
 
+        battery["cell1"] =
+            data.battery.cellVoltage[0];
+
+        battery["cell2"] =
+            data.battery.cellVoltage[1];
+
+        battery["cell3"] =
+            data.battery.cellVoltage[2];
+
+        battery["cell4"] =
+            data.battery.cellVoltage[3];
+
         battery["online"] =
             data.battery.online;
 
