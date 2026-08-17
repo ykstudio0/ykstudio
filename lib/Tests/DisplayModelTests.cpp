@@ -39,9 +39,9 @@ static_assert(
     "Overview solar power type must be Power");
 
 static_assert(
-    DEFAULT_OVERVIEW_DATA.batteryVoltage.type ==
-        DisplayTypes::ValueType::Voltage,
-    "Overview battery voltage type must be Voltage");
+    DEFAULT_OVERVIEW_DATA.batteryRemaining.type ==
+        DisplayTypes::ValueType::Capacity,
+    "Overview battery capacity type must be Capacity");
 
 static_assert(
     DEFAULT_OVERVIEW_DATA.batteryPercent.type ==
@@ -189,9 +189,9 @@ namespace
 
         Check(
             IsNearlyEqual(
-                model.GetOverview().batteryVoltage.value,
+                model.GetOverview().batteryRemaining.value,
                 0.0f),
-            "Overview battery voltage starts at zero");
+            "Overview battery capacity starts at zero");
 
         Check(
             model.GetSystem().wifiConnected == false,
@@ -349,7 +349,7 @@ namespace
         Check(
             IsNearlyEqual(
                 model.GetOverview()
-                    .batteryVoltage
+                    .batteryRemaining
                     .value,
                 13.42f),
             "Overview receives battery voltage");

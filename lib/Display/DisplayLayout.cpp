@@ -16,7 +16,7 @@ namespace
     const DisplayLayout::StaticRow g_overviewRows[] =
     {
         {0, "Solar"},
-        {1, "Battery"},
+        {1, "Bat Remain"},
         {2, "SOC"},
         {3, "Load"},
         {4, "Cabin"},

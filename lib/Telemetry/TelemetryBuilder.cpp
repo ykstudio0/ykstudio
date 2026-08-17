@@ -105,6 +105,12 @@ namespace SVEMS::Telemetry
         data.battery.temperature =
             DataManager::Temperature.battery;
 
+        for (uint8_t i = 0U; i < 4U; ++i)
+        {
+            data.battery.cellVoltage[i] =
+                DataManager::Battery.cellVoltage[i];
+        }
+        
         data.battery.online =
             DataManager::Battery.status.online;
 

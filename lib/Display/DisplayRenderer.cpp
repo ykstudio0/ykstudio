@@ -396,13 +396,13 @@ namespace DisplayRenderer
 
         const bool batteryChanged =
             HasValueChanged(
-                data.batteryVoltage,
-                lastData.batteryVoltage);
+                data.batteryRemaining,
+                lastData.batteryRemaining);
             
         if (ShouldDraw(batteryChanged))
         {
             DrawRowValue(
-                data.batteryVoltage,
+                data.batteryRemaining,
                 1U);
         }
 
