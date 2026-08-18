@@ -348,9 +348,14 @@ namespace DisplayRenderer
                     DrawBattery(
                         model.GetBattery());
                 }
-                else
+                else if (subPage == 1U)
                 {
                     DrawBatteryDetail(
+                        model.GetBattery());
+                }
+                else if (subPage == 2U)
+                {
+                    DrawBatteryDetail2(
                         model.GetBattery());
                 }
 
@@ -727,6 +732,92 @@ namespace DisplayRenderer
             DrawRowValue(
                 data.cellDelta,
                 5U);
+        }
+    }
+
+    void Renderer::DrawBatteryDetail2(
+        const DisplayModel::BatteryData& data)
+    {
+        const DisplayModel::BatteryData& lastData =
+            m_lastModel.GetBattery();
+
+        // BMS Temperature
+        const bool bmsTemperatureChanged =
+            HasValueChanged(
+                data.bmsTemperature,
+                lastData.bmsTemperature);
+
+        if (ShouldDraw(bmsTemperatureChanged))
+        {
+            DrawRowValue(
+                data.bmsTemperature,
+                0U);
+        }
+
+        // External Temperature
+        const bool externalTemperatureChanged =
+            HasValueChanged(
+                data.externalTemperature,
+                lastData.externalTemperature);
+
+        if (ShouldDraw(externalTemperatureChanged))
+        {
+            DrawRowValue(
+                data.externalTemperature,
+                1U);
+        }
+
+        // Total Capacity
+        const bool totalCapacityChanged =
+            HasValueChanged(
+                data.totalCapacity,
+                lastData.totalCapacity);
+
+        if (ShouldDraw(totalCapacityChanged))
+        {
+            DrawRowValue(
+                data.totalCapacity,
+                2U);
+        }
+
+        // Remaining Capacity
+        const bool remainingCapacityChanged =
+            HasValueChanged(
+                data.remainingCapacity,
+                lastData.remainingCapacity);
+
+        if (ShouldDraw(remainingCapacityChanged))
+        {
+            DrawRowValue(
+                data.remainingCapacity,
+                3U);
+        }
+
+        // SOC
+        const bool percentChanged =
+            HasValueChanged(
+                data.percent,
+                lastData.percent);
+
+        if (ShouldDraw(percentChanged))
+        {
+            DrawRowValue(
+                data.percent,
+                4U);
+        }
+
+        // BMS Communication Status
+        const bool statusChanged =
+            HasDisplayTextChanged(
+                data.communicationStatus,
+                lastData.communicationStatus);
+
+        if (ShouldDraw(statusChanged))
+        {
+            DisplayWidgets::ValueWidget::DrawTextValue(
+                *m_target,
+                5U,
+                data.communicationStatus);
         }
     }
 

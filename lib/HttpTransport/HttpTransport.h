@@ -52,6 +52,8 @@ namespace SVEMS::Transport
         static const char* StateToString(
             State state);
 
+        static int GetLastErrorCode();
+
     private:
 
         static void WorkerTask(
@@ -85,6 +87,8 @@ namespace SVEMS::Transport
         static uint32_t ConsecutiveFailures;
 
         static uint32_t LastFailureMs;
+
+        static int LastErrorCode;
 
         static constexpr uint32_t
             RETRY_INTERVAL_MS = 30000UL;

@@ -53,6 +53,16 @@ namespace
         { 5U, "Delta", true }
     };
 
+    constexpr StaticRow g_batteryDetail2Rows[] =
+    {
+        { 0U, "BMS Temp",   true },
+        { 1U, "Ext Temp",   true },
+        { 2U, "Capacity",   true },
+        { 3U, "Remaining",  true },
+        { 4U, "SOC",        true },
+        { 5U, "Status",     true }
+    };
+
     static constexpr DisplayLayout::StaticRow g_systemDetailRows[] =
     {
         { 0U, "SOLAR OFF",  true },
@@ -120,6 +130,15 @@ const DisplayLayout::StaticRow*
                         sizeof(g_batteryDetailRows[0]);
 
                     return g_batteryDetailRows;
+                }
+
+                if (subPage == 2U)
+                {
+                    count =
+                        sizeof(g_batteryDetail2Rows) /
+                        sizeof(g_batteryDetail2Rows[0]);
+
+                    return g_batteryDetail2Rows;
                 }
 
                 count =

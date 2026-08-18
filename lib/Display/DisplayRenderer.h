@@ -134,5 +134,8 @@ namespace DisplayRenderer
 
         void DrawBatteryDetail(
             const DisplayModel::BatteryData& data);
+
+        void DrawBatteryDetail2(
+            const DisplayModel::BatteryData& data);
     };
 }

@@ -118,7 +118,7 @@ namespace DisplayPages
         switch (page)
         {
             case Page::Battery:
-                return 2U;
+                return 3U;
 
             case Page::System:
                 return 2U;

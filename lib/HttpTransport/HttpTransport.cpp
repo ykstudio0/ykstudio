@@ -43,6 +43,8 @@ namespace SVEMS::Transport
     uint32_t
         HttpTransport::LastFailureMs = 0U;
     
+    int HttpTransport::LastErrorCode = 0;
+
     bool HttpTransport::Ready = false;
 
     QueueHandle_t HttpTransport::Queue = nullptr;
@@ -428,6 +430,9 @@ namespace SVEMS::Transport
         ++FailureCount;
         ++ConsecutiveFailures;
 
+        LastErrorCode =
+            httpCode;
+
         LastFailureMs =
             now;
 
@@ -547,5 +552,19 @@ namespace SVEMS::Transport
             default:
                 return "Unknown";
         }
+    }
+
+    int HttpTransport::GetLastErrorCode()
+    {
+        portENTER_CRITICAL(
+            &StateMux);
+
+        const int value =
+            LastErrorCode;
+
+        portEXIT_CRITICAL(
+            &StateMux);
+
+        return value;
     }
 }

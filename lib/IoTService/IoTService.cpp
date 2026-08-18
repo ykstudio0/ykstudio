@@ -82,6 +82,10 @@ namespace SVEMS::Service
             SVEMS::Transport::
                 HttpTransport::GetConsecutiveFailures();
 
+        m_data.communication.http.lastErrorCode =
+            SVEMS::Transport::
+                HttpTransport::GetLastErrorCode();
+
         // Temporary Telemetry Debug Output
         char buffer[128];
 

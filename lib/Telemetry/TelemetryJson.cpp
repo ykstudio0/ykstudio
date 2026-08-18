@@ -287,6 +287,9 @@ namespace SVEMS::Telemetry
         http["consecutiveFailures"] =
             data.communication.http.consecutiveFailures;
 
+        http["lastErrorCode"] =
+            data.communication.http.lastErrorCode;
+
         //---------------------------------------------------------
         // System
         //---------------------------------------------------------
