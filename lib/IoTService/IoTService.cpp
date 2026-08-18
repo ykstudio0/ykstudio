@@ -82,6 +82,10 @@ namespace SVEMS::Service
             SVEMS::Transport::
                 HttpTransport::GetConsecutiveFailures();
 
+        m_data.communication.http.maxConsecutiveFailures =
+            SVEMS::Transport::
+                HttpTransport::GetMaxConsecutiveFailures();
+
         m_data.communication.http.lastErrorCode =
             SVEMS::Transport::
                 HttpTransport::GetLastErrorCode();

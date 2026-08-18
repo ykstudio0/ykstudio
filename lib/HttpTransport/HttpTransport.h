@@ -54,6 +54,8 @@ namespace SVEMS::Transport
 
         static int GetLastErrorCode();
 
+        static uint32_t GetMaxConsecutiveFailures();
+
     private:
 
         static void WorkerTask(
@@ -69,10 +71,13 @@ namespace SVEMS::Transport
         static TaskHandle_t WorkerTaskHandle;
 
         static constexpr size_t
-            MAX_PAYLOAD_SIZE = 1024U;
+            MAX_PAYLOAD_SIZE = 2048U;
 
         static constexpr uint8_t
             QUEUE_LENGTH = 2U;
+
+        static constexpr uint32_t
+            SENDING_TIMEOUT_MS = 10000UL;
 
         struct HttpMessage
         {
@@ -87,6 +92,7 @@ namespace SVEMS::Transport
         static uint32_t ConsecutiveFailures;
 
         static uint32_t LastFailureMs;
+        static uint32_t SendingSinceMs;
 
         static int LastErrorCode;
 
@@ -94,5 +100,7 @@ namespace SVEMS::Transport
             RETRY_INTERVAL_MS = 30000UL;
 
         static portMUX_TYPE StateMux;
+
+        static uint32_t MaxConsecutiveFailures;
     };
 }

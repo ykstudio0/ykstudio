@@ -119,6 +119,7 @@ namespace SVEMS::Telemetry
         uint32_t successCount = 0U;
         uint32_t failureCount = 0U;
         uint32_t consecutiveFailures = 0U;
+        uint32_t maxConsecutiveFailures = 0U;
 
         int lastErrorCode = 0;
     };

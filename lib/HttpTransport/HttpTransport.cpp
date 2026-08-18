@@ -42,8 +42,12 @@ namespace SVEMS::Transport
 
     uint32_t
         HttpTransport::LastFailureMs = 0U;
+
+    uint32_t HttpTransport::SendingSinceMs = 0U;
     
     int HttpTransport::LastErrorCode = 0;
+
+    uint32_t HttpTransport::MaxConsecutiveFailures = 0U;
 
     bool HttpTransport::Ready = false;
 
@@ -158,6 +162,9 @@ namespace SVEMS::Transport
         return online;
     }
 
+    bool canSend = false;
+    bool sendingTimedOut = false;
+
     bool HttpTransport::Send(
         const String& payload)
     {
@@ -201,6 +208,9 @@ namespace SVEMS::Transport
             CurrentState =
                 State::Sending;
 
+            SendingSinceMs =
+                now;
+
             canSend = true;
         }
         else if (CurrentState ==
@@ -211,15 +221,50 @@ namespace SVEMS::Transport
             {
                 CurrentState =
                     State::Sending;
+                
+                SendingSinceMs =
+                    now;
 
                 canSend = true;
+            }
+        }
+        else if (CurrentState ==
+                State::Sending)
+        {
+            if (now - SendingSinceMs >=
+                SENDING_TIMEOUT_MS)
+            {
+                CurrentState =
+                    State::RetryWaiting;
+
+                LastFailureMs =
+                    now;
+
+                ++FailureCount;
+                ++ConsecutiveFailures;
+
+                if (ConsecutiveFailures >
+                    MaxConsecutiveFailures)
+                {
+                    MaxConsecutiveFailures =
+                        ConsecutiveFailures;
+                }
+
+                sendingTimedOut = true;
             }
         }
 
         portEXIT_CRITICAL(
             &StateMux);
 
-        if (!canSend)
+        if (sendingTimedOut)
+        {
+            Logger::Warning(
+                "HTTP",
+                "Sending Timeout");
+        }
+
+            if (!canSend)
         {
             return true;
         }
@@ -312,6 +357,13 @@ namespace SVEMS::Transport
             ++FailureCount;
             ++ConsecutiveFailures;
 
+            if (ConsecutiveFailures >
+                MaxConsecutiveFailures)
+            {
+                MaxConsecutiveFailures =
+                    ConsecutiveFailures;
+            }
+
             LastFailureMs =
                 now;
 
@@ -334,6 +386,12 @@ namespace SVEMS::Transport
 
         HTTPClient http;
 
+        http.setConnectTimeout(
+            3000);
+
+        http.setTimeout(
+            3000);
+
         if (!http.begin(
                 SVEMS::Config::TELEMETRY_URL))
         {
@@ -345,6 +403,13 @@ namespace SVEMS::Transport
 
             ++FailureCount;
             ++ConsecutiveFailures;
+
+            if (ConsecutiveFailures >
+                MaxConsecutiveFailures)
+            {
+                MaxConsecutiveFailures =
+                    ConsecutiveFailures;
+            }
 
             LastFailureMs =
                 now;
@@ -429,6 +494,13 @@ namespace SVEMS::Transport
 
         ++FailureCount;
         ++ConsecutiveFailures;
+
+        if (ConsecutiveFailures >
+            MaxConsecutiveFailures)
+        {
+            MaxConsecutiveFailures =
+                ConsecutiveFailures;
+        }
 
         LastErrorCode =
             httpCode;
@@ -561,6 +633,20 @@ namespace SVEMS::Transport
 
         const int value =
             LastErrorCode;
+
+        portEXIT_CRITICAL(
+            &StateMux);
+
+        return value;
+    }
+
+    uint32_t HttpTransport::GetMaxConsecutiveFailures()
+    {
+        portENTER_CRITICAL(
+            &StateMux);
+
+        const uint32_t value =
+            MaxConsecutiveFailures;
 
         portEXIT_CRITICAL(
             &StateMux);
