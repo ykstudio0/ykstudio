@@ -113,7 +113,7 @@ namespace SVEMS::Transport
             xTaskCreatePinnedToCore(
                 WorkerTask,
                 "HttpWorker",
-                6144,
+                10240,
                 nullptr,
                 1,
                 &WorkerTaskHandle,
