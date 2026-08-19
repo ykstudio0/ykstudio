@@ -14,8 +14,12 @@
 
 bool ModbusRTU::Ready = false;
 
+ModbusRTU::ErrorReason
+    ModbusRTU::LastErrorReason =
+        ModbusRTU::ErrorReason::None;
+
 bool ModbusRTU::Begin()
-{
+{   
     Ready = false;
 
     if (!RS485::IsReady())
@@ -42,6 +46,9 @@ bool ModbusRTU::ReadInputRegisters(
     size_t responseSize)
 {
     static uint32_t seq = 0;
+
+    LastErrorReason =
+        ErrorReason::None;
 
     seq++;
     Logger::Info("MODBUS", "Read #" + String(seq));
@@ -156,6 +163,9 @@ bool ModbusRTU::ReadInputRegisters(
 
     if (len == 0)
     {
+        LastErrorReason =
+            ErrorReason::NoResponse;
+
         Logger::Warning("MODBUS", "NO Response");
 
         return false;
@@ -166,6 +176,9 @@ bool ModbusRTU::ReadInputRegisters(
     // 최소 프레임 확인
     if (len < 5)
     {
+        LastErrorReason =
+            ErrorReason::FrameTooShort;
+
         Logger::Error("MODBUS", "Frame Too Short");
         return false;
     }
@@ -173,6 +186,9 @@ bool ModbusRTU::ReadInputRegisters(
     // Slave 확인
     if (response[0] != slave)
     {
+        LastErrorReason =
+            ErrorReason::InvalidSlave;
+
         Logger::Error("MODBUS", "Invalid Slave");
         return false;
     }
@@ -191,6 +207,9 @@ bool ModbusRTU::ReadInputRegisters(
     {
         if (response[1] != MODBUS_READ_INPUT_REGISTERS)
         {
+            LastErrorReason =
+                ErrorReason::InvalidFunction;
+
             Logger::Error("MODBUS", "Invalid Function");
             return false;
         }
@@ -201,6 +220,9 @@ bool ModbusRTU::ReadInputRegisters(
 
     if (len != expectedLength)
     {
+        LastErrorReason =
+            ErrorReason::InvalidLength;
+
         Logger::Error(
             "MODBUS",
             "Invalid Length (" +
@@ -220,6 +242,9 @@ bool ModbusRTU::ReadInputRegisters(
 
     if (crcCalc != crcRecv)
     {
+        LastErrorReason =
+            ErrorReason::CrcError;
+
         char msg[48];
 
         sprintf(
@@ -235,6 +260,9 @@ bool ModbusRTU::ReadInputRegisters(
 
     if (isException)
     {
+        LastErrorReason =
+            ErrorReason::Exception;
+
         char msg[32];
 
         sprintf(
@@ -251,6 +279,9 @@ bool ModbusRTU::ReadInputRegisters(
     
     if (response[2] != requestedBytes)
     {
+        LastErrorReason =
+            ErrorReason::InvalidByteCount;
+
         Logger::Error(
             "MODBUS",
             "Invalid Byte Count (" +
@@ -260,23 +291,32 @@ bool ModbusRTU::ReadInputRegisters(
         return false;
     }
     
-    if (response[1] & 0x80)
-    {
-        char msg[32];
+    // if (response[1] & 0x80)
+    // {
+    //     char msg[32];
 
-        sprintf(
-            msg,
-            "Exception %02X",
-            response[2]);
+    //     sprintf(
+    //         msg,
+    //         "Exception %02X",
+    //         response[2]);
 
-        Logger::Error(
-            "MODBUS",
-            msg);
+    //     Logger::Error(
+    //         "MODBUS",
+    //         msg);
 
-        return false;
-    }
+    //     return false;
+    // }
     
+    LastErrorReason =
+        ErrorReason::None;
+
     return true;
+}
+
+ModbusRTU::ErrorReason
+    ModbusRTU::GetLastErrorReason()
+{
+    return LastErrorReason;
 }
 
 bool ModbusRTU::IsReady()

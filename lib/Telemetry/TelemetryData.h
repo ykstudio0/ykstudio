@@ -138,6 +138,16 @@ namespace SVEMS::Telemetry
 
         uint32_t bmsOfflineCount = 0U;
 
+        // Modbus error statistics
+        uint32_t modbusNoResponseCount = 0U;
+        uint32_t modbusFrameTooShortCount = 0U;
+        uint32_t modbusInvalidSlaveCount = 0U;
+        uint32_t modbusInvalidFunctionCount = 0U;
+        uint32_t modbusInvalidLengthCount = 0U;
+        uint32_t modbusCrcErrorCount = 0U;
+        uint32_t modbusExceptionCount = 0U;
+        uint32_t modbusInvalidByteCount = 0U;
+
         bool rs485Ready = false;
         bool modbusReady = false;
 

@@ -13,6 +13,19 @@
 class ModbusRTU
 {
 public:
+    enum class ErrorReason : uint8_t
+    {
+        None = 0,
+        NoResponse,
+        FrameTooShort,
+        InvalidSlave,
+        InvalidFunction,
+        InvalidLength,
+        CrcError,
+        Exception,
+        InvalidByteCount
+    };
+
     static bool Begin();
     static bool IsReady();
 
@@ -22,8 +35,13 @@ public:
         uint16_t count,
         uint8_t* response,
         size_t responseSize);
+
+    static ErrorReason GetLastErrorReason();
+
 private:
     static bool Ready;
+
+    static ErrorReason LastErrorReason;
 };
 
 #endif

@@ -20,6 +20,48 @@
 
 EpeverData Epever::Data;
 
+static void CountModbusError()
+{
+    switch (ModbusRTU::GetLastErrorReason())
+    {
+        case ModbusRTU::ErrorReason::NoResponse:
+            ++DataManager::CommStats.modbusNoResponseCount;
+            break;
+
+        case ModbusRTU::ErrorReason::FrameTooShort:
+            ++DataManager::CommStats.modbusFrameTooShortCount;
+            break;
+
+        case ModbusRTU::ErrorReason::InvalidSlave:
+            ++DataManager::CommStats.modbusInvalidSlaveCount;
+            break;
+
+        case ModbusRTU::ErrorReason::InvalidFunction:
+            ++DataManager::CommStats.modbusInvalidFunctionCount;
+            break;
+
+        case ModbusRTU::ErrorReason::InvalidLength:
+            ++DataManager::CommStats.modbusInvalidLengthCount;
+            break;
+
+        case ModbusRTU::ErrorReason::CrcError:
+            ++DataManager::CommStats.modbusCrcErrorCount;
+            break;
+
+        case ModbusRTU::ErrorReason::Exception:
+            ++DataManager::CommStats.modbusExceptionCount;
+            break;
+
+        case ModbusRTU::ErrorReason::InvalidByteCount:
+            ++DataManager::CommStats.modbusInvalidByteCount;
+            break;
+
+        case ModbusRTU::ErrorReason::None:
+        default:
+            break;
+    }
+}
+
 bool Epever::Begin()
 {
     return true;
@@ -42,6 +84,7 @@ bool Epever::ReadSolar()
         (uint16_t*)&solar))
     {
         ++DataManager::CommStats.solarTimeoutCount;
+        CountModbusError();
 
         DataManager::Solar.status.updated = false;
         return false;
@@ -268,6 +311,7 @@ bool Epever::ReadChargingStatus()
             (uint16_t*)&status))
     {
         ++DataManager::CommStats.chargeTimeoutCount;
+        CountModbusError();
 
         DataManager::Charge.status.updated = false;
 

@@ -197,6 +197,30 @@ namespace SVEMS::Telemetry
         data.communication.chargeOfflineCount =
             DataManager::CommStats.chargeOfflineCount;
 
+        data.communication.modbusNoResponseCount =
+            DataManager::CommStats.modbusNoResponseCount;
+
+        data.communication.modbusFrameTooShortCount =
+            DataManager::CommStats.modbusFrameTooShortCount;
+
+        data.communication.modbusInvalidSlaveCount =
+            DataManager::CommStats.modbusInvalidSlaveCount;
+
+        data.communication.modbusInvalidFunctionCount =
+            DataManager::CommStats.modbusInvalidFunctionCount;
+
+        data.communication.modbusInvalidLengthCount =
+            DataManager::CommStats.modbusInvalidLengthCount;
+
+        data.communication.modbusCrcErrorCount =
+            DataManager::CommStats.modbusCrcErrorCount;
+
+        data.communication.modbusExceptionCount =
+            DataManager::CommStats.modbusExceptionCount;
+
+        data.communication.modbusInvalidByteCount =
+            DataManager::CommStats.modbusInvalidByteCount;
+
         data.communication.bmsOfflineCount =
             DataManager::CommStats.batteryOfflineCount;
 

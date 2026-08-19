@@ -265,6 +265,34 @@ namespace SVEMS::Telemetry
         communication["chargeOffline"] =
             data.communication.chargeOfflineCount;
 
+        JsonObject modbusErrors =
+            communication.createNestedObject(
+                "modbusErrors");
+
+        modbusErrors["noResponse"] =
+            data.communication.modbusNoResponseCount;
+
+        modbusErrors["frameTooShort"] =
+            data.communication.modbusFrameTooShortCount;
+
+        modbusErrors["invalidSlave"] =
+            data.communication.modbusInvalidSlaveCount;
+
+        modbusErrors["invalidFunction"] =
+            data.communication.modbusInvalidFunctionCount;
+
+        modbusErrors["invalidLength"] =
+            data.communication.modbusInvalidLengthCount;
+
+        modbusErrors["crcError"] =
+            data.communication.modbusCrcErrorCount;
+
+        modbusErrors["exception"] =
+            data.communication.modbusExceptionCount;
+
+        modbusErrors["invalidByteCount"] =
+            data.communication.modbusInvalidByteCount;
+
         communication["bmsOffline"] =
             data.communication.bmsOfflineCount;
 
