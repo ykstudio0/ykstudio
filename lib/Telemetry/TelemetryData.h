@@ -161,6 +161,9 @@ namespace SVEMS::Telemetry
         int32_t wifiRssi = 0;
 
         bool wifiConnected = false;
+
+        uint32_t deviceCount = 0U;
+        uint32_t deviceTotal = 0U;
     };
 
     struct TelemetryData

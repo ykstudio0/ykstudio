@@ -10,6 +10,8 @@
 #ifndef DEVICE_MANAGER_H
 #define DEVICE_MANAGER_H
 
+#include <Arduino.h>
+
 class DeviceManager
 {
 public:
@@ -19,6 +21,8 @@ public:
 
     static bool IsRTCOnline();
     static bool IsSHT40Online();
+
+    static uint8_t GetOnlineDeviceCount();
 
 private:
     static bool Ready;

@@ -266,8 +266,8 @@ namespace SVEMS::Telemetry
             data.communication.chargeOfflineCount;
 
         JsonObject modbusErrors =
-            communication.createNestedObject(
-                "modbusErrors");
+            communication["modbusErrors"]
+                .to<JsonObject>();
 
         modbusErrors["noResponse"] =
             data.communication.modbusNoResponseCount;
@@ -336,6 +336,12 @@ namespace SVEMS::Telemetry
 
         system["rssi"] =
             data.system.wifiRssi;
+
+        system["deviceCount"] =
+            data.system.deviceCount;
+
+        system["deviceTotal"] =
+            data.system.deviceTotal;
 
         //---------------------------------------------------------
         // Serialize

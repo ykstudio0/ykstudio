@@ -429,37 +429,6 @@ namespace
             DataManager::Temperature.controllerStatus);
     }
 
-    uint8_t CountOnlineDevices()
-    {
-        uint8_t count = 0U;
-
-        // EPEVER MPPT
-        if (DataManager::Solar.status.online)
-        {
-            ++count;
-        }
-
-        // PowerBank BMS
-        if (DataManager::Battery.status.online)
-        {
-            ++count;
-        }
-
-        // SHT40 Cabin Sensor
-        if (DeviceManager::IsSHT40Online())
-        {
-            ++count;
-        }
-
-        // DS3231 RTC
-        if (DeviceManager::IsRTCOnline())
-        {
-            ++count;
-        }
-
-        return count;
-    }
-
     void BuildSystem(DisplayModel::Model& model)
     {
         DisplayModel::SystemData& system =
@@ -508,7 +477,7 @@ namespace
         }
 
         const uint8_t onlineDevices =
-            CountOnlineDevices();
+            DeviceManager::GetOnlineDeviceCount();
 
         static char deviceCountText[8];
 

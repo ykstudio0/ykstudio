@@ -17,6 +17,7 @@
 #include "SHT40Device.h"
 #include "TimeService.h"
 #include "EnvironmentService.h"
+#include "DataManager.h"
 
 namespace
 {
@@ -147,4 +148,35 @@ bool DeviceManager::IsRTCOnline()
 bool DeviceManager::IsSHT40Online()
 {
     return g_sht40.IsOnline();
+}
+
+uint8_t DeviceManager::GetOnlineDeviceCount()
+{
+    uint8_t count = 0U;
+
+    // EPEVER MPPT
+    if (DataManager::Solar.status.online)
+    {
+        ++count;
+    }
+
+    // PowerBank BMS
+    if (DataManager::Battery.status.online)
+    {
+        ++count;
+    }
+
+    // SHT40 Cabin Sensor
+    if (DeviceManager::IsSHT40Online())
+    {
+        ++count;
+    }
+
+    // DS3231 RTC
+    if (DeviceManager::IsRTCOnline())
+    {
+        ++count;
+    }
+
+    return count;
 }

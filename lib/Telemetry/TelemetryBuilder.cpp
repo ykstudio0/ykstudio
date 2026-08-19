@@ -13,7 +13,7 @@
 #include "ModbusRTU.h"
 #include "WiFiService.h"
 #include "TimeService.h"
-
+#include "DeviceManager.h"
 
 namespace SVEMS::Telemetry
 {
@@ -239,5 +239,11 @@ namespace SVEMS::Telemetry
 
         data.system.wifiRssi =
             SVEMS::Service::WiFiService::GetRssi();
+
+        data.system.deviceCount =
+            DeviceManager::GetOnlineDeviceCount();
+
+        data.system.deviceTotal =
+            SYSTEM_DEVICE_COUNT;
     }
 }
