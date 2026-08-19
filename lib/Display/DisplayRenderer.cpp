@@ -1337,25 +1337,73 @@ namespace DisplayRenderer
                         ? static_cast<uint32_t>(value.value)
                         : 0U;
 
-                const uint32_t hours =
-                    totalSeconds / 3600UL;
-                
-                const uint32_t minutes =
-                    (totalSeconds % 3600UL) / 60UL;
+                if (totalSeconds < 86400UL)
+                {
+                    const uint32_t hours =
+                        totalSeconds / 3600UL;
 
-                const uint32_t seconds =
-                    totalSeconds % 60UL;
+                    const uint32_t minutes =
+                        (totalSeconds % 3600UL) / 60UL;
 
-                snprintf(
-                    buffer,
-                    bufferSize,
-                    "%02u:%02u:%02u",
-                    static_cast<unsigned long>(hours),
-                    static_cast<unsigned long>(minutes),
-                    static_cast<unsigned long>(seconds));
+                    const uint32_t seconds =
+                        totalSeconds % 60UL;
+
+                    snprintf(
+                        buffer,
+                        bufferSize,
+                        "%02lu:%02lu:%02lu",
+                        static_cast<unsigned long>(hours),
+                        static_cast<unsigned long>(minutes),
+                        static_cast<unsigned long>(seconds));
+                }
+                else
+                {
+                    const uint32_t days =
+                        totalSeconds / 86400UL;
+
+                    const uint32_t hours =
+                        (totalSeconds % 86400UL) / 3600UL;
+
+                    const uint32_t minutes =
+                        (totalSeconds % 3600UL) / 60UL;
+
+                    snprintf(
+                        buffer,
+                        bufferSize,
+                        "%lud %02lu:%02lu",
+                        static_cast<unsigned long>(days),
+                        static_cast<unsigned long>(hours),
+                        static_cast<unsigned long>(minutes));
+                }
 
                 break;
             }
+            // case DisplayTypes::ValueType::Duration:
+            // {
+            //     uint32_t totalSeconds =
+            //         value.value > 0.0f
+            //             ? static_cast<uint32_t>(value.value)
+            //             : 0U;
+
+            //     const uint32_t hours =
+            //         totalSeconds / 3600UL;
+                
+            //     const uint32_t minutes =
+            //         (totalSeconds % 3600UL) / 60UL;
+
+            //     const uint32_t seconds =
+            //         totalSeconds % 60UL;
+
+            //     snprintf(
+            //         buffer,
+            //         bufferSize,
+            //         "%02u:%02u:%02u",
+            //         static_cast<unsigned long>(hours),
+            //         static_cast<unsigned long>(minutes),
+            //         static_cast<unsigned long>(seconds));
+
+            //     break;
+            // }
 
             // Text는 현재 displayValue가 문자열을 저장하지 않으므로
             // 임시 대체 문자열을 추력한다.
