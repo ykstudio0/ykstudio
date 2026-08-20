@@ -181,6 +181,11 @@ public:
         Status status;
     };
 
+    struct VehicleData
+    {
+        bool active = false;
+    };
+
     static SolarData Solar;
     static BatteryData Battery;
     static ControllerBatteryData ControllerBattery;
@@ -194,4 +199,6 @@ public:
     
     static void ClearUpdates();
     static void UpdateOnlineStatus(uint32_t now);
+
+    static VehicleData Vehicle;
 };

@@ -552,6 +552,9 @@ v0.6.1 python http server
     Dashboard에서 loadDailySummary() 다시 연결
     마지막으로 기존 날짜를 위한 rebuild_daily_summary() 작성
     DuckDNS + Caddy HTTPS, Dashboard Basic Auth, ESP32 /telemetry API Key 인증, 기존 HTTP 우회 경로 제거까지 실제 차량 데이터가 들어오는 상태에서 모두 검증됐고, Mini PC의 OFFLINE 문제도 시간 동기화 문제로 원인을 확정
+v0.6.2 SVEMS https 서버 구성
+v0.6.3 Vehicle Signal Interface
+
 v0.6.x
     EPEVER Modbus 통신 완료
     태양광 실시간 데이터

@@ -24,6 +24,7 @@
 #include "UiAction.h"
 #include "BMSService.h"
 #include "IoTService.h"
+#include "VehicleInput.h"
 
 namespace
 {
@@ -156,6 +157,8 @@ void Scheduler::Run()
 // 0.1 Second Tasks
 void Scheduler::Run100ms()
 {
+    VehicleInput::Update();
+
     if (!SVEMS::Manager::TouchManager::Update())
     {
         return;

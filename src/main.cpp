@@ -28,6 +28,7 @@
 #include "NtpService.h"
 #include "BMSService.h"
 #include "Version.h"
+#include "VehicleInput.h"
 
 namespace
 {
@@ -108,6 +109,7 @@ void setup()
     SVEMS::Service::WiFiService::Begin();
     SVEMS::Service::NtpService::Begin();
     TestTFT();
+    VehicleInput::Begin();
     delay(2000);
     
     if constexpr (!ENABLE_BMS_SERVICE)

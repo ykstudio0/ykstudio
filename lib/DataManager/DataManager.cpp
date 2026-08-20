@@ -21,6 +21,8 @@ DataManager::EnvironmentData DataManager::Environment;
 
 DataManager::CommunicationStats DataManager::CommStats;
 
+DataManager::VehicleData DataManager::Vehicle;
+
 void DataManager::ClearUpdates()
 {
     Solar.status.updated = false;
