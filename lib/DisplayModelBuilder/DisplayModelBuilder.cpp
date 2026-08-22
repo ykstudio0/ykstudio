@@ -678,7 +678,13 @@ namespace
         // System status
         //---------------------------------------------------------
 
-        if (!system.wifiConnected)
+        if (DataManager::Vehicle.active)
+        {
+            header.status.text = "IG2";
+            header.status.color =
+                DisplayTheme::COLOR_SUCCESS;
+        }
+        else if (!system.wifiConnected)
         {
             header.status.text = "NET";
             header.status.color =

@@ -9,19 +9,49 @@
 
 #include "VehicleInput.h"
 #include "DataManager.h"
+#include "Logger.h"
+#include "Pins.h"
 
 bool VehicleInput::Active = false;
 
 bool VehicleInput::Begin()
 {
+    pinMode(
+        PIN_IG2,
+        INPUT_PULLUP
+    );
+
     Active = false;
+
+    Logger::Info(
+        "VEHICLE",
+        "Ready"
+    );
+
     return true;
 }
 
 void VehicleInput::Update()
 {
-    // PC817 도착 후 GPIO 입력 처리 추가
-    DataManager::Vehicle.active = Active;
+    const bool active =
+        digitalRead(
+            PIN_IG2
+        ) == LOW;
+
+    if (active != Active)
+    {
+        Active = active;
+
+        Logger::Info(
+            "VEHICLE",
+            Active
+                ? "IG2 ON"
+                : "IG2 OFF"
+        );
+    }
+
+    DataManager::Vehicle.active =
+        Active;
 }
 
 bool VehicleInput::IsActive()
