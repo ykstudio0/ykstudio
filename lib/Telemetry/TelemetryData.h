@@ -166,6 +166,11 @@ namespace SVEMS::Telemetry
         uint32_t deviceTotal = 0U;
     };
 
+    struct VehicleData
+    {
+        bool active = false;
+    };
+
     struct TelemetryData
     {
         TimestampData timestamp;
@@ -177,5 +182,6 @@ namespace SVEMS::Telemetry
         EnvironmentData environment;
         CommunicationData communication;
         SystemData system;
+        VehicleData vehicle;
     };
 }

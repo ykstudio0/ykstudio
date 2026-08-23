@@ -245,5 +245,8 @@ namespace SVEMS::Telemetry
 
         data.system.deviceTotal =
             SYSTEM_DEVICE_COUNT;
+
+        data.vehicle.active =
+            DataManager::Vehicle.active;
     }
 }

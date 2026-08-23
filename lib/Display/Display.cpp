@@ -124,3 +124,47 @@ void Display::NextSubPage()
 
     g_pageManager.NextSubPage();
 }
+
+DisplayPages::Page Display::CurrentPage()
+{
+    if (!g_initialized)
+    {
+        return DisplayPages::Page::Overview;
+    }
+
+    return g_pageManager.Current();
+}
+
+void Display::SetWiFiSetupConfirm(
+    bool visible)
+{
+    if (!g_initialized)
+    {
+        return;
+    }
+
+    g_renderer.SetWiFiSetupConfirm(
+        visible);
+}
+
+bool Display::IsWiFiSetupConfirm()
+{
+    if (!g_initialized)
+    {
+        return false;
+    }
+
+    return g_renderer.IsWiFiSetupConfirm();
+}
+
+void Display::SetWiFiSetupMode(
+    bool active)
+{
+    if (!g_initialized)
+    {
+        return;
+    }
+
+    g_renderer.SetWiFiSetupMode(
+        active);
+}

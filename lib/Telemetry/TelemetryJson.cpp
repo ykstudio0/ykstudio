@@ -344,6 +344,16 @@ namespace SVEMS::Telemetry
             data.system.deviceTotal;
 
         //---------------------------------------------------------
+        // Vehicle
+        //---------------------------------------------------------
+
+        JsonObject vehicle =
+            doc["vehicle"].to<JsonObject>();
+
+        vehicle["active"] =
+            data.vehicle.active;
+
+        //---------------------------------------------------------
         // Serialize
         //---------------------------------------------------------
 

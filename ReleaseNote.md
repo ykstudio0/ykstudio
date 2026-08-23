@@ -566,6 +566,24 @@ v0.6.3 Vehicle Signal Interface & app 개발
     Splash 0.8초
     Auth 정보 local.properties 분리
     Release 서명 APK 생성 및 설치
+    **2026-08-22**
+    시동 OFF → Header에서 IG2 사라짐
+    IG2 ON → Header에 녹색 IG2
+    시동 중/주행 중 순간적으로 튀지 않는지
+    시동 OFF 후 즉시 정상 복귀하는지
+    다른 통신/Display 동작에 영향 없는지
+v0.6.4 WiFi Setup
+    **2026-08-23**
+    NVS 저장값 우선 사용
+    기본 Config fallback
+    System Header에서 Setup 진입
+    Confirm / Cancel 팝업
+    Setup AP 생성
+    LCD에 SVEMS-SETUP / 192.168.4.1 안내
+    웹에서 SSID/PW 저장
+    자동 재부팅
+    저장된 Wi-Fi로 정상 재접속
+    Saved 페이지 가독성 개선
 v0.6.x
     EPEVER Modbus 통신 완료
     태양광 실시간 데이터

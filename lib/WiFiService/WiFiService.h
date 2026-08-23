@@ -9,6 +9,7 @@
 
 #pragma once
 
+#include <Arduino.h>
 #include <stdint.h>
 
 namespace SVEMS::Service
@@ -23,6 +24,13 @@ namespace SVEMS::Service
         static bool IsConnecting();
 
         static int32_t GetRssi();
+
+        static bool SaveConfig(
+            const String& ssid,
+            const String& password
+        );
+
+        static bool StartSetupMode();
 
     private:
         static void StartConnection();

@@ -236,6 +236,46 @@ void Scheduler::Run100ms()
 
             switch (action)
             {
+                case SVEMS::UI::Action::WiFiSetup:
+                    Logger::Info(
+                        "UI",
+                        "WiFi Setup");
+
+                    Display::SetWiFiSetupConfirm(
+                        true);
+
+                    break;
+
+                case SVEMS::UI::Action::Cancel:
+                    Logger::Info(
+                        "UI",
+                        "WiFi Setup Cancel"
+                    );
+
+                    Display::SetWiFiSetupConfirm(
+                        false);
+
+                    break;
+
+                case SVEMS::UI::Action::Confirm:
+                    Logger::Info(
+                        "UI",
+                        "WiFi Setup Confirm"
+                    );
+
+                    Display::SetWiFiSetupConfirm(
+                        false);
+
+                    SVEMS::Service::WiFiService::
+                        StartSetupMode();
+
+                    {
+                        Display::SetWiFiSetupMode(
+                            true);
+                    }
+                    
+                    break;
+                
                 case SVEMS::UI::Action::PreviousPage:
                     Logger::Info(
                         "UI",

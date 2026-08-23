@@ -26,6 +26,8 @@ namespace SVEMS::UI
         CloseMenu,
 
         Confirm,
-        Cancel
+        Cancel,
+
+        WiFiSetup
     };
 }

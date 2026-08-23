@@ -28,5 +28,11 @@ namespace SVEMS::Manager
         
         static SVEMS::UI::Action ProcessContent(
             const SVEMS::Touch::TouchPoint& point);
+
+        static SVEMS::UI::Action ProcessHeader(
+            const SVEMS::Touch::TouchPoint& point);
+
+        static SVEMS::UI::Action ProcessWiFiSetupConfirm(
+            const SVEMS::Touch::TouchPoint& point);
     };
 }

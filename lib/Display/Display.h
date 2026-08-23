@@ -9,6 +9,8 @@
 
 #pragma once
 
+#include "DisplayPages.h"
+
 class Display
 {
 public:
@@ -19,6 +21,16 @@ public:
     static void PreviousPage();
 
     static void NextSubPage();
+
+    static DisplayPages::Page CurrentPage();
+
+    static void SetWiFiSetupConfirm(
+        bool visible);
+
+    static bool IsWiFiSetupConfirm();
+
+    static void SetWiFiSetupMode(
+        bool active);
 
 private:
     static bool InitializeLCD();    

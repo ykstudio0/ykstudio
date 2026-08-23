@@ -136,6 +136,8 @@ void setup()
     }
 
     Serial.println("DisplayRenderer Ready");
+
+    // SVEMS::Service::WiFiService::StartSetupMode();
 }
 
 void loop()
