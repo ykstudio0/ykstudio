@@ -11,7 +11,6 @@
 #include <WiFi.h>
 
 #include "WiFiService.h"
-#include "Secrets.h"
 #include "Logger.h"
 #include <Preferences.h>
 #include "WebServer.h"
@@ -190,16 +189,14 @@ namespace SVEMS::Service
 
         if (ssid.length() == 0U)
         {
-            ssid =
-                SVEMS::Config::WIFI_SSID;
-
-            password =
-                SVEMS::Config::WIFI_PASSWORD;
-
-            Logger::Info(
+            Logger::Warning(
                 "WIFI",
-                "Using default config"
+                "No saved config"
             );
+
+            StartSetupMode();
+
+            return;
         }
         else
         {
@@ -313,15 +310,21 @@ namespace SVEMS::Service
                     "<head>"
                     "<meta name='viewport' "
                     "content='width=device-width, initial-scale=1'>"
-                    "<title>SVEMS WiFi Setup</title>"
+                    "<style>"
+                    "body{font-family:Arial,sans-serif;padding:24px;}"
+                    "input{font-size:20px;width:100%;padding:10px;"
+                    "margin:8px 0 20px 0;box-sizing:border-box;}"
+                    "button{font-size:22px;padding:12px 24px;}"
+                    "label{font-size:22px;}"
+                    "</style>"
                     "</head>"
                     "<body>"
                     "<h2>SVEMS WiFi Setup</h2>"
                     "<form method='POST' action='/save'>"
-                    "<label>SSID</label><br>"
-                    "<input type='text' name='ssid'><br><br>"
-                    "<label>Password</label><br>"
-                    "<input type='password' name='password'><br><br>"
+                    "<label>SSID</label>"
+                    "<input name='ssid' type='text'>"
+                    "<label>Password</label>"
+                    "<input name='password' type='password'>"
                     "<button type='submit'>Save</button>"
                     "</form>"
                     "</body>"
@@ -411,6 +414,17 @@ namespace SVEMS::Service
                 );
 
                 ESP.restart();
+            }
+        );
+
+        SetupServer.onNotFound(
+            []()
+            {
+                SetupServer.send(
+                    404,
+                    "text/plain",
+                    "Not Found"
+                );
             }
         );
 

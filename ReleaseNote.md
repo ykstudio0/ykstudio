@@ -584,6 +584,19 @@ v0.6.4 WiFi Setup
     자동 재부팅
     저장된 Wi-Fi로 정상 재접속
     Saved 페이지 가독성 개선
+    MAIN / Remote 모두 NVS 저장값 우선 사용
+    **2026-08-24**
+    Secrets.h의 SSID/PW 의존성 제거
+    저장값 없으면 자동 Setup Mode 진입
+    SVEMS-SETUP AP 생성
+    192.168.4.1 웹 설정
+    모바일 친화적인 동일 HTML 사용
+    Save → NVS 저장 → Saved 화면 → 재부팅
+    재부팅 후 저장된 Wi-Fi로 재접속
+    System Header에서 수동 Setup 진입 가능
+    Confirm / Cancel 팝업 정상
+    LCD에 Setup Mode 안내 화면 표시
+    MAIN / Remote 모두 실제 SSID 변경 테스트 성공
 v0.6.x
     EPEVER Modbus 통신 완료
     태양광 실시간 데이터
@@ -605,4 +618,4 @@ DeviceManager   █████████░  90%
 Scheduler       █████████░  90%
 DataManager     █████████░  90%
 Display Engine  ██████████ 100%
-IoT             ██████░░░░  50%
+IoT             ████████░░  80%
