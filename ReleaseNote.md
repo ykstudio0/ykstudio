@@ -598,6 +598,13 @@ v0.6.4 WiFi Setup
     LCD에 Setup Mode 안내 화면 표시
     MAIN / Remote 모두 실제 SSID 변경 테스트 성공
 v0.6.5 MAIN Uptime / Boot Count / Reset Reason 진단
+    Wi-Fi Setup 완전 마무리
+    HTTP Max Consecutive Dashboard 추가
+    Boot Count / Reset Reason 구현
+    실차 MAIN 검증
+    Server DB 저장
+    Dashboard 표시
+    Remote MAIN SYS DTL(4) 표시
 v0.6.x
     EPEVER Modbus 통신 완료
     태양광 실시간 데이터
