@@ -331,6 +331,12 @@ namespace SVEMS::Telemetry
         system["uptime"] =
             data.system.uptimeSeconds;
 
+        system["bootCount"] =
+            data.system.bootCount;
+
+        system["resetReason"] =
+            data.system.resetReason;
+
         system["wifi"] =
             data.system.wifiConnected;
 

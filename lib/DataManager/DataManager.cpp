@@ -20,6 +20,7 @@ DataManager::ChargeData DataManager::Charge;
 DataManager::EnvironmentData DataManager::Environment;
 
 DataManager::CommunicationStats DataManager::CommStats;
+DataManager::SystemRuntimeData DataManager::SystemRuntime;
 
 DataManager::VehicleData DataManager::Vehicle;
 
@@ -182,5 +183,33 @@ void DataManager::UpdateOnlineStatus(uint32_t now)
 
         ++CommStats.socOfflineCount;
         CommStats.socLastOffline = now;
+    }
+}
+
+const char* DataManager::ResetReasonToString(
+    ResetReason reason)
+{
+    switch (reason)
+    {
+        case ResetReason::PowerOn:
+            return "PowerOn";
+
+        case ResetReason::External:
+            return "External";
+
+        case ResetReason::Software:
+            return "Software";
+
+        case ResetReason::Watchdog:
+            return "Watchdog";
+
+        case ResetReason::DeepSleep:
+            return "DeepSleep";
+
+        case ResetReason::Brownout:
+            return "Brownout";
+
+        default:
+            return "Unknown";
     }
 }

@@ -597,6 +597,7 @@ v0.6.4 WiFi Setup
     Confirm / Cancel 팝업 정상
     LCD에 Setup Mode 안내 화면 표시
     MAIN / Remote 모두 실제 SSID 변경 테스트 성공
+v0.6.5 MAIN Uptime / Boot Count / Reset Reason 진단
 v0.6.x
     EPEVER Modbus 통신 완료
     태양광 실시간 데이터

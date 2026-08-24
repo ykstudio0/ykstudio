@@ -211,22 +211,22 @@ namespace SVEMS::Service
             ssid.c_str()
         );
 
-        char buffer[64];
+        // char buffer[64];
 
-        snprintf(
-            buffer,
-            sizeof(buffer),
-            "SSID='%s' PW_LEN=%u",
-            ssid.c_str(),
-            static_cast<unsigned>(
-                password.length()
-            )
-        );
+        // snprintf(
+        //     buffer,
+        //     sizeof(buffer),
+        //     "SSID='%s' PW_LEN=%u",
+        //     ssid.c_str(),
+        //     static_cast<unsigned>(
+        //         password.length()
+        //     )
+        // );
 
-        Logger::Info(
-            "WIFI",
-            buffer
-        );
+        // Logger::Info(
+        //     "WIFI",
+        //     buffer
+        // );
 
         WiFi.begin(
             ssid.c_str(),

@@ -234,6 +234,14 @@ namespace SVEMS::Telemetry
         data.system.uptimeSeconds =
             millis() / 1000UL;
 
+        data.system.bootCount =
+            DataManager::SystemRuntime.bootCount;
+
+        data.system.resetReason =
+            DataManager::ResetReasonToString(
+                DataManager::SystemRuntime.resetReason
+            );
+
         data.system.wifiConnected =
             SVEMS::Service::WiFiService::IsConnected();
 

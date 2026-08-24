@@ -29,6 +29,7 @@
 #include "BMSService.h"
 #include "Version.h"
 #include "VehicleInput.h"
+#include "SystemRuntimeService.h"
 
 namespace
 {
@@ -49,6 +50,14 @@ void setup()
     Serial.begin(MODBUS_BAUDRATE);
     delay(BOOT_DELAY_MS);
     Logger::Begin();
+
+    if (!SVEMS::Service::SystemRuntimeService::Begin())
+    {
+        Logger::Error(
+            "SYSTEM",
+            "Runtime Init Failed"
+        );
+    }
 
     pinMode(6, OUTPUT);
     digitalWrite(6, LOW);
@@ -138,6 +147,8 @@ void setup()
     Serial.println("DisplayRenderer Ready");
 
     // SVEMS::Service::WiFiService::StartSetupMode();
+    // delay(5000);
+    // ESP.restart();
 }
 
 void loop()

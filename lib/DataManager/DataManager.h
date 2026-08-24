@@ -22,6 +22,17 @@ public:
         Offline
     };
 
+    enum class ResetReason : uint8_t
+    {
+        Unknown = 0U,
+        PowerOn,
+        Software,
+        Watchdog,
+        Brownout,
+        DeepSleep,
+        External
+    };
+
     struct Status
     {
         bool updated = false;
@@ -181,10 +192,21 @@ public:
         Status status;
     };
 
+    struct SystemRuntimeData
+    {
+        uint32_t bootCount = 0U;
+
+        ResetReason resetReason =
+            ResetReason::Unknown;
+    };
+
     struct VehicleData
     {
         bool active = false;
     };
+
+    static const char* ResetReasonToString(
+        ResetReason reason);
 
     static SolarData Solar;
     static BatteryData Battery;
@@ -196,6 +218,8 @@ public:
     static EnvironmentData Environment;
     
     static CommunicationStats CommStats;
+
+    static SystemRuntimeData SystemRuntime;
     
     static void ClearUpdates();
     static void UpdateOnlineStatus(uint32_t now);
