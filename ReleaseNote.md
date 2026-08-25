@@ -605,6 +605,7 @@ v0.6.5 MAIN Uptime / Boot Count / Reset Reason 진단
     Server DB 저장
     Dashboard 표시
     Remote MAIN SYS DTL(4) 표시
+    Remote Battery DTL(2)에 Runtime(사용가능 시간) 표시 추가
 v0.6.x
     EPEVER Modbus 통신 완료
     태양광 실시간 데이터
