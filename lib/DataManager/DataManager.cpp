@@ -24,6 +24,8 @@ DataManager::SystemRuntimeData DataManager::SystemRuntime;
 
 DataManager::VehicleData DataManager::Vehicle;
 
+DataManager::VehicleBatteryData DataManager::VehicleBattery;
+
 void DataManager::ClearUpdates()
 {
     Solar.status.updated = false;

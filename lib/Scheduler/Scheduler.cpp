@@ -25,6 +25,8 @@
 #include "BMSService.h"
 #include "IoTService.h"
 #include "VehicleInput.h"
+#include "VehicleVoltageService.h"
+#include "ChargeControlService.h"
 
 namespace
 {
@@ -324,6 +326,9 @@ void Scheduler::Run100ms()
 void Scheduler::Run1Sec()
 {
     DeviceManager::Update();
+
+    SVEMS::Vehicle::VehicleVoltageService::Update();
+    SVEMS::Vehicle::ChargeControlService::Update();
     
     if constexpr (ENABLE_EPEVER_POLLING)
     {

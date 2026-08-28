@@ -30,6 +30,9 @@
 #include "Version.h"
 #include "VehicleInput.h"
 #include "SystemRuntimeService.h"
+#include "VehicleVoltageService.h"
+#include "ChargeRelayDriver.h"
+#include "ChargeControlService.h"
 
 namespace
 {
@@ -119,6 +122,9 @@ void setup()
     SVEMS::Service::NtpService::Begin();
     TestTFT();
     VehicleInput::Begin();
+    SVEMS::Vehicle::VehicleVoltageService::Begin();
+    SVEMS::Vehicle::ChargeRelayDriver::Begin();
+    SVEMS::Vehicle::ChargeControlService::Begin();
     delay(2000);
     
     if constexpr (!ENABLE_BMS_SERVICE)

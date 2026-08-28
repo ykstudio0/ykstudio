@@ -14,6 +14,7 @@
 #include "WiFiService.h"
 #include "TimeService.h"
 #include "DeviceManager.h"
+#include "ChargeRelayDriver.h"
 
 namespace SVEMS::Telemetry
 {
@@ -256,5 +257,11 @@ namespace SVEMS::Telemetry
 
         data.vehicle.active =
             DataManager::Vehicle.active;
+
+        data.vehicle.voltage =
+            DataManager::VehicleBattery.voltage;
+
+        data.vehicle.reverseChargeEnabled =
+            SVEMS::Vehicle::ChargeRelayDriver::IsEnabled();
     }
 }

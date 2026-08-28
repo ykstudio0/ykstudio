@@ -205,6 +205,12 @@ public:
         bool active = false;
     };
 
+    struct VehicleBatteryData
+    {
+        float voltage = 0.0f;
+        Status status;
+    };
+
     static const char* ResetReasonToString(
         ResetReason reason);
 
@@ -225,4 +231,6 @@ public:
     static void UpdateOnlineStatus(uint32_t now);
 
     static VehicleData Vehicle;
+    
+    static VehicleBatteryData VehicleBattery;
 };

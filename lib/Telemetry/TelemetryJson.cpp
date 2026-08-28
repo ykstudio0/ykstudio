@@ -359,6 +359,12 @@ namespace SVEMS::Telemetry
         vehicle["active"] =
             data.vehicle.active;
 
+        vehicle["voltage"] =
+            data.vehicle.voltage;
+
+        vehicle["reverseChargeEnabled"] =
+            data.vehicle.reverseChargeEnabled;
+
         //---------------------------------------------------------
         // Serialize
         //---------------------------------------------------------

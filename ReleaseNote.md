@@ -607,7 +607,24 @@ v0.6.5 MAIN Uptime / Boot Count / Reset Reason 진단
     Remote MAIN SYS DTL(4) 표시
     Remote Battery DTL(2)에 Runtime(사용가능 시간) 표시 추가
 v0.7.0 Vehicle Battery Charge Control Framework
-
+    1. Pins.h 반영
+    2. VehicleBattery 데이터 구조 추가
+    3. VehicleVoltageService 뼈대
+    4. ChargeRelayDriver
+    5. ChargeControlService
+    6. Telemetry / Remote / Dashboard 표시
+    7. 부품 도착 후 실제 ADC 보정 + 릴레이 동작 테스트
+    **2026-08-28**
+    GPIO1 차량 배터리 ADC 정의
+    GPIO41 Reverse Charge Enable 정의
+    VehicleVoltageService
+    ChargeRelayDriver
+    ChargeControlService
+    IG2 ON → 충전 Enable OFF
+    IG2 OFF → 충전 Enable ON
+    vehicle.voltage
+    vehicle.reverseChargeEnabled
+    텔레메트리 JSON까지 정상 확인
 v1.0.0 : 차량 실사용 버전(첫 번째 정식 릴리스)
 
 Architecture Status
