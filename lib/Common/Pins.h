@@ -59,5 +59,11 @@ constexpr uint8_t PIN_BMS_RX = 4;
 // Vehicle Signal Input
 // ===========================
 constexpr uint8_t PIN_IG2 = 3;
+constexpr uint8_t PIN_VEHICLE_BAT_ADC = 1;
+
+// ===========================
+// Vehicle Charge Control
+// ===========================
+constexpr uint8_t PIN_REVERSE_CHARGE_ENABLE = 41;
 
 #endif

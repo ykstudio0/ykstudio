@@ -606,12 +606,8 @@ v0.6.5 MAIN Uptime / Boot Count / Reset Reason 진단
     Dashboard 표시
     Remote MAIN SYS DTL(4) 표시
     Remote Battery DTL(2)에 Runtime(사용가능 시간) 표시 추가
-v0.6.x
-    EPEVER Modbus 통신 완료
-    태양광 실시간 데이터
-v0.7.x
-    DeviceManager 안정화
-    Wi-Fi / IoT
+v0.7.0 Vehicle Battery Charge Control Framework
+
 v1.0.0 : 차량 실사용 버전(첫 번째 정식 릴리스)
 
 Architecture Status
