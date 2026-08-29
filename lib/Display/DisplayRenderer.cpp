@@ -330,17 +330,30 @@ namespace DisplayRenderer
         // Status
         //---------------------------------------------------------
 
-        const bool statusChanged =
-            HasDisplayTextChanged(
-                header.status,
-                lastHeader.status);
-
-        if (ShouldDraw(statusChanged))
+        if (page == DisplayPages::Page::System)
         {
-            DisplayWidgets::HeaderWidget::DrawStatus(
-                *m_target,
-                header.status.text,
-                header.status.color);
+            if (ShouldDraw(false))
+            {
+                DisplayWidgets::HeaderWidget::DrawStatus(
+                    *m_target,
+                    "SET",
+                    DisplayTheme::COLOR_VALUE);
+            }
+        }
+        else
+        {
+            const bool statusChanged =
+                HasDisplayTextChanged(
+                    header.status,
+                    lastHeader.status);
+
+            if (ShouldDraw(statusChanged))
+            {
+                DisplayWidgets::HeaderWidget::DrawStatus(
+                    *m_target,
+                    header.status.text,
+                    header.status.color);
+            }
         }
     }
 

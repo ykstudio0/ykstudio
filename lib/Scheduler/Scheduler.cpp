@@ -160,6 +160,8 @@ void Scheduler::Run()
 void Scheduler::Run100ms()
 {
     VehicleInput::Update();
+    
+    SVEMS::Vehicle::ChargeControlService::Update();
 
     if (!SVEMS::Manager::TouchManager::Update())
     {
@@ -328,7 +330,6 @@ void Scheduler::Run1Sec()
     DeviceManager::Update();
 
     SVEMS::Vehicle::VehicleVoltageService::Update();
-    SVEMS::Vehicle::ChargeControlService::Update();
     
     if constexpr (ENABLE_EPEVER_POLLING)
     {
