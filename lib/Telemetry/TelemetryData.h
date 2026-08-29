@@ -156,6 +156,9 @@ namespace SVEMS::Telemetry
 
     struct SystemData
     {
+        const char* deviceId =
+            "unknown";
+
         uint32_t uptimeSeconds = 0U;
 
         uint32_t bootCount = 0U;

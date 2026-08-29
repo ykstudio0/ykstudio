@@ -328,6 +328,9 @@ namespace SVEMS::Telemetry
         JsonObject system =
             doc["system"].to<JsonObject>();
 
+        system["deviceId"] =
+            data.system.deviceId;
+
         system["uptime"] =
             data.system.uptimeSeconds;
 

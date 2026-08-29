@@ -15,6 +15,7 @@
 #include "TimeService.h"
 #include "DeviceManager.h"
 #include "ChargeRelayDriver.h"
+#include "BuildConfig.h"
 
 namespace SVEMS::Telemetry
 {
@@ -40,6 +41,9 @@ namespace SVEMS::Telemetry
     {
         const SVEMS::Device::RTCDateTime& now =
             SVEMS::Service::TimeService::Now();
+
+        data.system.deviceId = 
+            SVEMS_DEVICE_ID;
 
         data.timestamp.year =
             now.year;

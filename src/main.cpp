@@ -152,6 +152,10 @@ void setup()
 
     Serial.println("DisplayRenderer Ready");
 
+    Logger::Info(
+        "SYSTEM",
+        SVEMS_DEVICE_ID);
+
     // SVEMS::Service::WiFiService::StartSetupMode();
     // delay(5000);
     // ESP.restart();
