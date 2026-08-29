@@ -625,6 +625,25 @@ v0.7.0 Vehicle Battery Charge Control Framework
     vehicle.voltage
     vehicle.reverseChargeEnabled
     텔레메트리 JSON까지 정상 확인
+    **2026-08-29**
+    실차 MAIN → 아직 구형 펌웨어라 unknown
+    Test MAIN → main-test
+    서버 latest 메모리 분리 정상
+    telemetry DB 저장 분리 정상
+    daily_summary 복합키 (date, device_id) 정상
+    Events / state / counter도 device별 분리
+    History raw / aggregate 조회 정상
+    Dashboard 10M / 1H / 6H / 24H 그래프 정상
+    Remote Main / TestMain 선택 및 NVS 저장 정상
+    불필요한 DB/Latest 디버그 로그 정리
+    서버 재부팅 후 정상 가동 확인
+    1. do_POST()에서 save_telemetry(data) 호출 누락
+   → latest는 정상인데 DB 적재 중단
+
+    2. load_telemetry_history()에서
+    device_id 조건을 WHERE 조립 후 추가
+    → SQL placeholder 3개 / parameter 4개
+    → History HTTP 500
 v1.0.0 : 차량 실사용 버전(첫 번째 정식 릴리스)
 
 Architecture Status
