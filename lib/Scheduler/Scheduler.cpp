@@ -27,6 +27,15 @@
 #include "VehicleInput.h"
 #include "VehicleVoltageService.h"
 #include "ChargeControlService.h"
+#include "ReverseChargeTypes.h"
+#include "ReverseChargeController.h"
+
+// ---------------------------------------------------------
+// Reverse Charge
+// ---------------------------------------------------------
+static void UpdateReverseCharge();
+
+static ReverseChargeController g_reverseChargeController;
 
 namespace
 {
@@ -99,6 +108,8 @@ bool Scheduler::Begin()
             "IoT service failed");
     }
 
+    g_reverseChargeController.Begin();
+
     uint32_t now = millis();
     Timer100ms = now;
     Timer1sec  = now;
@@ -160,8 +171,6 @@ void Scheduler::Run()
 void Scheduler::Run100ms()
 {
     VehicleInput::Update();
-    
-    SVEMS::Vehicle::ChargeControlService::Update();
 
     if (!SVEMS::Manager::TouchManager::Update())
     {
@@ -331,6 +340,8 @@ void Scheduler::Run1Sec()
 
     SVEMS::Vehicle::VehicleVoltageService::Update();
     
+    UpdateReverseCharge();
+
     if constexpr (ENABLE_EPEVER_POLLING)
     {
         PollEpeverDistributed();
@@ -629,4 +640,98 @@ void Scheduler::PollEpeverDistributed()
                 break;
         }
     }
+}
+
+static void UpdateReverseCharge()
+{
+    ReverseCharge::Input input;
+
+    input.ig2Active =
+        DataManager::Vehicle.active;
+
+    input.vehicleVoltage =
+        DataManager::VehicleBattery.voltage;
+
+    input.voltageValid =
+        DataManager::VehicleBattery.status.online;
+
+    input.manualStart =
+        false;
+
+    input.manualStop =
+        false;
+
+    g_reverseChargeController.Update(
+        input
+    );
+
+    SVEMS::Vehicle::ChargeControlService::Update(
+        g_reverseChargeController.IsChargeEnabled()
+    );
+
+    String message;
+
+    message.reserve(
+        96
+    );
+
+    message +=
+        "Mode=";
+
+    message +=
+        String(
+            static_cast<int>(
+                g_reverseChargeController.GetMode()
+            )
+        );
+
+    message +=
+        " State=";
+
+    message +=
+        String(
+            static_cast<int>(
+                g_reverseChargeController.GetState()
+            )
+        );
+
+    message +=
+        " Safety=";
+
+    message +=
+        String(
+            static_cast<int>(
+                g_reverseChargeController.GetSafetyReason()
+            )
+        );
+
+    message +=
+        " Enabled=";
+
+    message +=
+        g_reverseChargeController.IsChargeEnabled()
+            ? "1"
+            : "0";
+
+    message +=
+        " V=";
+
+    message +=
+        String(
+            input.vehicleVoltage,
+            2
+        );
+
+    message +=
+        " IG2=";
+
+    message +=
+        input.ig2Active
+            ? "1"
+            : "0";
+
+    Logger::Info(
+        "REVCHG",
+        message
+    );
 }

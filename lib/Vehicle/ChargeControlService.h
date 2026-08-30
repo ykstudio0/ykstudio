@@ -18,7 +18,9 @@ namespace SVEMS
         {
         public:
             static void Begin();
-            static void Update();
+            static void Update(
+                bool enable
+            );
         };
 
     } // namespace Vehicle

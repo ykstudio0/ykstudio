@@ -24,35 +24,37 @@ namespace SVEMS
             // Charge relay remains OFF from ChargeRelayDriver::Begin().
         }
 
-        void ChargeControlService::Update()
+        void ChargeControlService::Update(
+            bool enable
+        )
         {
-            const bool ig2Active =
-                (digitalRead(PIN_IG2) == LOW);
-
-            const bool enable =
-                !ig2Active;
-
-            if (enable ==
-                ChargeRelayDriver::IsEnabled())
+            if (
+                enable ==
+                ChargeRelayDriver::IsEnabled()
+            )
             {
                 return;
             }
 
             ChargeRelayDriver::SetEnabled(
-                enable);
+                enable
+            );
 
-            char buffer[48];
+            char buffer[32];
 
             snprintf(
                 buffer,
                 sizeof(buffer),
-                "IG2=%s ENABLE=%s",
-                ig2Active ? "ON" : "OFF",
-                enable ? "ON" : "OFF");
+                "ENABLE=%s",
+                enable
+                    ? "ON"
+                    : "OFF"
+            );
 
             Logger::Info(
                 "CHARGE",
-                buffer);
+                buffer
+            );
         }
 
     } // namespace Vehicle

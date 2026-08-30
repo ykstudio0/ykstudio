@@ -644,6 +644,86 @@ v0.7.0 Vehicle Battery Charge Control Framework
     device_id 조건을 WHERE 조립 후 추가
     → SQL placeholder 3개 / parameter 4개
     → History HTTP 500
+v0.7.1 Reverse Charge routine
+    * Normal Mode
+    WaitAfterIg2Off          ✅
+    Idle                     ✅
+    LowVoltageConfirm        ✅
+    Charging 시작            ✅
+    GPIO41 ON                ✅
+    최소 충전시간            ✅
+    Resting                  ✅
+    GPIO41 OFF               ✅
+    Rest 후 전압 판정         ✅
+    IG2 ON 중 충전 시작 차단  ✅
+    Charging 중 IG2 ON 차단   ✅
+    Telemetry 연동            ✅
+    Soft Mode 진입                    ✅
+    WaitAfterIg2Off                  ✅
+    12.00V → 충전 안 함              ✅
+    11.70V → LowVoltageConfirm        ✅
+    3초 확인                          ✅
+    Emergency Charging 시작          ✅
+    GPIO41 ON                        ✅
+    10초 최소 충전                    ✅
+    GPIO41 OFF                       ✅
+    Resting                          ✅
+    12.70V → Idle                    ✅
+    충전 완료 후 Soft 유지           ✅
+    Telemetry ON/OFF 일치            ✅
+    Safety = None                    ✅
+    * Soft Mode
+    12.0V에서 충전 억제                 ✅
+    11.8V 이하 Emergency 진입           ✅
+    LowVoltageConfirm                  ✅
+    1차 Charging                       ✅
+    Resting                            ✅
+    Rest 후 12.2V → 재충전              ✅
+    재충전 시 Confirm 생략              ✅
+    2차 Charging                       ✅
+    Rest 후 12.7V → Idle                ✅
+    전체 과정 Soft 유지                 ✅
+    GPIO41 / Telemetry 일치             ✅
+    *Hard Mode
+    Charging
+    ↓
+    14.5V 감지
+    ↓
+    Charge OFF          ✅
+    GPIO41 OFF          ✅
+    SafetyStop          ✅
+    OverVoltage 기록    ✅
+    12.7V 정상복귀
+    ↓
+    자동 재충전 금지    ✅
+    SafetyStop 유지     ✅
+    Hard 강제 시작                    ✅
+    시간 만료 후 Normal 복귀          ✅
+    manualStop → 즉시 OFF            ✅
+    IG2 ON → 즉시 OFF + Normal       ✅
+    OverVoltage → 즉시 OFF           ✅
+    OverVoltage → SafetyStop         ✅
+    Hard → Normal 전환               ✅
+    정상전압 복귀 후 재시작 금지      ✅
+    * InvalidVoltage test
+    InvalidVoltage 감지             ✅
+    즉시 SafetyStop                 ✅
+    SafetyReason=InvalidVoltage      ✅
+    출력 OFF 유지                    ✅
+    정상전압 복귀 즉시 재시작 안 함  ✅
+    정상전압 2초 확인                ✅
+    Safety 해제                     ✅
+    WaitAfterIg2Off 복귀            ✅
+    5초 대기 후 Idle                ✅
+    Normal 기본 사이클, IG2 개입, 재충전
+    Soft 기본/재충전/비상 충전
+    Hard 시작/수동정지/시간종료/IG2 차단
+    InvalidVoltage 감지 및 자동복구
+    OverVoltage 감지 및 latch
+    Hard 중 Invalid/OverVoltage 차단
+    Safety와 IG2 동시 조건 우선순위
+    SafetyStop 중 Hard 재요청 거부
+    InvalidVoltage 복구 후 Hard 재허용
 v1.0.0 : 차량 실사용 버전(첫 번째 정식 릴리스)
 
 Architecture Status
