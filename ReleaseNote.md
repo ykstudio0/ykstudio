@@ -734,6 +734,14 @@ v0.7.1 Reverse Charge routine
     Scheduler에서 명령 소비 정상
     SafetyStop 상태에서 Soft/Hard 명령 거부 정상
     Solar/Touch도 구조 변경 후 거의 정상
+    Dashboard UI 정책 정리 완료
+    실차 구형 MAIN 호환 처리 완료
+    Test MAIN 신형 Reverse Charge telemetry 정상
+    Dashboard → Server → Caddy → MAIN 명령 경로 정상
+    CommandWorker 분리 완료
+    Pending command 전달 구조 안정화
+    SafetyStop에서 명령 거부 정책 정상
+    Solar / Touch 영향 거의 해소
 v1.0.0 : 차량 실사용 버전(첫 번째 정식 릴리스)
 
 Architecture Status
