@@ -10,6 +10,7 @@
 #pragma once
 
 #include <Arduino.h>
+#include <stdint.h>
 
 namespace ReverseCharge
 {
@@ -164,4 +165,19 @@ namespace ReverseCharge
             State::Idle;
     };
 
+    // -----------------------------------------------------
+    // String conversion
+    // -----------------------------------------------------
+
+    const char* ToString(
+        Mode mode
+    );
+
+    const char* ToString(
+        State state
+    );
+
+    const char* ToString(
+        SafetyReason reason
+    );
 }

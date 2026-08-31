@@ -368,6 +368,15 @@ namespace SVEMS::Telemetry
         vehicle["reverseChargeEnabled"] =
             data.vehicle.reverseChargeEnabled;
 
+        vehicle["reverseChargeMode"] =
+            data.vehicle.reverseChargeMode;
+
+        vehicle["reverseChargeState"] =
+            data.vehicle.reverseChargeState;
+
+        vehicle["reverseChargeSafety"] =
+            data.vehicle.reverseChargeSafety;
+
         //---------------------------------------------------------
         // Serialize
         //---------------------------------------------------------

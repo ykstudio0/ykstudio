@@ -26,6 +26,8 @@ DataManager::VehicleData DataManager::Vehicle;
 
 DataManager::VehicleBatteryData DataManager::VehicleBattery;
 
+DataManager::ReverseChargeData DataManager::ReverseCharge;
+
 void DataManager::ClearUpdates()
 {
     Solar.status.updated = false;

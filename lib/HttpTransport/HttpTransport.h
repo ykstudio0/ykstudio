@@ -56,6 +56,9 @@ namespace SVEMS::Transport
 
         static uint32_t GetMaxConsecutiveFailures();
 
+        static bool FetchReverseChargeCommand(
+            String& response);
+
     private:
 
         static void WorkerTask(

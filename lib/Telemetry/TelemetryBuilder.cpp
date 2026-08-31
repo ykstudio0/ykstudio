@@ -16,6 +16,7 @@
 #include "DeviceManager.h"
 #include "ChargeRelayDriver.h"
 #include "BuildConfig.h"
+#include "ReverseChargeTypes.h"
 
 namespace SVEMS::Telemetry
 {
@@ -265,7 +266,24 @@ namespace SVEMS::Telemetry
         data.vehicle.voltage =
             DataManager::VehicleBattery.voltage;
 
+        // 실제 출력 드라이버가 현재 기억하고 있는 출력 상태를 표시
         data.vehicle.reverseChargeEnabled =
             SVEMS::Vehicle::ChargeRelayDriver::IsEnabled();
+
+        data.vehicle.reverseChargeMode =
+            ReverseCharge::ToString(
+                DataManager::ReverseCharge.mode
+            );
+
+        // Controller가 "켜라"고 판단한 논리 상태 표시
+        data.vehicle.reverseChargeState =
+            ReverseCharge::ToString(
+                DataManager::ReverseCharge.state
+            );
+
+        data.vehicle.reverseChargeSafety =
+            ReverseCharge::ToString(
+                DataManager::ReverseCharge.safety
+            );
     }
 }

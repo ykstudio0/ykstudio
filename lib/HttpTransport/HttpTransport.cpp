@@ -653,4 +653,105 @@ namespace SVEMS::Transport
 
         return value;
     }
+
+    bool HttpTransport::FetchReverseChargeCommand(
+        String& response)
+    {
+        response = "";
+
+        //---------------------------------------------------------
+        // WiFi Check
+        //---------------------------------------------------------
+
+        if (!SVEMS::Service::WiFiService::IsConnected())
+        {
+            Logger::Warning(
+                "HTTP",
+                "WiFi Offline");
+
+            return false;
+        }
+
+        //---------------------------------------------------------
+        // HTTP Begin
+        //---------------------------------------------------------
+
+        HTTPClient http;
+
+        http.setConnectTimeout(
+            3000);
+
+        http.setTimeout(
+            3000);
+
+        String url =
+            SVEMS::Config::REVERSE_CHARGE_COMMAND_URL;
+
+        url += "?deviceId=";
+        url += SVEMS_DEVICE_ID;
+
+        if (!http.begin(
+                url))
+        {
+            Logger::Warning(
+                "HTTP",
+                "Command Begin Failed");
+
+            return false;
+        }
+
+        http.addHeader(
+            "X-SVEMS-API-Key",
+            SVEMS::Config::SVEMS_API_KEY);
+
+        //---------------------------------------------------------
+        // HTTP GET
+        //---------------------------------------------------------
+
+        const int httpCode =
+            http.GET();
+
+        if (httpCode < 200 ||
+            httpCode >= 300)
+        {
+            char message[48];
+
+            snprintf(
+                message,
+                sizeof(message),
+                "Command GET Failed (%d)",
+                httpCode);
+
+            Logger::Warning(
+                "HTTP",
+                message);
+
+            const String errorBody =
+                http.getString();
+
+            Logger::Warning(
+                "HTTP CMD",
+                errorBody.c_str()
+            );
+
+            http.end();
+
+            return false;
+        }
+
+        //---------------------------------------------------------
+        // Response
+        //---------------------------------------------------------
+
+        response =
+            http.getString();
+
+        Logger::Info(
+            "HTTP CMD",
+            response.c_str());
+
+        http.end();
+
+        return true;
+    }
 }

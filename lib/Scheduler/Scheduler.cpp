@@ -6,6 +6,7 @@
 // Version : 0.2.0
 // Description : 시간을 관리
 //-------------------------------------------------------------
+#include <ArduinoJson.h>
 
 #include "Scheduler.h"
 #include "Config.h"
@@ -29,6 +30,7 @@
 #include "ChargeControlService.h"
 #include "ReverseChargeTypes.h"
 #include "ReverseChargeController.h"
+#include "HttpTransport.h"
 
 // ---------------------------------------------------------
 // Reverse Charge
@@ -36,6 +38,14 @@
 static void UpdateReverseCharge();
 
 static ReverseChargeController g_reverseChargeController;
+
+static bool
+    g_reverseChargeManualStart =
+        false;
+
+static bool
+    g_reverseChargeManualStop =
+        false;
 
 namespace
 {
@@ -341,6 +351,149 @@ void Scheduler::Run1Sec()
     SVEMS::Vehicle::VehicleVoltageService::Update();
     
     UpdateReverseCharge();
+
+    String response;
+
+    if (
+        SVEMS::Transport::HttpTransport::
+            FetchReverseChargeCommand(
+                response
+            )
+    )
+    {
+        JsonDocument doc;
+
+        const DeserializationError error =
+            deserializeJson(
+                doc,
+                response
+            );
+
+        if (error)
+        {
+            Logger::Warning(
+                "REV CMD",
+                "JSON parse failed"
+            );
+
+            return;
+        }
+
+        JsonVariant command =
+            doc["command"];
+
+        //---------------------------------------------------------
+        // No Command
+        //---------------------------------------------------------
+
+        if (
+            command.isNull()
+        )
+        {
+            return;
+        }
+
+        //---------------------------------------------------------
+        // Command Type
+        //---------------------------------------------------------
+
+        const char* commandName =
+            command["command"] |
+            "";
+
+        if (
+            strcmp(
+                commandName,
+                "setMode"
+            ) == 0
+        )
+        {
+            const char* mode =
+                command["mode"] |
+                "";
+
+            if (
+                strcmp(
+                    mode,
+                    "Normal"
+                ) == 0
+            )
+            {
+                g_reverseChargeController.SetMode(
+                    ReverseCharge::Mode::Normal
+                );
+
+                Logger::Info(
+                    "REV CMD",
+                    "SetMode = Normal"
+                );
+            }
+            else if (
+                strcmp(
+                    mode,
+                    "Soft"
+                ) == 0
+            )
+            {
+                g_reverseChargeController.SetMode(
+                    ReverseCharge::Mode::Soft
+                );
+
+                Logger::Info(
+                    "REV CMD",
+                    "SetMode = Soft"
+                );
+            }
+            else
+            {
+                Logger::Warning(
+                    "REV CMD",
+                    "Invalid Mode"
+                );
+            }
+        }
+        else if (
+            strcmp(
+                commandName,
+                "hardStart"
+            ) == 0
+        )
+        {
+            g_reverseChargeController.SetMode(
+                ReverseCharge::Mode::Hard
+            );
+
+            g_reverseChargeManualStart =
+                true;
+
+            Logger::Info(
+                "REV CMD",
+                "Hard Start"
+            );
+        }
+        else if (
+            strcmp(
+                commandName,
+                "hardStop"
+            ) == 0
+        )
+        {
+            g_reverseChargeManualStop =
+                true;
+
+            Logger::Info(
+                "REV CMD",
+                "Hard Stop"
+            );
+        }
+        else
+        {
+            Logger::Warning(
+                "REV CMD",
+                "Unknown Command"
+            );
+        }
+    }
 
     if constexpr (ENABLE_EPEVER_POLLING)
     {
@@ -656,13 +809,35 @@ static void UpdateReverseCharge()
         DataManager::VehicleBattery.status.online;
 
     input.manualStart =
-        false;
+        g_reverseChargeManualStart;
 
     input.manualStop =
-        false;
+        g_reverseChargeManualStop;
 
     g_reverseChargeController.Update(
         input
+    );
+
+    g_reverseChargeManualStart =
+        false;
+
+    g_reverseChargeManualStop =
+        false;
+
+    DataManager::ReverseCharge.mode =
+        g_reverseChargeController.GetMode();
+
+    DataManager::ReverseCharge.state =
+        g_reverseChargeController.GetState();
+
+    DataManager::ReverseCharge.safety =
+        g_reverseChargeController.GetSafetyReason();
+
+    DataManager::ReverseCharge.enabled =
+        g_reverseChargeController.IsChargeEnabled();
+
+    SVEMS::Vehicle::ChargeControlService::Update(
+        DataManager::ReverseCharge.enabled
     );
 
     SVEMS::Vehicle::ChargeControlService::Update(

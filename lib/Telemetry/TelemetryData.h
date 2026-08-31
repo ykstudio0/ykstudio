@@ -179,6 +179,14 @@ namespace SVEMS::Telemetry
         bool active = false;
         float voltage = 0.0f;
         bool reverseChargeEnabled = false;
+        const char* reverseChargeMode =
+            "Normal";
+
+        const char* reverseChargeState =
+            "Idle";
+
+        const char* reverseChargeSafety =
+            "None";
     };
 
     struct TelemetryData

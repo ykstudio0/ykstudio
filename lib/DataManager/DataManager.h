@@ -10,6 +10,7 @@
 #pragma once
 #include <stdint.h>
 #include "EpeverStatusParser.h"
+#include "../ReverseCharge/ReverseChargeTypes.h"
 
 class DataManager
 {
@@ -211,6 +212,21 @@ public:
         Status status;
     };
 
+    struct ReverseChargeData
+    {
+        ReverseCharge::Mode mode =
+            ReverseCharge::Mode::Normal;
+
+        ReverseCharge::State state =
+            ReverseCharge::State::Idle;
+
+        ReverseCharge::SafetyReason safety =
+            ReverseCharge::SafetyReason::None;
+
+        bool enabled =
+            false;
+    };
+
     static const char* ResetReasonToString(
         ResetReason reason);
 
@@ -233,4 +249,6 @@ public:
     static VehicleData Vehicle;
     
     static VehicleBatteryData VehicleBattery;
+    
+    static ReverseChargeData ReverseCharge;
 };
