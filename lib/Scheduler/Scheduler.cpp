@@ -32,21 +32,6 @@
 #include "ReverseChargeController.h"
 #include "HttpTransport.h"
 
-// ---------------------------------------------------------
-// Reverse Charge
-// ---------------------------------------------------------
-static void UpdateReverseCharge();
-
-static ReverseChargeController g_reverseChargeController;
-
-static bool
-    g_reverseChargeManualStart =
-        false;
-
-static bool
-    g_reverseChargeManualStop =
-        false;
-
 namespace
 {
     SVEMS::Device::TouchDevice Touch;
@@ -81,6 +66,230 @@ namespace
     };
 
     EpeverPollState g_epeverPoll;
+}
+
+// ---------------------------------------------------------
+// Reverse Charge
+// ---------------------------------------------------------
+static void UpdateReverseCharge();
+
+static ReverseChargeController g_reverseChargeController;
+
+static bool
+    g_reverseChargeManualStart =
+        false;
+
+static bool
+    g_reverseChargeManualStop =
+        false;
+
+static char
+    g_reverseChargePendingCommand[256] =
+        { 0 };
+
+static portMUX_TYPE
+    g_reverseChargeCommandMux =
+        portMUX_INITIALIZER_UNLOCKED;
+
+static void ProcessReverseChargeCommand(
+    const String& response
+)
+{
+    JsonDocument doc;
+
+    const DeserializationError error =
+        deserializeJson(
+            doc,
+            response
+        );
+
+    if (error)
+    {
+        Logger::Warning(
+            "REV CMD",
+            "JSON parse failed"
+        );
+
+        return;
+    }
+
+    JsonVariant command =
+        doc["command"];
+
+    if (
+        command.isNull()
+    )
+    {
+        return;
+    }
+
+    const char* commandName =
+        command["command"] |
+        "";
+
+    //---------------------------------------------------------
+    // Set Mode
+    //---------------------------------------------------------
+
+    if (
+        strcmp(
+            commandName,
+            "setMode"
+        ) == 0
+    )
+    {
+        const char* mode =
+            command["mode"] |
+            "";
+
+        if (
+            strcmp(
+                mode,
+                "Normal"
+            ) == 0
+        )
+        {
+            g_reverseChargeController.SetMode(
+                ReverseCharge::Mode::Normal
+            );
+
+            Logger::Info(
+                "REV CMD",
+                "SetMode = Normal"
+            );
+        }
+        else if (
+            strcmp(
+                mode,
+                "Soft"
+            ) == 0
+        )
+        {
+            g_reverseChargeController.SetMode(
+                ReverseCharge::Mode::Soft
+            );
+
+            Logger::Info(
+                "REV CMD",
+                "SetMode = Soft"
+            );
+        }
+        else
+        {
+            Logger::Warning(
+                "REV CMD",
+                "Invalid Mode"
+            );
+        }
+
+        return;
+    }
+
+    //---------------------------------------------------------
+    // Hard Start
+    //---------------------------------------------------------
+
+    if (
+        strcmp(
+            commandName,
+            "hardStart"
+        ) == 0
+    )
+    {
+        g_reverseChargeController.SetMode(
+            ReverseCharge::Mode::Hard
+        );
+
+        g_reverseChargeManualStart =
+            true;
+
+        Logger::Info(
+            "REV CMD",
+            "Hard Start"
+        );
+
+        return;
+    }
+
+    //---------------------------------------------------------
+    // Hard Stop
+    //---------------------------------------------------------
+
+    if (
+        strcmp(
+            commandName,
+            "hardStop"
+        ) == 0
+    )
+    {
+        g_reverseChargeManualStop =
+            true;
+
+        Logger::Info(
+            "REV CMD",
+            "Hard Stop"
+        );
+
+        return;
+    }
+
+    //---------------------------------------------------------
+    // Unknown Command
+    //---------------------------------------------------------
+
+    Logger::Warning(
+        "REV CMD",
+        "Unknown Command"
+    );
+}
+
+static void ConsumeReverseChargePendingCommand()
+{
+    char commandBuffer[256] =
+        { 0 };
+
+    //---------------------------------------------------------
+    // Copy Pending Command
+    //---------------------------------------------------------
+
+    portENTER_CRITICAL(
+        &g_reverseChargeCommandMux
+    );
+
+    memcpy(
+        commandBuffer,
+        g_reverseChargePendingCommand,
+        sizeof(commandBuffer)
+    );
+
+    g_reverseChargePendingCommand[0] =
+        '\0';
+
+    portEXIT_CRITICAL(
+        &g_reverseChargeCommandMux
+    );
+
+    //---------------------------------------------------------
+    // No Pending Command
+    //---------------------------------------------------------
+
+    if (
+        commandBuffer[0] ==
+        '\0'
+    )
+    {
+        return;
+    }
+
+    //---------------------------------------------------------
+    // Process Command
+    //---------------------------------------------------------
+
+    ProcessReverseChargeCommand(
+        String(
+            commandBuffer
+        )
+    );
 }
 
 bool Scheduler::Begin()
@@ -349,151 +558,10 @@ void Scheduler::Run1Sec()
     DeviceManager::Update();
 
     SVEMS::Vehicle::VehicleVoltageService::Update();
+
+    ConsumeReverseChargePendingCommand();
     
     UpdateReverseCharge();
-
-    String response;
-
-    if (
-        SVEMS::Transport::HttpTransport::
-            FetchReverseChargeCommand(
-                response
-            )
-    )
-    {
-        JsonDocument doc;
-
-        const DeserializationError error =
-            deserializeJson(
-                doc,
-                response
-            );
-
-        if (error)
-        {
-            Logger::Warning(
-                "REV CMD",
-                "JSON parse failed"
-            );
-
-            return;
-        }
-
-        JsonVariant command =
-            doc["command"];
-
-        //---------------------------------------------------------
-        // No Command
-        //---------------------------------------------------------
-
-        if (
-            command.isNull()
-        )
-        {
-            return;
-        }
-
-        //---------------------------------------------------------
-        // Command Type
-        //---------------------------------------------------------
-
-        const char* commandName =
-            command["command"] |
-            "";
-
-        if (
-            strcmp(
-                commandName,
-                "setMode"
-            ) == 0
-        )
-        {
-            const char* mode =
-                command["mode"] |
-                "";
-
-            if (
-                strcmp(
-                    mode,
-                    "Normal"
-                ) == 0
-            )
-            {
-                g_reverseChargeController.SetMode(
-                    ReverseCharge::Mode::Normal
-                );
-
-                Logger::Info(
-                    "REV CMD",
-                    "SetMode = Normal"
-                );
-            }
-            else if (
-                strcmp(
-                    mode,
-                    "Soft"
-                ) == 0
-            )
-            {
-                g_reverseChargeController.SetMode(
-                    ReverseCharge::Mode::Soft
-                );
-
-                Logger::Info(
-                    "REV CMD",
-                    "SetMode = Soft"
-                );
-            }
-            else
-            {
-                Logger::Warning(
-                    "REV CMD",
-                    "Invalid Mode"
-                );
-            }
-        }
-        else if (
-            strcmp(
-                commandName,
-                "hardStart"
-            ) == 0
-        )
-        {
-            g_reverseChargeController.SetMode(
-                ReverseCharge::Mode::Hard
-            );
-
-            g_reverseChargeManualStart =
-                true;
-
-            Logger::Info(
-                "REV CMD",
-                "Hard Start"
-            );
-        }
-        else if (
-            strcmp(
-                commandName,
-                "hardStop"
-            ) == 0
-        )
-        {
-            g_reverseChargeManualStop =
-                true;
-
-            Logger::Info(
-                "REV CMD",
-                "Hard Stop"
-            );
-        }
-        else
-        {
-            Logger::Warning(
-                "REV CMD",
-                "Unknown Command"
-            );
-        }
-    }
 
     if constexpr (ENABLE_EPEVER_POLLING)
     {
@@ -908,5 +976,34 @@ static void UpdateReverseCharge()
     Logger::Info(
         "REVCHG",
         message
+    );
+}
+
+void Scheduler::SetReverseChargePendingCommand(
+    const String& command
+)
+{
+    char buffer[256] =
+        { 0 };
+
+    command.toCharArray(
+        buffer,
+        sizeof(buffer)
+    );
+
+    portENTER_CRITICAL(
+        &g_reverseChargeCommandMux
+    );
+
+    memcpy(
+        g_reverseChargePendingCommand,
+        buffer,
+        sizeof(
+            g_reverseChargePendingCommand
+        )
+    );
+
+    portEXIT_CRITICAL(
+        &g_reverseChargeCommandMux
     );
 }

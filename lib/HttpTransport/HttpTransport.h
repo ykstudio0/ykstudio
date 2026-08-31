@@ -82,6 +82,13 @@ namespace SVEMS::Transport
         static constexpr uint32_t
             SENDING_TIMEOUT_MS = 10000UL;
 
+        static constexpr uint32_t
+            RETRY_INTERVAL_MS = 30000UL;
+
+        static constexpr uint32_t
+            COMMAND_POLL_INTERVAL_MS =
+                5000UL;
+
         struct HttpMessage
         {
             char payload[
@@ -99,11 +106,14 @@ namespace SVEMS::Transport
 
         static int LastErrorCode;
 
-        static constexpr uint32_t
-            RETRY_INTERVAL_MS = 30000UL;
-
         static portMUX_TYPE StateMux;
 
         static uint32_t MaxConsecutiveFailures;
+
+        static void CommandWorkerTask(
+            void* parameter);
+
+        static TaskHandle_t
+            CommandWorkerTaskHandle;
     };
 }

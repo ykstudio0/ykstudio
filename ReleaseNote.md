@@ -724,6 +724,16 @@ v0.7.1 Reverse Charge routine
     Safety와 IG2 동시 조건 우선순위
     SafetyStop 중 Hard 재요청 거부
     InvalidVoltage 복구 후 Hard 재허용
+    Dashboard → Server POST 정상
+    **2026-08-31**
+    Server 1회 명령 저장/소비 정상
+    Caddy GET 경로 수정 완료
+    Test MAIN CommandWorker 수신 정상
+    JSON 파싱 정상
+    Pending char[256] 전달 정상
+    Scheduler에서 명령 소비 정상
+    SafetyStop 상태에서 Soft/Hard 명령 거부 정상
+    Solar/Touch도 구조 변경 후 거의 정상
 v1.0.0 : 차량 실사용 버전(첫 번째 정식 릴리스)
 
 Architecture Status

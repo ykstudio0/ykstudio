@@ -19,6 +19,9 @@ public:
     static void Run();
     static void RunInitial();
 
+    static void SetReverseChargePendingCommand(
+        const String& command);
+
 private:
     static void Run100ms();
     static void Run1Sec();

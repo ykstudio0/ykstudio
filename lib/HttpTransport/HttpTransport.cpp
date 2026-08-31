@@ -6,7 +6,7 @@
 // Version : 0.6.0
 // Description : HTTP Transport Layer
 //-------------------------------------------------------------
-
+#include <ArduinoJson.h>
 #include <HTTPClient.h>
 
 #include "HttpTransport.h"
@@ -14,6 +14,7 @@
 #include "WiFiService.h"
 #include "Config.h"
 #include "Secrets.h"
+#include "Scheduler.h"
 
 namespace
 {
@@ -57,6 +58,10 @@ namespace SVEMS::Transport
 
     portMUX_TYPE HttpTransport::StateMux =
         portMUX_INITIALIZER_UNLOCKED;
+
+    TaskHandle_t
+        HttpTransport::CommandWorkerTaskHandle =
+            nullptr;
 
     bool HttpTransport::Begin()
     {
@@ -129,6 +134,41 @@ namespace SVEMS::Transport
                 Queue);
 
             Queue = nullptr;
+
+            return false;
+        }
+
+        //---------------------------------------------------------
+        // Create Command Worker
+        //---------------------------------------------------------
+
+        const BaseType_t commandResult =
+            xTaskCreatePinnedToCore(
+                CommandWorkerTask,
+                "CommandWorker",
+                8192,
+                nullptr,
+                1,
+                &CommandWorkerTaskHandle,
+                0);
+
+        if (commandResult != pdPASS)
+        {
+            Logger::Error(
+                "HTTP CMD",
+                "Task Create Failed");
+
+            vTaskDelete(
+                WorkerTaskHandle);
+
+            WorkerTaskHandle =
+                nullptr;
+
+            vQueueDelete(
+                Queue);
+
+            Queue =
+                nullptr;
 
             return false;
         }
@@ -330,6 +370,65 @@ namespace SVEMS::Transport
                 SendHttp(
                     message.payload);
             }
+        }
+    }
+
+    void HttpTransport::CommandWorkerTask(
+        void* parameter
+    )
+    {
+        (void)parameter;
+
+        Logger::Info(
+            "HTTP CMD",
+            "Worker Started"
+        );
+
+        for (;;)
+        {
+            String response;
+
+            if (
+                FetchReverseChargeCommand(
+                    response
+                )
+            )
+            {
+                if (
+                    response.length() > 0
+                )
+                {
+                    JsonDocument doc;
+
+                    const DeserializationError error =
+                        deserializeJson(
+                            doc,
+                            response
+                        );
+
+                    if (!error)
+                    {
+                        JsonVariant command =
+                            doc["command"];
+
+                        if (
+                            !command.isNull()
+                        )
+                        {
+                            Scheduler::
+                                SetReverseChargePendingCommand(
+                                    response
+                                );
+                        }
+                    }
+                }
+            }
+
+            vTaskDelay(
+                pdMS_TO_TICKS(
+                    COMMAND_POLL_INTERVAL_MS
+                )
+            );
         }
     }
 
@@ -745,10 +844,6 @@ namespace SVEMS::Transport
 
         response =
             http.getString();
-
-        Logger::Info(
-            "HTTP CMD",
-            response.c_str());
 
         http.end();
 
