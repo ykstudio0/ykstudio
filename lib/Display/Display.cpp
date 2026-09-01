@@ -210,3 +210,64 @@ void Display::ToggleDeviceRtc()
 {
     g_renderer.ToggleDeviceRtc();
 }
+
+bool Display::SaveDeviceConfig()
+{
+    if (!g_initialized)
+    {
+        return false;
+    }
+
+    const auto& config =
+        g_renderer.GetDeviceConfigEdit();
+
+    //-------------------------------------------------
+    // 먼저 NVS 저장
+    //-------------------------------------------------
+
+    if (!SVEMS::Device::
+            DeviceConfigurationStorage::Save(
+                config))
+    {
+        Logger::Warning(
+            "DEV CFG",
+            "Save Failed");
+
+        return false;
+    }
+
+    //-------------------------------------------------
+    // 저장 성공 후 Runtime 적용
+    //-------------------------------------------------
+
+    DeviceManager::SetConfiguration(
+        config);
+
+    Logger::Info(
+        "DEV CFG",
+        "Applied");
+
+    //-------------------------------------------------
+    // Device Config 종료
+    //-------------------------------------------------
+
+    g_renderer.SetDeviceConfigMode(
+        false);
+
+    return true;
+}
+
+void Display::CancelDeviceConfig()
+{
+    if (!g_initialized)
+    {
+        return;
+    }
+
+    Logger::Info(
+        "DEV CFG",
+        "Cancelled");
+
+    g_renderer.SetDeviceConfigMode(
+        false);
+}

@@ -10,6 +10,8 @@
 #pragma once
 
 #include "DisplayPages.h"
+#include "DeviceManager.h"
+#include "DeviceConfigurationStorage.h"
 
 class Display
 {
@@ -41,6 +43,10 @@ public:
     static void ToggleDeviceBms();
     static void ToggleDeviceSht40();
     static void ToggleDeviceRtc();
+
+    static bool SaveDeviceConfig();
+
+    static void CancelDeviceConfig();
 
 private:
     static bool InitializeLCD();    

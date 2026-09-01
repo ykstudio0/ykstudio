@@ -67,14 +67,6 @@ bool DeviceManager::Begin()
     ok &= Epever::Begin();
     ok &= Scheduler::Begin();
 
-    auto config =
-        DeviceManager::GetConfiguration();
-
-    config.bms = false;
-
-    DeviceManager::SetConfiguration(
-        config);
-
     // 등록된 모든 Device 초기화
     for (auto* device : g_devices)
     {

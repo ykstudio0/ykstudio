@@ -19,6 +19,50 @@ namespace SVEMS::Manager
     WidgetEventManager::ProcessDeviceConfig(
         const SVEMS::Touch::TouchPoint& point)
     {
+        constexpr int16_t BUTTON_Y1 = 198;
+        constexpr int16_t BUTTON_Y2 = 240;
+
+        //-------------------------------------------------
+        // WiFi Setup
+        //-------------------------------------------------
+
+        constexpr int16_t WIFI_X1 = 60;
+        constexpr int16_t WIFI_X2 = 260;
+
+        constexpr int16_t WIFI_Y1 = 38;
+        constexpr int16_t WIFI_Y2 = 78;
+
+        if (
+            point.x >= WIFI_X1 &&
+            point.x <  WIFI_X2 &&
+            point.y >= WIFI_Y1 &&
+            point.y <  WIFI_Y2)
+        {
+            return
+                SVEMS::UI::Action::WiFiSetup;
+        }
+        
+        //-------------------------------------------------
+        // SAVE / CANCEL
+        //-------------------------------------------------
+
+        if (point.y >= BUTTON_Y1 &&
+            point.y < BUTTON_Y2)
+        {
+            if (point.x < 160)
+            {
+                return
+                    SVEMS::UI::Action::DeviceConfigSave;
+            }
+
+            return
+                SVEMS::UI::Action::DeviceConfigCancel;
+        }
+
+        //-------------------------------------------------
+        // Device Items
+        //-------------------------------------------------
+
         constexpr int16_t ITEM_X1 = 25;
         constexpr int16_t ITEM_X2 = 180;
 
@@ -37,34 +81,40 @@ namespace SVEMS::Manager
         if (point.x < ITEM_X1 ||
             point.x > ITEM_X2)
         {
-            return SVEMS::UI::Action::None;
+            return
+                SVEMS::UI::Action::None;
         }
 
         if (point.y >= MPPT_Y1 &&
             point.y < MPPT_Y2)
         {
-            return SVEMS::UI::Action::DeviceMpptToggle;
+            return
+                SVEMS::UI::Action::DeviceMpptToggle;
         }
 
         if (point.y >= BMS_Y1 &&
             point.y < BMS_Y2)
         {
-            return SVEMS::UI::Action::DeviceBmsToggle;
+            return
+                SVEMS::UI::Action::DeviceBmsToggle;
         }
 
         if (point.y >= SHT40_Y1 &&
             point.y < SHT40_Y2)
         {
-            return SVEMS::UI::Action::DeviceSht40Toggle;
+            return
+                SVEMS::UI::Action::DeviceSht40Toggle;
         }
 
         if (point.y >= RTC_Y1 &&
             point.y < RTC_Y2)
         {
-            return SVEMS::UI::Action::DeviceRtcToggle;
+            return
+                SVEMS::UI::Action::DeviceRtcToggle;
         }
 
-        return SVEMS::UI::Action::None;
+        return
+            SVEMS::UI::Action::None;
     }
     
     // Process

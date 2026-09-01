@@ -568,6 +568,22 @@ void Scheduler::Run100ms()
                     ::Display::ToggleDeviceRtc();
                     break;
 
+                case SVEMS::UI::Action::DeviceConfigSave:
+                    Logger::Info(
+                        "UI",
+                        "Device Config Save");
+
+                    ::Display::SaveDeviceConfig();
+                    break;
+
+                case SVEMS::UI::Action::DeviceConfigCancel:
+                    Logger::Info(
+                        "UI",
+                        "Device Config Cancel");
+
+                    ::Display::CancelDeviceConfig();
+                    break;
+
                 default:
                     break;
             }

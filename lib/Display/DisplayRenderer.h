@@ -57,6 +57,9 @@ namespace DisplayRenderer
         void ToggleDeviceSht40();
         void ToggleDeviceRtc();
 
+        const SVEMS::Device::DeviceConfiguration&
+            GetDeviceConfigEdit() const;
+
     private:
         enum class DeviceConfigDirty : uint8_t
         {

@@ -152,9 +152,30 @@ namespace DisplayRenderer
             return true;
         }
 
+        //---------------------------------------------------------
+        // WiFi Setup Confirm Overlay
+        //---------------------------------------------------------
+
+        if (m_wifiSetupConfirm)
+        {
+            if (!m_wifiSetupConfirmDrawn)
+            {
+                DrawWiFiSetupConfirm();
+
+                m_wifiSetupConfirmDrawn =
+                    true;
+            }
+
+            m_target->EndFrame();
+
+            return true;
+        }
+
         if (m_deviceConfigMode)
         {
-            if (!m_deviceConfigDrawn)
+            if (
+                m_firstRender ||
+                !m_deviceConfigDrawn)
             {
                 m_target->Clear(
                     DisplayTheme::COLOR_BACKGROUND);
@@ -201,25 +222,6 @@ namespace DisplayRenderer
 
                 m_deviceConfigDirty =
                     DeviceConfigDirty::None;
-            }
-
-            m_target->EndFrame();
-
-            return true;
-        }
-
-        //---------------------------------------------------------
-        // WiFi Setup Confirm Overlay
-        //---------------------------------------------------------
-
-        if (m_wifiSetupConfirm)
-        {
-            if (!m_wifiSetupConfirmDrawn)
-            {
-                DrawWiFiSetupConfirm();
-
-                m_wifiSetupConfirmDrawn =
-                    true;
             }
 
             m_target->EndFrame();
@@ -288,6 +290,12 @@ namespace DisplayRenderer
 
         m_deviceConfigDirty =
             DeviceConfigDirty::Rtc;
+    }
+
+    const SVEMS::Device::DeviceConfiguration&
+    Renderer::GetDeviceConfigEdit() const
+    {
+        return m_deviceConfigEdit;
     }
 
     void Renderer::DrawDeviceConfigStatic()
@@ -1863,12 +1871,6 @@ namespace DisplayRenderer
     void Renderer::SetDeviceConfigMode(
         bool visible)
     {
-        Logger::Info(
-            "DISPLAY",
-            visible
-                ? "DeviceConfig ON"
-                : "DeviceConfig OFF");
-
         if (m_deviceConfigMode == visible)
         {
             return;
@@ -1882,6 +1884,9 @@ namespace DisplayRenderer
             m_deviceConfigEdit =
                 DeviceManager::GetConfiguration();
         }
+
+        m_deviceConfigDirty =
+            DeviceConfigDirty::None;
 
         m_deviceConfigDrawn =
             false;

@@ -35,6 +35,9 @@ namespace SVEMS::UI
         DeviceMpptToggle,
         DeviceBmsToggle,
         DeviceSht40Toggle,
-        DeviceRtcToggle
+        DeviceRtcToggle,
+
+        DeviceConfigSave,
+        DeviceConfigCancel
     };
 }
