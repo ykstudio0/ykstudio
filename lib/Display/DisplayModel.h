@@ -355,6 +355,7 @@ namespace DisplayModel
         bool epeverOnline;
         bool bmsOnline;
         bool rs485CommunicationError = false;
+        bool modbusCommunicationError = false;
 
         constexpr SystemData()
             : currentTime(

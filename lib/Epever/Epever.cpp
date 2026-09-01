@@ -384,6 +384,7 @@ bool Epever::ReadRegisters(
         return false;
     }
 
+
     if (rx[0] != MODBUS_SLAVE_ID)
         return false;
     

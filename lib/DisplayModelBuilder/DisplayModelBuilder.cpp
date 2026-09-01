@@ -634,6 +634,9 @@ namespace
 
         system.rs485CommunicationError =
             RS485::IsCommunicationError();
+
+        system.modbusCommunicationError =
+            ModbusRTU::IsCommunicationError();
     }
 
     void BuildHeader(DisplayModel::Model& model)
@@ -692,21 +695,23 @@ namespace
             header.status.color =
                 DisplayTheme::COLOR_WARNING;
         }
-        // else if (!system.rs485Ready)
+        else if (!system.rs485Ready)
+        {
+            header.status.text = "485";
+            header.status.color =
+                DisplayTheme::COLOR_WARNING;
+        }
+        // else if (
+        //     !system.rs485Ready ||
+        //     system.rs485CommunicationError)
         // {
         //     header.status.text = "485";
         //     header.status.color =
         //         DisplayTheme::COLOR_WARNING;
         // }
         else if (
-            !system.rs485Ready ||
-            system.rs485CommunicationError)
-        {
-            header.status.text = "485";
-            header.status.color =
-                DisplayTheme::COLOR_WARNING;
-        }
-        else if (!system.modbusReady)
+            !system.modbusReady ||
+            system.modbusCommunicationError)
         {
             header.status.text = "MOD";
             header.status.color =
