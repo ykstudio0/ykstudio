@@ -695,20 +695,20 @@ namespace
             header.status.color =
                 DisplayTheme::COLOR_WARNING;
         }
-        else if (!system.rs485Ready)
-        {
-            header.status.text = "485";
-            header.status.color =
-                DisplayTheme::COLOR_WARNING;
-        }
-        // else if (
-        //     !system.rs485Ready ||
-        //     system.rs485CommunicationError)
+        // else if (!system.rs485Ready)
         // {
         //     header.status.text = "485";
         //     header.status.color =
         //         DisplayTheme::COLOR_WARNING;
         // }
+        else if (
+            !system.rs485Ready ||
+            system.rs485CommunicationError)
+        {
+            header.status.text = "485";
+            header.status.color =
+                DisplayTheme::COLOR_WARNING;
+        }
         else if (
             !system.modbusReady ||
             system.modbusCommunicationError)
