@@ -31,6 +31,7 @@
 #include "ReverseChargeTypes.h"
 #include "ReverseChargeController.h"
 #include "HttpTransport.h"
+#include "RS485.h"
 
 namespace
 {
@@ -562,6 +563,14 @@ void Scheduler::Run1Sec()
     ConsumeReverseChargePendingCommand();
     
     UpdateReverseCharge();
+
+    Logger::Info(
+        "RS485",
+        "NoRx=" +
+        String(
+            RS485::GetConsecutiveNoRxCount()
+        )
+    );
 
     if constexpr (ENABLE_EPEVER_POLLING)
     {

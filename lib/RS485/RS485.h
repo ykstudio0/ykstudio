@@ -30,6 +30,10 @@ public:
 
     static void ClearReceiveBuffer();
 
+    static bool IsCommunicationError();
+
+    static uint32_t GetConsecutiveNoRxCount();
+
 private:
     static bool Ready;
     
@@ -41,4 +45,10 @@ private:
     static bool IsTimeOut(
         uint32_t startTime,
         uint32_t timeout);
+
+    static uint32_t ConsecutiveNoRxCount;
+
+    static constexpr uint32_t
+        NO_RX_ERROR_THRESHOLD =
+            3U;
 };

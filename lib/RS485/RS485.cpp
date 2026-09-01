@@ -16,9 +16,15 @@ HardwareSerial RS485Serial(1);
 
 bool RS485::Ready = false;
 
+uint32_t RS485::ConsecutiveNoRxCount =
+    0U;
+
 bool RS485::Begin()
 {
     Ready = false;
+
+    ConsecutiveNoRxCount =
+        0U;
 
     pinMode(PIN_RS485_DE, OUTPUT);
 
@@ -104,9 +110,21 @@ bool RS485::ReceiveFrame(
                 "RS485",
                 "Timeout Available=" +
                 String(RS485Serial.available()));
-
-            if (length > 0)
+            
+            if (length == 0)
             {
+                ++ConsecutiveNoRxCount;
+            }
+            else
+            {
+                //-------------------------------------------------
+                // RX는 있었음
+                // RS485 물리 계층은 정상으로 판단
+                //-------------------------------------------------
+
+                ConsecutiveNoRxCount =
+                    0U;
+
                 Logger::Hex(
                     "RX PARTIAL",
                     buffer,
@@ -138,12 +156,20 @@ bool RS485::ReceiveFrame(
                 return false;
             }
 
-            const int value = RS485Serial.read();
+            const int value =
+                RS485Serial.read();
 
             if (value < 0)
             {
                 continue;
             }
+
+            //---------------------------------------------------------
+            // 실제 RX 바이트 수신
+            //---------------------------------------------------------
+
+            ConsecutiveNoRxCount =
+                0U;
 
             buffer[length++] =
                 static_cast<uint8_t>(value);
@@ -289,4 +315,21 @@ bool RS485::IsTimeOut(
     return
         static_cast<uint32_t>(
             millis() - startTime) >= timeout;
+}
+
+bool RS485::IsCommunicationError()
+{
+    if (!Ready)
+    {
+        return false;
+    }
+
+    return
+        ConsecutiveNoRxCount >=
+        NO_RX_ERROR_THRESHOLD;
+}
+
+uint32_t RS485::GetConsecutiveNoRxCount()
+{
+    return ConsecutiveNoRxCount;
 }
