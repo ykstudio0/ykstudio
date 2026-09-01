@@ -28,6 +28,13 @@ namespace SVEMS::UI
         Confirm,
         Cancel,
 
-        WiFiSetup
+        WiFiSetup,
+
+        DeviceConfig,
+
+        DeviceMpptToggle,
+        DeviceBmsToggle,
+        DeviceSht40Toggle,
+        DeviceRtcToggle
     };
 }

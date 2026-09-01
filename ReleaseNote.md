@@ -742,6 +742,12 @@ v0.7.1 Reverse Charge routine
     Pending command 전달 구조 안정화
     SafetyStop에서 명령 거부 정책 정상
     Solar / Touch 영향 거의 해소
+v0.7.2 Device Configuration
+    DeviceConfiguration 구조체 완료
+    Expected Count 동적 계산 완료
+    Online Count도 설정 장치만 계산
+    BMS=false 임시 테스트
+    → Remote 3/3 확인 완료
 v1.0.0 : 차량 실사용 버전(첫 번째 정식 릴리스)
 
 Architecture Status

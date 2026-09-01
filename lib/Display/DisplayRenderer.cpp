@@ -15,6 +15,9 @@
 #include "HeaderWidget.h"
 #include "ValueWidget.h"
 #include "FooterWidget.h"
+#include "Display.h"
+#include "Logger.h"
+#include "DeviceManager.h"
 
 
 namespace DisplayRenderer
@@ -116,6 +119,14 @@ namespace DisplayRenderer
             return false;
         }
 
+        Logger::Info(
+            "DISPLAY",
+            "Render First=" +
+            String(m_firstRender ? 1 : 0) +
+            " DevCfg=" +
+            String(m_deviceConfigMode ? 1 : 0)
+        );
+        
         m_pageChanged =
             m_firstRender ||
             (page != m_lastPage) ||
@@ -134,6 +145,62 @@ namespace DisplayRenderer
 
                 m_firstRender =
                     false;
+            }
+
+            m_target->EndFrame();
+
+            return true;
+        }
+
+        if (m_deviceConfigMode)
+        {
+            if (!m_deviceConfigDrawn)
+            {
+                m_target->Clear(
+                    DisplayTheme::COLOR_BACKGROUND);
+
+                DrawDeviceConfigStatic();
+
+                m_deviceConfigDrawn = true;
+                m_deviceConfigDirty =
+                    DeviceConfigDirty::None;
+
+                m_firstRender = false;
+            }
+            else
+            {
+                switch (m_deviceConfigDirty)
+                {
+                    case DeviceConfigDirty::Mppt:
+                        DrawDeviceConfigCheck(
+                            90,
+                            m_deviceConfigEdit.mppt);
+                        break;
+
+                    case DeviceConfigDirty::Bms:
+                        DrawDeviceConfigCheck(
+                            120,
+                            m_deviceConfigEdit.bms);
+                        break;
+
+                    case DeviceConfigDirty::Sht40:
+                        DrawDeviceConfigCheck(
+                            150,
+                            m_deviceConfigEdit.sht40);
+                        break;
+
+                    case DeviceConfigDirty::Rtc:
+                        DrawDeviceConfigCheck(
+                            180,
+                            m_deviceConfigEdit.rtc);
+                        break;
+
+                    default:
+                        break;
+                }
+
+                m_deviceConfigDirty =
+                    DeviceConfigDirty::None;
             }
 
             m_target->EndFrame();
@@ -187,6 +254,201 @@ namespace DisplayRenderer
         return true;
     }
 
+    void Renderer::ToggleDeviceMppt()
+    {
+        m_deviceConfigEdit.mppt =
+            !m_deviceConfigEdit.mppt;
+
+        m_deviceConfigDirty =
+            DeviceConfigDirty::Mppt;
+    }
+
+    void Renderer::ToggleDeviceBms()
+    {
+        m_deviceConfigEdit.bms =
+            !m_deviceConfigEdit.bms;
+
+        m_deviceConfigDirty =
+            DeviceConfigDirty::Bms;
+    }
+
+    void Renderer::ToggleDeviceSht40()
+    {
+        m_deviceConfigEdit.sht40 =
+            !m_deviceConfigEdit.sht40;
+
+        m_deviceConfigDirty =
+            DeviceConfigDirty::Sht40;
+    }
+
+    void Renderer::ToggleDeviceRtc()
+    {
+        m_deviceConfigEdit.rtc =
+            !m_deviceConfigEdit.rtc;
+
+        m_deviceConfigDirty =
+            DeviceConfigDirty::Rtc;
+    }
+
+    void Renderer::DrawDeviceConfigStatic()
+    {
+        const auto& config =
+            m_deviceConfigEdit;
+
+        constexpr int16_t CHECK_X = 32;
+        constexpr int16_t TEXT_X  = 82;
+
+        constexpr int16_t TITLE_Y  = 20;
+        constexpr int16_t WIFI_Y   = 52;
+
+        constexpr int16_t MPPT_Y   = 90;
+        constexpr int16_t BMS_Y    = 120;
+        constexpr int16_t SHT40_Y  = 150;
+        constexpr int16_t RTC_Y    = 180;
+
+        constexpr int16_t BUTTON_Y = 212;
+
+        m_target->DrawText(
+            160,
+            TITLE_Y,
+            "< DEVICE CONFIG >",
+            DisplayTheme::COLOR_LABEL,
+            2U,
+            DisplayTypes::TextAlign::Center
+        );
+
+        m_target->DrawText(
+            160,
+            WIFI_Y,
+            "WIFI SETUP",
+            DisplayTheme::COLOR_LABEL,
+            2U,
+            DisplayTypes::TextAlign::Center
+        );
+
+        m_target->DrawText(
+            CHECK_X,
+            MPPT_Y,
+            config.mppt ? "[*]" : "[ ]",
+            DisplayTheme::COLOR_VALUE,
+            2U,
+            DisplayTypes::TextAlign::Left
+        );
+
+        m_target->DrawText(
+            TEXT_X,
+            MPPT_Y,
+            "MPPT",
+            DisplayTheme::COLOR_LABEL,
+            2U,
+            DisplayTypes::TextAlign::Left
+        );
+
+        m_target->DrawText(
+            CHECK_X,
+            BMS_Y,
+            config.bms ? "[*]" : "[ ]",
+            DisplayTheme::COLOR_VALUE,
+            2U,
+            DisplayTypes::TextAlign::Left
+        );
+
+        m_target->DrawText(
+            TEXT_X,
+            BMS_Y,
+            "BMS",
+            DisplayTheme::COLOR_LABEL,
+            2U,
+            DisplayTypes::TextAlign::Left
+        );
+
+        m_target->DrawText(
+            CHECK_X,
+            SHT40_Y,
+            config.sht40 ? "[*]" : "[ ]",
+            DisplayTheme::COLOR_VALUE,
+            2U,
+            DisplayTypes::TextAlign::Left
+        );
+
+        m_target->DrawText(
+            TEXT_X,
+            SHT40_Y,
+            "SHT40",
+            DisplayTheme::COLOR_LABEL,
+            2U,
+            DisplayTypes::TextAlign::Left
+        );
+
+        m_target->DrawText(
+            CHECK_X,
+            RTC_Y,
+            config.rtc ? "[*]" : "[ ]",
+            DisplayTheme::COLOR_VALUE,
+            2U,
+            DisplayTypes::TextAlign::Left
+        );
+
+        m_target->DrawText(
+            TEXT_X,
+            RTC_Y,
+            "RTC",
+            DisplayTheme::COLOR_LABEL,
+            2U,
+            DisplayTypes::TextAlign::Left
+        );
+
+        m_target->DrawText(
+            90,
+            BUTTON_Y,
+            "SAVE",
+            DisplayTheme::COLOR_LABEL,
+            2U,
+            DisplayTypes::TextAlign::Center
+        );
+
+        m_target->DrawText(
+            230,
+            BUTTON_Y,
+            "CANCEL",
+            DisplayTheme::COLOR_LABEL,
+            2U,
+            DisplayTypes::TextAlign::Center
+        );
+    }
+
+    void Renderer::DrawDeviceConfigCheck(
+        int16_t y,
+        bool checked)
+    {
+        constexpr int16_t CHECK_X = 32;
+
+        //-------------------------------------------------
+        // 기존 체크박스 영역 지우기
+        //-------------------------------------------------
+
+        m_target->FillRect(
+            CHECK_X,
+            y,
+            42,
+            20,
+            DisplayTheme::COLOR_BACKGROUND
+        );
+
+        //-------------------------------------------------
+        // 체크박스 다시 그리기
+        //-------------------------------------------------
+
+        m_target->DrawText(
+            CHECK_X,
+            y,
+            checked ? "[*]" : "[ ]",
+            DisplayTheme::COLOR_VALUE,
+            2U,
+            DisplayTypes::TextAlign::Left
+        );
+    }
+
     void Renderer::DrawContentStatic(
         DisplayPages::Page page,
         uint8_t subPage)
@@ -227,6 +489,7 @@ namespace DisplayRenderer
         const char* title =
             DisplayPages::GetTitle(page);
 
+            
         char detailTitle[24];
 
         //-------------------------------------------------
@@ -971,10 +1234,6 @@ namespace DisplayRenderer
                 data.controllerTemperature,
                 3U);
         }
-
-        
-
-        
     }
 
     void Renderer::DrawSystem(
@@ -1599,6 +1858,41 @@ namespace DisplayRenderer
             1U,
             DisplayTypes::TextAlign::Center
         );
+    }
+
+    void Renderer::SetDeviceConfigMode(
+        bool visible)
+    {
+        Logger::Info(
+            "DISPLAY",
+            visible
+                ? "DeviceConfig ON"
+                : "DeviceConfig OFF");
+
+        if (m_deviceConfigMode == visible)
+        {
+            return;
+        }
+
+        m_deviceConfigMode =
+            visible;
+
+        if (visible)
+        {
+            m_deviceConfigEdit =
+                DeviceManager::GetConfiguration();
+        }
+
+        m_deviceConfigDrawn =
+            false;
+
+        m_firstRender =
+            true;
+    }
+
+    bool Renderer::IsDeviceConfigMode() const
+    {
+        return m_deviceConfigMode;
     }
 
     void Renderer::SetWiFiSetupConfirm(

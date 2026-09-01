@@ -15,27 +15,97 @@
 
 namespace SVEMS::Manager
 {
+    SVEMS::UI::Action
+    WidgetEventManager::ProcessDeviceConfig(
+        const SVEMS::Touch::TouchPoint& point)
+    {
+        constexpr int16_t ITEM_X1 = 25;
+        constexpr int16_t ITEM_X2 = 180;
+
+        constexpr int16_t MPPT_Y1  = 78;
+        constexpr int16_t MPPT_Y2  = 108;
+
+        constexpr int16_t BMS_Y1   = 108;
+        constexpr int16_t BMS_Y2   = 138;
+
+        constexpr int16_t SHT40_Y1 = 138;
+        constexpr int16_t SHT40_Y2 = 168;
+
+        constexpr int16_t RTC_Y1   = 168;
+        constexpr int16_t RTC_Y2   = 198;
+
+        if (point.x < ITEM_X1 ||
+            point.x > ITEM_X2)
+        {
+            return SVEMS::UI::Action::None;
+        }
+
+        if (point.y >= MPPT_Y1 &&
+            point.y < MPPT_Y2)
+        {
+            return SVEMS::UI::Action::DeviceMpptToggle;
+        }
+
+        if (point.y >= BMS_Y1 &&
+            point.y < BMS_Y2)
+        {
+            return SVEMS::UI::Action::DeviceBmsToggle;
+        }
+
+        if (point.y >= SHT40_Y1 &&
+            point.y < SHT40_Y2)
+        {
+            return SVEMS::UI::Action::DeviceSht40Toggle;
+        }
+
+        if (point.y >= RTC_Y1 &&
+            point.y < RTC_Y2)
+        {
+            return SVEMS::UI::Action::DeviceRtcToggle;
+        }
+
+        return SVEMS::UI::Action::None;
+    }
+    
     // Process
     SVEMS::UI::Action WidgetEventManager::Process(
         SVEMS::Touch::Event event,
         const SVEMS::Touch::TouchPoint& point)
     {
-        if (
-            event ==
-                SVEMS::Touch::Event::Tap &&
-            ::Display::IsWiFiSetupConfirm()
-        )
+        //-------------------------------------------------
+        // Tap 이벤트만 처리
+        //-------------------------------------------------
+
+        if (event !=
+            SVEMS::Touch::Event::Tap)
+        {
+            return
+                SVEMS::UI::Action::None;
+        }
+
+        //-------------------------------------------------
+        // WiFi Setup Confirm
+        //-------------------------------------------------
+
+        if (::Display::IsWiFiSetupConfirm())
         {
             return ProcessWiFiSetupConfirm(
                 point);
         }
 
-        if (event !=
-            SVEMS::Touch::Event::Tap)
+        //-------------------------------------------------
+        // Device Config
+        //-------------------------------------------------
+
+        if (::Display::IsDeviceConfigMode())
         {
-            return 
-                SVEMS::UI::Action::None;
+            return ProcessDeviceConfig(
+                point);
         }
+
+        //-------------------------------------------------
+        // Header
+        //-------------------------------------------------
 
         const SVEMS::UI::Action headerAction =
             ProcessHeader(
@@ -48,7 +118,7 @@ namespace SVEMS::Manager
         }
 
         //-------------------------------------------------
-        // Footer 우선 처리
+        // Footer
         //-------------------------------------------------
 
         const SVEMS::UI::Action footerAction =
@@ -64,6 +134,7 @@ namespace SVEMS::Manager
         //-------------------------------------------------
         // Content Area
         //-------------------------------------------------
+
         return ProcessContent(
             point);
     }
@@ -181,7 +252,7 @@ namespace SVEMS::Manager
             return SVEMS::UI::Action::None;
         }
 
-        return SVEMS::UI::Action::WiFiSetup;
+        return SVEMS::UI::Action::DeviceConfig;
     }
 
     SVEMS::UI::Action

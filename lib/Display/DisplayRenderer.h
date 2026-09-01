@@ -17,6 +17,7 @@
 #include "DisplayModel.h"
 #include "DisplayTypes.h"
 #include "IRenderTarget.h"
+#include "DeviceConfiguration.h"
 
 namespace DisplayRenderer
 {
@@ -46,7 +47,29 @@ namespace DisplayRenderer
         void SetWiFiSetupMode(
             bool active);
 
+        void SetDeviceConfigMode(
+            bool visible);
+
+        bool IsDeviceConfigMode() const;
+
+        void ToggleDeviceMppt();
+        void ToggleDeviceBms();
+        void ToggleDeviceSht40();
+        void ToggleDeviceRtc();
+
     private:
+        enum class DeviceConfigDirty : uint8_t
+        {
+            None = 0,
+            Mppt,
+            Bms,
+            Sht40,
+            Rtc
+        };
+
+        DeviceConfigDirty m_deviceConfigDirty =
+            DeviceConfigDirty::None;
+
         // Common
         void DrawHeader(
             DisplayPages::Page page,
@@ -156,5 +179,17 @@ namespace DisplayRenderer
         bool IsWiFiSetupMode() const;
 
         void DrawWiFiSetupMode();
+
+        void DrawDeviceConfigStatic();
+
+        bool m_deviceConfigMode = false;
+        bool m_deviceConfigDrawn = false;
+
+        SVEMS::Device::DeviceConfiguration
+            m_deviceConfigEdit;
+
+        void DrawDeviceConfigCheck(
+            int16_t y,
+            bool checked);
     };
 }

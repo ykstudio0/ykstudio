@@ -32,6 +32,16 @@ public:
     static void SetWiFiSetupMode(
         bool active);
 
+    static void SetDeviceConfigMode(
+        bool visible);
+
+    static bool IsDeviceConfigMode();
+
+    static void ToggleDeviceMppt();
+    static void ToggleDeviceBms();
+    static void ToggleDeviceSht40();
+    static void ToggleDeviceRtc();
+
 private:
     static bool InitializeLCD();    
 };

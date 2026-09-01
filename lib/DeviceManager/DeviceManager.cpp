@@ -18,6 +18,7 @@
 #include "TimeService.h"
 #include "EnvironmentService.h"
 #include "DataManager.h"
+#include "DeviceConfigurationStorage.h"
 
 namespace
 {
@@ -52,11 +53,27 @@ bool DeviceManager::Ready = false;
 
 bool DeviceManager::Begin()
 {
+    if (!SVEMS::Device::DeviceConfigurationStorage::Load(
+            Configuration))
+    {
+        Logger::Warning(
+            "DEV CFG",
+            "Load Failed - Using Defaults");
+    }
+    
     bool ok = true;
 
     // 기존 시스템 초기화
     ok &= Epever::Begin();
     ok &= Scheduler::Begin();
+
+    auto config =
+        DeviceManager::GetConfiguration();
+
+    config.bms = false;
+
+    DeviceManager::SetConfiguration(
+        config);
 
     // 등록된 모든 Device 초기화
     for (auto* device : g_devices)
@@ -196,26 +213,30 @@ uint8_t DeviceManager::GetOnlineDeviceCount()
 {
     uint8_t count = 0U;
 
-    // EPEVER MPPT
-    if (DataManager::Solar.status.online)
+    if (
+        Configuration.mppt &&
+        DataManager::Solar.status.online)
     {
         ++count;
     }
 
-    // PowerBank BMS
-    if (DataManager::Battery.status.online)
+    if (
+        Configuration.bms &&
+        DataManager::Battery.status.online)
     {
         ++count;
     }
 
-    // SHT40 Cabin Sensor
-    if (DeviceManager::IsSHT40Online())
+    if (
+        Configuration.sht40 &&
+        DeviceManager::IsSHT40Online())
     {
         ++count;
     }
 
-    // DS3231 RTC
-    if (DeviceManager::IsRTCOnline())
+    if (
+        Configuration.rtc &&
+        DeviceManager::IsRTCOnline())
     {
         ++count;
     }

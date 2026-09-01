@@ -480,6 +480,16 @@ void Scheduler::Run100ms()
 
                     break;
 
+                case SVEMS::UI::Action::DeviceConfig:
+                    Logger::Info(
+                        "UI",
+                        "Device Config");
+
+                    Display::SetDeviceConfigMode(
+                        true);
+
+                    break;
+
                 case SVEMS::UI::Action::Cancel:
                     Logger::Info(
                         "UI",
@@ -540,6 +550,22 @@ void Scheduler::Run100ms()
                         "Next Sub Page");
 
                     Display::NextSubPage();
+                    break;
+
+                case SVEMS::UI::Action::DeviceMpptToggle:
+                    ::Display::ToggleDeviceMppt();
+                    break;
+
+                case SVEMS::UI::Action::DeviceBmsToggle:
+                    ::Display::ToggleDeviceBms();
+                    break;
+
+                case SVEMS::UI::Action::DeviceSht40Toggle:
+                    ::Display::ToggleDeviceSht40();
+                    break;
+
+                case SVEMS::UI::Action::DeviceRtcToggle:
+                    ::Display::ToggleDeviceRtc();
                     break;
 
                 default:

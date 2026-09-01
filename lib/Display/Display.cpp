@@ -168,3 +168,45 @@ void Display::SetWiFiSetupMode(
     g_renderer.SetWiFiSetupMode(
         active);
 }
+
+void Display::SetDeviceConfigMode(
+    bool visible)
+{
+    if (!g_initialized)
+    {
+        return;
+    }
+
+    g_renderer.SetDeviceConfigMode(
+        visible);
+}
+
+bool Display::IsDeviceConfigMode()
+{
+    if (!g_initialized)
+    {
+        return false;
+    }
+
+    return g_renderer.IsDeviceConfigMode();
+}
+
+void Display::ToggleDeviceMppt()
+{
+    g_renderer.ToggleDeviceMppt();
+}
+
+void Display::ToggleDeviceBms()
+{
+    g_renderer.ToggleDeviceBms();
+}
+
+void Display::ToggleDeviceSht40()
+{
+    g_renderer.ToggleDeviceSht40();
+}
+
+void Display::ToggleDeviceRtc()
+{
+    g_renderer.ToggleDeviceRtc();
+}
