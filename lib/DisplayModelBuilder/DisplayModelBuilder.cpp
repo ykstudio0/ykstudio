@@ -578,8 +578,15 @@ namespace
         system.modbusReady =
             ModbusRTU::IsReady();
 
+        const uint8_t deviceOnline =
+            DeviceManager::GetOnlineDeviceCount();
+
+        const uint8_t deviceExpected =
+            DeviceManager::GetExpectedDeviceCount();
+
         system.deviceManagerReady =
-            DeviceManager::IsReady();
+            (deviceExpected == 0U) ||
+            (deviceOnline == deviceExpected);
 
         // Status Text
         system.rs485Status.text =
