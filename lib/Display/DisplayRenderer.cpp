@@ -118,14 +118,6 @@ namespace DisplayRenderer
         {
             return false;
         }
-
-        Logger::Info(
-            "DISPLAY",
-            "Render First=" +
-            String(m_firstRender ? 1 : 0) +
-            " DevCfg=" +
-            String(m_deviceConfigMode ? 1 : 0)
-        );
         
         m_pageChanged =
             m_firstRender ||

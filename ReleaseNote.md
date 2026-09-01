@@ -748,6 +748,52 @@ v0.7.2 Device Configuration
     Online Count도 설정 장치만 계산
     BMS=false 임시 테스트
     → Remote 3/3 확인 완료
+    [Device Configuration]
+    - DeviceConfiguration 구조 추가
+    - MPPT / BMS / SHT40 / RTC 기대 장비 설정
+    - Expected count 동적 계산
+    - Online count도 설정값 기준으로 계산
+
+    [NVS]
+    - device_cfg namespace 사용
+    - 설정 Save / Load 완료
+    - 재부팅 후 설정 유지 확인
+
+    [MAIN Device Config UI]
+    SYSTEM → SET
+        ↓
+    DEVICE CONFIG
+
+    - WIFI SETUP
+    - [*] MPPT
+    - [ ] BMS
+    - [*] SHT40
+    - [*] RTC
+    - SAVE / CANCEL
+
+    - 체크박스 부분 갱신
+    - 전체 화면 깜빡임 제거
+    - CANCEL = 편집값 폐기
+    - SAVE = NVS 저장 + Runtime 적용
+    - WIFI SETUP Cancel = Device Config 복귀
+    - WIFI SETUP OK = 기존 WiFi Setup 안내 화면
+
+    [DEV 상태]
+    Expected device Offline 시 DEV
+
+    BMS ON + BMS Offline
+    → MAIN   3/4 + DEV
+    → Remote 3/4 + DEV
+
+    BMS OFF
+    → MAIN   3/3 + OK
+    → Remote 3/3 + OK
+    IG2
+    NET
+    485   = TX는 하지만 RX byte가 연속으로 없음
+    MOD   = RX는 있지만 Modbus frame 오류
+    DEV   = 설정된 장비 중 Offline 장비 존재
+    OK
 v1.0.0 : 차량 실사용 버전(첫 번째 정식 릴리스)
 
 Architecture Status

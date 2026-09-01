@@ -189,21 +189,6 @@ bool ModbusRTU::ReadInputRegisters(
 
     Logger::Hex("RX", response, len);
 
-    #if defined(SVEMS_MODBUS_TEST_ERROR)
-
-        LastErrorReason =
-            ErrorReason::InvalidSlave;
-
-        RecordFrameError();
-
-        Logger::Warning(
-            "MODBUS",
-            "TEST Frame Error");
-
-        return false;
-
-        #endif
-
     // 최소 프레임 확인
     if (len < 5)
     {
