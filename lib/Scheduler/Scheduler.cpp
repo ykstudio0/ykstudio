@@ -32,6 +32,7 @@
 #include "ReverseChargeController.h"
 #include "HttpTransport.h"
 #include "RS485.h"
+#include "ModbusRTU.h"
 
 namespace
 {
@@ -569,6 +570,14 @@ void Scheduler::Run1Sec()
         "NoRx=" +
         String(
             RS485::GetConsecutiveNoRxCount()
+        )
+    );
+
+    Logger::Info(
+        "MODBUS",
+        "FrameErr=" +
+        String(
+            ModbusRTU::GetConsecutiveFrameErrorCount()
         )
     );
 

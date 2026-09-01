@@ -354,6 +354,7 @@ namespace DisplayModel
         bool deviceManagerReady;
         bool epeverOnline;
         bool bmsOnline;
+        bool rs485CommunicationError = false;
 
         constexpr SystemData()
             : currentTime(

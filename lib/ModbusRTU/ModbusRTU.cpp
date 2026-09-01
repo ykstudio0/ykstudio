@@ -14,6 +14,9 @@
 
 bool ModbusRTU::Ready = false;
 
+uint32_t ModbusRTU::ConsecutiveFrameErrorCount =
+    0U;
+
 ModbusRTU::ErrorReason
     ModbusRTU::LastErrorReason =
         ModbusRTU::ErrorReason::None;
@@ -21,6 +24,9 @@ ModbusRTU::ErrorReason
 bool ModbusRTU::Begin()
 {   
     Ready = false;
+
+    ConsecutiveFrameErrorCount =
+        0U;
 
     if (!RS485::IsReady())
     {
@@ -166,7 +172,12 @@ bool ModbusRTU::ReadInputRegisters(
         LastErrorReason =
             ErrorReason::NoResponse;
 
-        Logger::Warning("MODBUS", "NO Response");
+        ConsecutiveFrameErrorCount =
+            0U;
+
+        Logger::Warning(
+            "MODBUS",
+            "NO Response");
 
         return false;
     }
@@ -179,7 +190,12 @@ bool ModbusRTU::ReadInputRegisters(
         LastErrorReason =
             ErrorReason::FrameTooShort;
 
-        Logger::Error("MODBUS", "Frame Too Short");
+        RecordFrameError();
+
+        Logger::Error(
+            "MODBUS",
+            "Frame Too Short");
+
         return false;
     }
 
@@ -188,6 +204,8 @@ bool ModbusRTU::ReadInputRegisters(
     {
         LastErrorReason =
             ErrorReason::InvalidSlave;
+
+        RecordFrameError();
 
         Logger::Error("MODBUS", "Invalid Slave");
         return false;
@@ -210,6 +228,8 @@ bool ModbusRTU::ReadInputRegisters(
             LastErrorReason =
                 ErrorReason::InvalidFunction;
 
+            RecordFrameError();
+
             Logger::Error("MODBUS", "Invalid Function");
             return false;
         }
@@ -222,6 +242,8 @@ bool ModbusRTU::ReadInputRegisters(
     {
         LastErrorReason =
             ErrorReason::InvalidLength;
+
+        RecordFrameError();
 
         Logger::Error(
             "MODBUS",
@@ -245,6 +267,8 @@ bool ModbusRTU::ReadInputRegisters(
         LastErrorReason =
             ErrorReason::CrcError;
 
+        RecordFrameError();
+
         char msg[48];
 
         sprintf(
@@ -262,6 +286,8 @@ bool ModbusRTU::ReadInputRegisters(
     {
         LastErrorReason =
             ErrorReason::Exception;
+
+        RecordFrameError();
 
         char msg[32];
 
@@ -281,6 +307,8 @@ bool ModbusRTU::ReadInputRegisters(
     {
         LastErrorReason =
             ErrorReason::InvalidByteCount;
+
+        RecordFrameError();
 
         Logger::Error(
             "MODBUS",
@@ -306,6 +334,9 @@ bool ModbusRTU::ReadInputRegisters(
 
     //     return false;
     // }
+
+    ConsecutiveFrameErrorCount =
+        0U;
     
     LastErrorReason =
         ErrorReason::None;
@@ -322,4 +353,26 @@ ModbusRTU::ErrorReason
 bool ModbusRTU::IsReady()
 {
     return Ready;
+}
+
+void ModbusRTU::RecordFrameError()
+{
+    ++ConsecutiveFrameErrorCount;
+}
+
+bool ModbusRTU::IsCommunicationError()
+{
+    if (!Ready)
+    {
+        return false;
+    }
+
+    return
+        ConsecutiveFrameErrorCount >=
+        FRAME_ERROR_THRESHOLD;
+}
+
+uint32_t ModbusRTU::GetConsecutiveFrameErrorCount()
+{
+    return ConsecutiveFrameErrorCount;
 }

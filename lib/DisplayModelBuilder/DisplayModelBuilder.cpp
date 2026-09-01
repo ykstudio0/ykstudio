@@ -631,6 +631,9 @@ namespace
             system.bmsOnline
                 ? DisplayTheme::COLOR_VALUE
                 : DisplayTheme::COLOR_DISABLED;
+
+        system.rs485CommunicationError =
+            RS485::IsCommunicationError();
     }
 
     void BuildHeader(DisplayModel::Model& model)
@@ -677,7 +680,6 @@ namespace
         //---------------------------------------------------------
         // System status
         //---------------------------------------------------------
-
         if (DataManager::Vehicle.active)
         {
             header.status.text = "IG2";
@@ -690,7 +692,15 @@ namespace
             header.status.color =
                 DisplayTheme::COLOR_WARNING;
         }
-        else if (!system.rs485Ready)
+        // else if (!system.rs485Ready)
+        // {
+        //     header.status.text = "485";
+        //     header.status.color =
+        //         DisplayTheme::COLOR_WARNING;
+        // }
+        else if (
+            !system.rs485Ready ||
+            system.rs485CommunicationError)
         {
             header.status.text = "485";
             header.status.color =

@@ -38,10 +38,23 @@ public:
 
     static ErrorReason GetLastErrorReason();
 
+    static bool IsCommunicationError();
+
+    static uint32_t
+        GetConsecutiveFrameErrorCount();
+
 private:
     static bool Ready;
 
     static ErrorReason LastErrorReason;
+
+    static uint32_t ConsecutiveFrameErrorCount;
+
+    static constexpr uint32_t
+        FRAME_ERROR_THRESHOLD =
+            3U;
+
+    static void RecordFrameError();
 };
 
 #endif
