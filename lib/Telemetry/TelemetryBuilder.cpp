@@ -236,6 +236,12 @@ namespace SVEMS::Telemetry
         data.communication.modbusReady =
             ModbusRTU::IsReady();
 
+        data.communication.rs485CommunicationError =
+            RS485::IsCommunicationError();
+
+        data.communication.modbusCommunicationError =
+            ModbusRTU::IsCommunicationError();
+
         // System
         data.system.uptimeSeconds =
             millis() / 1000UL;

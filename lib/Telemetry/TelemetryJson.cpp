@@ -243,6 +243,12 @@ namespace SVEMS::Telemetry
         communication["modbus"] =
             data.communication.modbusReady;
 
+        communication["rs485CommunicationError"] =
+            data.communication.rs485CommunicationError;
+
+        communication["modbusCommunicationError"] =
+            data.communication.modbusCommunicationError;
+
         communication["solarState"] =
             ToString(
                 data.communication.solarState
