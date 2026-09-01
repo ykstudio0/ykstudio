@@ -264,7 +264,7 @@ namespace SVEMS::Telemetry
             DeviceManager::GetOnlineDeviceCount();
 
         data.system.deviceTotal =
-            SYSTEM_DEVICE_COUNT;
+            DeviceManager::GetExpectedDeviceCount();
 
         data.vehicle.active =
             DataManager::Vehicle.active;

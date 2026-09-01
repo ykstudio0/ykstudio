@@ -486,13 +486,13 @@ namespace
             sizeof(deviceCountText),
             "%u/%u",
             static_cast<unsigned>(onlineDevices),
-            static_cast<unsigned>(SYSTEM_DEVICE_COUNT));
+            static_cast<unsigned>(DeviceManager::GetExpectedDeviceCount()));
 
         system.deviceCount.text =
             deviceCountText;
 
         system.deviceCount.color =
-            (onlineDevices == SYSTEM_DEVICE_COUNT)
+            (onlineDevices == DeviceManager::GetExpectedDeviceCount())
                 ? DisplayTheme::COLOR_VALUE
                 : DisplayTheme::COLOR_WARNING;
 

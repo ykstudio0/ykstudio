@@ -33,6 +33,21 @@ namespace
     };
 }
 
+SVEMS::Device::DeviceConfiguration
+    DeviceManager::Configuration;
+
+const SVEMS::Device::DeviceConfiguration&
+    DeviceManager::GetConfiguration()
+{
+    return Configuration;
+}
+
+void DeviceManager::SetConfiguration(
+    const SVEMS::Device::DeviceConfiguration& config)
+{
+    Configuration = config;
+}
+
 bool DeviceManager::Ready = false;
 
 bool DeviceManager::Begin()
@@ -138,6 +153,33 @@ bool DeviceManager::Update()
 bool DeviceManager::IsReady()
 {
     return Ready;
+}
+
+uint8_t DeviceManager::GetExpectedDeviceCount()
+{
+    uint8_t count = 0U;
+
+    if (Configuration.mppt)
+    {
+        ++count;
+    }
+
+    if (Configuration.bms)
+    {
+        ++count;
+    }
+
+    if (Configuration.sht40)
+    {
+        ++count;
+    }
+
+    if (Configuration.rtc)
+    {
+        ++count;
+    }
+
+    return count;
 }
 
 bool DeviceManager::IsRTCOnline()
