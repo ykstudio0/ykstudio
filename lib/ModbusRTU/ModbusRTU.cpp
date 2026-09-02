@@ -329,22 +329,6 @@ bool ModbusRTU::ReadInputRegisters(
         return false;
     }
     
-    // if (response[1] & 0x80)
-    // {
-    //     char msg[32];
-
-    //     sprintf(
-    //         msg,
-    //         "Exception %02X",
-    //         response[2]);
-
-    //     Logger::Error(
-    //         "MODBUS",
-    //         msg);
-
-    //     return false;
-    // }
-
     ConsecutiveFrameErrorCount =
         0U;
     
