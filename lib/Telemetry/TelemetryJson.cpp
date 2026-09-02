@@ -358,6 +358,21 @@ namespace SVEMS::Telemetry
         system["deviceTotal"] =
             data.system.deviceTotal;
 
+        JsonObject deviceConfig =
+            doc["deviceConfig"].to<JsonObject>();
+
+        deviceConfig["mppt"] =
+            data.deviceConfig.mppt;
+
+        deviceConfig["bms"] =
+            data.deviceConfig.bms;
+
+        deviceConfig["sht40"] =
+            data.deviceConfig.sht40;
+
+        deviceConfig["rtc"] =
+            data.deviceConfig.rtc;
+
         //---------------------------------------------------------
         // Vehicle
         //---------------------------------------------------------

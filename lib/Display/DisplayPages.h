@@ -113,6 +113,7 @@ namespace DisplayPages
         return static_cast<Page>(value);
     }
 
+    // SubPage 개수 변환(Main + 상세)
     inline uint8_t GetSubPageCount(Page page)
     {
         switch (page)

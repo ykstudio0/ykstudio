@@ -266,6 +266,21 @@ namespace SVEMS::Telemetry
         data.system.deviceTotal =
             DeviceManager::GetExpectedDeviceCount();
 
+        const auto& deviceConfig =
+            DeviceManager::GetConfiguration();
+
+        data.deviceConfig.mppt =
+            deviceConfig.mppt;
+
+        data.deviceConfig.bms =
+            deviceConfig.bms;
+
+        data.deviceConfig.sht40 =
+            deviceConfig.sht40;
+
+        data.deviceConfig.rtc =
+            deviceConfig.rtc;
+
         data.vehicle.active =
             DataManager::Vehicle.active;
 

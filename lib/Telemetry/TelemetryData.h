@@ -175,6 +175,11 @@ namespace SVEMS::Telemetry
 
         uint32_t deviceCount = 0U;
         uint32_t deviceTotal = 0U;
+
+        bool mpptConfigured = false;
+        bool bmsConfigured = false;
+        bool sht40Configured = false;
+        bool rtcConfigured = false;
     };
 
     struct VehicleData
@@ -192,6 +197,14 @@ namespace SVEMS::Telemetry
             "None";
     };
 
+    struct DeviceConfigData
+    {
+        bool mppt = false;
+        bool bms = false;
+        bool sht40 = false;
+        bool rtc = false;
+    };
+
     struct TelemetryData
     {
         TimestampData timestamp;
@@ -203,6 +216,7 @@ namespace SVEMS::Telemetry
         EnvironmentData environment;
         CommunicationData communication;
         SystemData system;
+        DeviceConfigData deviceConfig;
         VehicleData vehicle;
     };
 }
