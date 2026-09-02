@@ -33,6 +33,8 @@ public:
 
     static uint8_t GetExpectedDeviceCount();
 
+    static bool IsRs485Required();
+
 private:
     static bool Ready;
 

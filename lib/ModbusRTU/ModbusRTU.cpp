@@ -17,6 +17,11 @@ bool ModbusRTU::Ready = false;
 uint32_t ModbusRTU::ConsecutiveFrameErrorCount =
     0U;
 
+void ModbusRTU::ResetCommunicationState()
+{
+    ConsecutiveFrameErrorCount = 0U;
+}
+
 ModbusRTU::ErrorReason
     ModbusRTU::LastErrorReason =
         ModbusRTU::ErrorReason::None;

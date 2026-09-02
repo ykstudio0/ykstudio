@@ -19,6 +19,11 @@ bool RS485::Ready = false;
 uint32_t RS485::ConsecutiveNoRxCount =
     0U;
 
+void RS485::ResetCommunicationState()
+{
+    ConsecutiveNoRxCount = 0U;
+}
+
 bool RS485::Begin()
 {
     Ready = false;

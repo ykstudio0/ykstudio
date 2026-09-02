@@ -34,6 +34,8 @@ public:
 
     static uint32_t GetConsecutiveNoRxCount();
 
+    static void ResetCommunicationState();
+
 private:
     static bool Ready;
     

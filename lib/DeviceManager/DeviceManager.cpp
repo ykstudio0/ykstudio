@@ -19,6 +19,8 @@
 #include "EnvironmentService.h"
 #include "DataManager.h"
 #include "DeviceConfigurationStorage.h"
+#include "RS485.h"
+#include "ModbusRTU.h"
 
 namespace
 {
@@ -46,7 +48,23 @@ const SVEMS::Device::DeviceConfiguration&
 void DeviceManager::SetConfiguration(
     const SVEMS::Device::DeviceConfiguration& config)
 {
-    Configuration = config;
+    const bool mpptChanged =
+        Configuration.mppt !=
+        config.mppt;
+
+    Configuration =
+        config;
+
+    if (mpptChanged)
+    {
+        RS485::ResetCommunicationState();
+
+        ModbusRTU::ResetCommunicationState();
+
+        Logger::Info(
+            "DEV CFG",
+            "RS485/MOD State Reset");
+    }
 }
 
 bool DeviceManager::Ready = false;
@@ -189,6 +207,11 @@ uint8_t DeviceManager::GetExpectedDeviceCount()
     }
 
     return count;
+}
+
+bool DeviceManager::IsRs485Required()
+{
+    return Configuration.mppt;
 }
 
 bool DeviceManager::IsRTCOnline()

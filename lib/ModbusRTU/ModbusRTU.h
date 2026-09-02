@@ -43,6 +43,8 @@ public:
     static uint32_t
         GetConsecutiveFrameErrorCount();
 
+    static void ResetCommunicationState();
+
 private:
     static bool Ready;
 

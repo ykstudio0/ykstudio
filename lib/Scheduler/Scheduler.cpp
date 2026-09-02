@@ -820,6 +820,11 @@ void Scheduler::ServiceIoT()
 
 void Scheduler::PollEpeverDistributed()
 {
+    if (!DeviceManager::IsRs485Required())
+    {
+        return;
+    }
+    
     static uint8_t nextPoll = 0U;
 
     const uint32_t now =
