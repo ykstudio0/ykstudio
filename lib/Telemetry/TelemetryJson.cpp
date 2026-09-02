@@ -373,6 +373,21 @@ namespace SVEMS::Telemetry
         deviceConfig["rtc"] =
             data.deviceConfig.rtc;
 
+        JsonObject deviceStatus =
+            doc["deviceStatus"].to<JsonObject>();
+
+        deviceStatus["mppt"] =
+            data.deviceStatus.mppt;
+
+        deviceStatus["bms"] =
+            data.deviceStatus.bms;
+
+        deviceStatus["sht40"] =
+            data.deviceStatus.sht40;
+
+        deviceStatus["rtc"] =
+            data.deviceStatus.rtc;
+
         //---------------------------------------------------------
         // Vehicle
         //---------------------------------------------------------

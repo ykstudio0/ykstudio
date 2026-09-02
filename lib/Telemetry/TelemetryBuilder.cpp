@@ -281,6 +281,18 @@ namespace SVEMS::Telemetry
         data.deviceConfig.rtc =
             deviceConfig.rtc;
 
+        data.deviceStatus.mppt =
+            DataManager::Solar.status.online;
+
+        data.deviceStatus.bms =
+            DataManager::Battery.status.online;
+
+        data.deviceStatus.sht40 =
+            DeviceManager::IsSHT40Online();
+
+        data.deviceStatus.rtc =
+            DeviceManager::IsRTCOnline();
+
         data.vehicle.active =
             DataManager::Vehicle.active;
 
