@@ -32,6 +32,8 @@ namespace SVEMS::Service
 
         static bool StartSetupMode();
 
+        static void StopSetupMode();
+
     private:
         static void StartConnection();
 

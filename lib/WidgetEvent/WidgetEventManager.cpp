@@ -144,6 +144,16 @@ namespace SVEMS::Manager
         }
 
         //-------------------------------------------------
+        // WiFi Setup Mode
+        //-------------------------------------------------
+
+        if (::Display::IsWiFiSetupMode())
+        {
+            return ProcessWiFiSetupMode(
+                point);
+        }
+
+        //-------------------------------------------------
         // Device Config
         //-------------------------------------------------
 
@@ -358,6 +368,30 @@ namespace SVEMS::Manager
         {
             return
                 SVEMS::UI::Action::Confirm;
+        }
+
+        return
+            SVEMS::UI::Action::None;
+    }
+
+    SVEMS::UI::Action
+    WidgetEventManager::ProcessWiFiSetupMode(
+        const SVEMS::Touch::TouchPoint& point)
+    {
+        constexpr int16_t CANCEL_X1 = 80;
+        constexpr int16_t CANCEL_X2 = 240;
+
+        constexpr int16_t CANCEL_Y1 = 190;
+        constexpr int16_t CANCEL_Y2 = 240;
+
+        if (
+            point.x >= CANCEL_X1 &&
+            point.x <  CANCEL_X2 &&
+            point.y >= CANCEL_Y1 &&
+            point.y <  CANCEL_Y2)
+        {
+            return
+                SVEMS::UI::Action::WiFiSetupModeCancel;
         }
 
         return

@@ -60,6 +60,8 @@ namespace DisplayRenderer
         const SVEMS::Device::DeviceConfiguration&
             GetDeviceConfigEdit() const;
 
+        bool IsWiFiSetupMode() const;
+
     private:
         enum class DeviceConfigDirty : uint8_t
         {
@@ -178,8 +180,6 @@ namespace DisplayRenderer
         void DrawWiFiSetupConfirm();
 
         bool m_wifiSetupMode = false;
-
-        bool IsWiFiSetupMode() const;
 
         void DrawWiFiSetupMode();
 

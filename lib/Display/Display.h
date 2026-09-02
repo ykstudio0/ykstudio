@@ -48,6 +48,8 @@ public:
 
     static void CancelDeviceConfig();
 
+    static bool IsWiFiSetupMode();
+
 private:
     static bool InitializeLCD();    
 };

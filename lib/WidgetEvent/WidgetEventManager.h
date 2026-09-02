@@ -37,5 +37,8 @@ namespace SVEMS::Manager
 
         static SVEMS::UI::Action ProcessDeviceConfig(
             const SVEMS::Touch::TouchPoint& point);
+
+        static SVEMS::UI::Action ProcessWiFiSetupMode(
+            const SVEMS::Touch::TouchPoint& point);
     };
 }

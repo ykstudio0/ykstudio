@@ -169,6 +169,16 @@ void Display::SetWiFiSetupMode(
         active);
 }
 
+bool Display::IsWiFiSetupMode()
+{
+    if (!g_initialized)
+    {
+        return false;
+    }
+
+    return g_renderer.IsWiFiSetupMode();
+}
+
 void Display::SetDeviceConfigMode(
     bool visible)
 {

@@ -437,4 +437,34 @@ namespace SVEMS::Service
 
         return true;
     }
+
+    void WiFiService::StopSetupMode()
+    {
+        //-------------------------------------------------
+        // Setup WebServer 종료
+        //-------------------------------------------------
+
+        SetupServer.stop();
+
+        //-------------------------------------------------
+        // Setup AP 종료
+        //-------------------------------------------------
+
+        WiFi.softAPdisconnect(
+            false);
+
+        Logger::Info(
+            "WIFI",
+            "Setup AP Stopped");
+
+        //-------------------------------------------------
+        // 정상 Station Mode 복귀
+        //-------------------------------------------------
+
+        Begin();
+
+        Logger::Info(
+            "WIFI",
+            "Station Recovery Started");
+    }
 }

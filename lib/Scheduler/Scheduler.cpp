@@ -480,6 +480,19 @@ void Scheduler::Run100ms()
 
                     break;
 
+                case SVEMS::UI::Action::WiFiSetupModeCancel:
+                    Logger::Info(
+                        "UI",
+                        "WiFi Setup Mode Cancel");
+
+                    SVEMS::Service::WiFiService::
+                        StopSetupMode();
+
+                    Display::SetWiFiSetupMode(
+                        false);
+
+                    break;
+
                 case SVEMS::UI::Action::DeviceConfig:
                     Logger::Info(
                         "UI",

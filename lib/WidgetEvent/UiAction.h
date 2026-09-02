@@ -29,6 +29,7 @@ namespace SVEMS::UI
         Cancel,
 
         WiFiSetup,
+        WiFiSetupModeCancel,
 
         DeviceConfig,
 
