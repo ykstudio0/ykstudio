@@ -121,7 +121,7 @@ namespace DisplayPages
                 return 3U;
 
             case Page::System:
-                return 2U;
+                return 3U;
 
             default:
                 return 1U;

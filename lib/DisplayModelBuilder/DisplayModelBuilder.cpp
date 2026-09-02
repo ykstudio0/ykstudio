@@ -434,6 +434,9 @@ namespace
         DisplayModel::SystemData& system =
             model.GetSystem();
 
+        const auto& deviceConfig =
+            DeviceManager::GetConfiguration();
+
         const SVEMS::Device::RTCDateTime& now =
             SVEMS::Service::TimeService::Now();
 
@@ -619,25 +622,117 @@ namespace
                 ? DisplayTheme::COLOR_VALUE
                 : DisplayTheme::COLOR_ALARM;
 
-        system.epeverStatus.text =
-            system.epeverOnline
-                ? "ONLINE"
-                : "OFF";
+        if (!deviceConfig.mppt)
+        {
+            system.epeverStatus.text =
+                "NOT USED";
 
-        system.epeverStatus.color =
-            system.epeverOnline
-                ? DisplayTheme::COLOR_VALUE
-                : DisplayTheme::COLOR_DISABLED;
+            system.epeverStatus.color =
+                DisplayTheme::COLOR_DISABLED;
+        }
+        else if (system.epeverOnline)
+        {
+            system.epeverStatus.text =
+                "ONLINE";
 
-        system.bmsStatus.text =
-            system.bmsOnline
-                ? "ONLINE"
-                : "OFF";
+            system.epeverStatus.color =
+                DisplayTheme::COLOR_VALUE;
+        }
+        else
+        {
+            system.epeverStatus.text =
+                "OFFLINE";
 
-        system.bmsStatus.color =
-            system.bmsOnline
-                ? DisplayTheme::COLOR_VALUE
-                : DisplayTheme::COLOR_DISABLED;
+            system.epeverStatus.color =
+                DisplayTheme::COLOR_ALARM;
+        }
+
+        //-------------------------------------------------
+        // BMS Status
+        //-------------------------------------------------
+
+        if (!deviceConfig.bms)
+        {
+            system.bmsStatus.text =
+                "NOT USED";
+
+            system.bmsStatus.color =
+                DisplayTheme::COLOR_DISABLED;
+        }
+        else if (system.bmsOnline)
+        {
+            system.bmsStatus.text =
+                "ONLINE";
+
+            system.bmsStatus.color =
+                DisplayTheme::COLOR_VALUE;
+        }
+        else
+        {
+            system.bmsStatus.text =
+                "OFFLINE";
+
+            system.bmsStatus.color =
+                DisplayTheme::COLOR_ALARM;
+        }
+
+        //-------------------------------------------------
+        // SHT40 Status
+        //-------------------------------------------------
+
+        if (!deviceConfig.sht40)
+        {
+            system.sht40Status.text =
+                "NOT USED";
+
+            system.sht40Status.color =
+                DisplayTheme::COLOR_DISABLED;
+        }
+        else if (DeviceManager::IsSHT40Online())
+        {
+            system.sht40Status.text =
+                "ONLINE";
+
+            system.sht40Status.color =
+                DisplayTheme::COLOR_VALUE;
+        }
+        else
+        {
+            system.sht40Status.text =
+                "OFFLINE";
+
+            system.sht40Status.color =
+                DisplayTheme::COLOR_ALARM;
+        }
+
+        //-------------------------------------------------
+        // RTC Status
+        //-------------------------------------------------
+
+        if (!deviceConfig.rtc)
+        {
+            system.rtcStatus.text =
+                "NOT USED";
+
+            system.rtcStatus.color =
+                DisplayTheme::COLOR_DISABLED;
+        }
+        else if (DeviceManager::IsRTCOnline())
+        {
+            system.rtcStatus.text =
+                "ONLINE";
+
+            system.rtcStatus.color =
+                DisplayTheme::COLOR_VALUE;
+        }
+        else
+        {
+            system.rtcStatus.text =
+                "OFFLINE";
+
+            system.rtcStatus.color =
+                DisplayTheme::COLOR_ALARM;
+        }
 
         system.rs485CommunicationError =
             RS485::IsCommunicationError();

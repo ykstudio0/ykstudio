@@ -339,6 +339,8 @@ namespace DisplayModel
 
         DisplayTypes::DisplayText epeverStatus;
         DisplayTypes::DisplayText bmsStatus;
+        DisplayTypes::DisplayText sht40Status;
+        DisplayTypes::DisplayText rtcStatus;
 
         // SYSTEM DTL(1) - Communication statistics
         DisplayTypes::DisplayValue solarOfflineCount;
@@ -386,6 +388,8 @@ namespace DisplayModel
 
             epeverStatus(),
             bmsStatus(),
+            sht40Status(),
+            rtcStatus(),
 
             solarOfflineCount(
                 DisplayTypes::MakeValue(

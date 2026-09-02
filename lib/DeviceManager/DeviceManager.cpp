@@ -21,6 +21,7 @@
 #include "DeviceConfigurationStorage.h"
 #include "RS485.h"
 #include "ModbusRTU.h"
+#include "BMSService.h"
 
 namespace
 {
@@ -78,14 +79,62 @@ bool DeviceManager::Begin()
             "DEV CFG",
             "Load Failed - Using Defaults");
     }
-    
+
     bool ok = true;
 
-    // 기존 시스템 초기화
-    ok &= Epever::Begin();
+    //-------------------------------------------------
+    // MPPT
+    //-------------------------------------------------
+
+    if (Configuration.mppt)
+    {
+        ok &= Epever::Begin();
+    }
+    else
+    {
+        Logger::Info(
+            "EPEVER",
+            "Not Used");
+    }
+
+    //-------------------------------------------------
+    // BMS
+    //-------------------------------------------------
+
+    if constexpr (ENABLE_BMS_SERVICE)
+    {
+        if (Configuration.bms)
+        {
+            const bool bmsOk =
+                SVEMS::Service::BMSService::Begin();
+
+            if (!bmsOk)
+            {
+                Logger::Error(
+                    "BMS",
+                    "Init Failed");
+            }
+
+            ok &= bmsOk;
+        }
+        else
+        {
+            Logger::Info(
+                "BMS",
+                "Not Used");
+        }
+    }
+
+    //-------------------------------------------------
+    // Scheduler
+    //-------------------------------------------------
+
     ok &= Scheduler::Begin();
 
-    // 등록된 모든 Device 초기화
+    //-------------------------------------------------
+    // Registered Devices
+    //-------------------------------------------------
+
     for (auto* device : g_devices)
     {
         if (device == nullptr)
@@ -93,7 +142,28 @@ bool DeviceManager::Begin()
             continue;
         }
 
-        const bool deviceOk = device->Begin();
+        bool enabled = true;
+
+        if (device == &g_ds3231)
+        {
+            enabled = Configuration.rtc;
+        }
+        else if (device == &g_sht40)
+        {
+            enabled = Configuration.sht40;
+        }
+
+        if (!enabled)
+        {
+            Logger::Info(
+                device->GetName(),
+                "Not Used");
+
+            continue;
+        }
+
+        const bool deviceOk =
+            device->Begin();
 
         if (deviceOk)
         {
@@ -111,39 +181,61 @@ bool DeviceManager::Begin()
         ok &= deviceOk;
     }
 
-    if (g_ds3231.IsOnline())
+    //-------------------------------------------------
+    // Time Service
+    //-------------------------------------------------
+
+    if (Configuration.rtc)
     {
-        const bool timeServiceOk =
-            SVEMS::Service::TimeService::Begin(
-                g_ds3231);
-        
-        ok &= timeServiceOk;
-    }
-    else
-    {
-        ok = false;
+        if (g_ds3231.IsOnline())
+        {
+            const bool timeServiceOk =
+                SVEMS::Service::TimeService::Begin(
+                    g_ds3231);
+
+            ok &= timeServiceOk;
+        }
+        else
+        {
+            ok = false;
+        }
     }
 
-    if (g_sht40.IsOnline())
-    {
-        const bool environmentServiceOk =
-            SVEMS::Service::EnvironmentService::Begin(
-                g_sht40);
+    //-------------------------------------------------
+    // Environment Service
+    //-------------------------------------------------
 
-        ok &= environmentServiceOk;
-    }
-    else
+    if (Configuration.sht40)
     {
-        ok = false;
+        if (g_sht40.IsOnline())
+        {
+            const bool environmentServiceOk =
+                SVEMS::Service::EnvironmentService::Begin(
+                    g_sht40);
+
+            ok &= environmentServiceOk;
+        }
+        else
+        {
+            ok = false;
+        }
     }
 
     Ready = ok;
 
     if (Ready)
-        Logger::Info("DEVICES", "Ready");
+    {
+        Logger::Info(
+            "DEVICES",
+            "Ready");
+    }
     else
-        Logger::Error("DEVICES", "Init Failed");
-        
+    {
+        Logger::Error(
+            "DEVICES",
+            "Init Failed");
+    }
+
     return Ready;
 }
 

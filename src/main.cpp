@@ -105,14 +105,6 @@ void setup()
         foundCount);
 
     Logger::Info("I2C", result);
-    
-    if constexpr (ENABLE_BMS_SERVICE)
-    {
-        if (!SVEMS::Service::BMSService::Begin())
-        {
-            Logger::Error("BMS", "Init Failed");
-        }
-    }
 
     RS485::Begin();
     ModbusRTU::Begin();
@@ -155,10 +147,6 @@ void setup()
     Logger::Info(
         "SYSTEM",
         SVEMS_DEVICE_ID);
-
-    // SVEMS::Service::WiFiService::StartSetupMode();
-    // delay(5000);
-    // ESP.restart();
 }
 
 void loop()

@@ -73,6 +73,14 @@ namespace
         { 5U, "SOC OFF",    true }
     };
 
+    static constexpr DisplayLayout::StaticRow g_systemDetail2Rows[] =
+    {
+        { 0U, "MPPT",       true },
+        { 1U, "BMS",        true },
+        { 2U, "SHT40",      true },
+        { 3U, "RTC",        true }
+    };
+
     const DisplayLayout::StaticRow g_loadRows[] =
     {
         {0, "Voltage"},
@@ -91,7 +99,7 @@ namespace
     const DisplayLayout::StaticRow g_systemRows[] =
     {
         {0, "RSSI"},
-        {1, "EPEVER"},
+        {1, "MPPT"},
         {2, "BMS"},
         {3, "DEVICES"},
         {4, "HEAP"},
@@ -171,6 +179,15 @@ const DisplayLayout::StaticRow*
                         sizeof(g_systemDetailRows[0]);
 
                     return g_systemDetailRows;
+                }
+
+                if (subPage == 2U)
+                {
+                    count =
+                        sizeof(g_systemDetail2Rows) /
+                        sizeof(g_systemDetail2Rows[0]);
+
+                    return g_systemDetail2Rows;
                 }
 
                 count =

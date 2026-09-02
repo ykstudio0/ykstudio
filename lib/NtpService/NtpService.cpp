@@ -9,13 +9,14 @@
 
 #include <Arduino.h>
 #include <time.h>
+#include <esp_sntp.h>
 
 #include "NtpService.h"
 #include "WiFiService.h"
 #include "Logger.h"
 #include "TimeService.h"
 #include "RTCDateTime.h"
-#include <esp_sntp.h>
+#include "DeviceManager.h"
 
 namespace
 {
@@ -167,17 +168,19 @@ namespace SVEMS::Service
                 "NTP",
                 message);
 
-            AppliedToRtc =
-                ApplySynchronizedTime(
-                    timeInfo);
-
-            if (AppliedToRtc)
+            if (DeviceManager::GetConfiguration().rtc)
             {
-                LastSuccessfulSyncMs =
-                    nowMs;
+                AppliedToRtc =
+                    ApplySynchronizedTime(
+                        timeInfo);
+            }
+            else
+            {
+                AppliedToRtc = false;
             }
 
-            return;
+            LastSuccessfulSyncMs =
+                nowMs;
         }
 
         if (!Synchronized &&

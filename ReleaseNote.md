@@ -794,6 +794,7 @@ v0.7.2 Device Configuration
     MOD   = RX는 있지만 Modbus frame 오류
     DEV   = 설정된 장비 중 Offline 장비 존재
     OK
+    **2026-09-02 : Config-aware Device Initialization
 v1.0.0 : 차량 실사용 버전(첫 번째 정식 릴리스)
 
 Architecture Status
