@@ -795,6 +795,14 @@ v0.7.2 Device Configuration
     DEV   = 설정된 장비 중 Offline 장비 존재
     OK
     **2026-09-02 : Config-aware Device Initialization
+v0.7.3 LCD Brightness Control
+    Display Brightness Control
+    MAIN: 완료
+    정상 밝기
+    5분 무입력 → 5%
+    5초 후 → LCD OFF
+    첫 터치 Wake 전용
+    이후 터치 정상 동작
 v1.0.0 : 차량 실사용 버전(첫 번째 정식 릴리스)
 
 Architecture Status
