@@ -33,6 +33,7 @@
 #include "VehicleVoltageService.h"
 #include "ChargeRelayDriver.h"
 #include "ChargeControlService.h"
+#include "DisplayPowerManager.h"
 
 namespace
 {
@@ -110,6 +111,10 @@ void setup()
     ModbusRTU::Begin();
     DeviceManager::Begin();
     Display::Begin();
+    DisplayPowerManager::Begin();
+    lcd.setBrightness(
+        DisplayPowerManager::GetBrightness()
+    );
     SVEMS::Service::WiFiService::Begin();
     SVEMS::Service::NtpService::Begin();
     TestTFT();
@@ -152,6 +157,23 @@ void setup()
 void loop()
 {
     Scheduler::Run();
+
+    // PWM 백라이트
+   static uint8_t lastBrightness =
+        0xFFU;
+
+    const uint8_t brightness =
+        DisplayPowerManager::GetBrightness();
+
+    if (brightness != lastBrightness)
+    {
+        lastBrightness =
+            brightness;
+
+        lcd.setBrightness(
+            brightness
+        );
+    }
 }
 
 void TestTFT()
@@ -163,8 +185,6 @@ void TestTFT()
 
     // 320 x 240 가로 방향
     lcd.setRotation(3);
-
-    // PWM 백라이트
     lcd.setBrightness(180);
     lcd.fillScreen(TFT_BLACK);
 

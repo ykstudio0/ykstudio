@@ -33,6 +33,7 @@
 #include "HttpTransport.h"
 #include "RS485.h"
 #include "ModbusRTU.h"
+#include "DisplayPowerManager.h"
 
 namespace
 {
@@ -393,6 +394,8 @@ void Scheduler::Run100ms()
 {
     VehicleInput::Update();
 
+    DisplayPowerManager::Update();
+
     if (!SVEMS::Manager::TouchManager::Update())
     {
         return;
@@ -407,6 +410,47 @@ void Scheduler::Run100ms()
         return;
     }
 
+    static bool consumeWakeTouch =
+        false;
+
+    //-------------------------------------------------
+    // Wake touch
+    //-------------------------------------------------
+    if (
+        event ==
+        SVEMS::Touch::Event::Pressed
+    )
+    {
+        const bool wokeDisplay =
+            DisplayPowerManager::NotifyActivity();
+
+        if (wokeDisplay)
+        {
+            consumeWakeTouch  =
+                true;
+
+            return;
+        }
+    }
+
+    //---------------------------------------------
+    // Wake touch 전체 소비
+    //---------------------------------------------
+
+    if (consumeWakeTouch)
+    {
+        if (
+            event ==
+            SVEMS::Touch::Event::Tap
+        )
+        {
+            consumeWakeTouch =
+                false;
+        }
+
+        return;
+    }
+    
     SVEMS::Touch::TouchPoint point;
 
     SVEMS::Manager::TouchManager::GetPoint(
