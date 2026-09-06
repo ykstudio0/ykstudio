@@ -106,6 +106,7 @@ void setup()
         foundCount);
 
     Logger::Info("I2C", result);
+    StatusLED::Begin();
 
     RS485::Begin();
     ModbusRTU::Begin();
@@ -156,6 +157,8 @@ void setup()
 
 void loop()
 {
+    StatusLED::Task();
+    
     Scheduler::Run();
 
     // PWM 백라이트

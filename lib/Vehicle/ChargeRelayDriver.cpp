@@ -20,11 +20,15 @@ namespace SVEMS
 
         void ChargeRelayDriver::Begin()
         {
-            pinMode(PIN_REVERSE_CHARGE_ENABLE, OUTPUT);
-
             digitalWrite(
                 PIN_REVERSE_CHARGE_ENABLE,
-                LOW);
+                LOW
+            );
+
+            pinMode(
+                PIN_REVERSE_CHARGE_ENABLE,
+                OUTPUT
+            );
 
             m_enabled = false;
         }

@@ -661,7 +661,11 @@ void Scheduler::Run1Sec()
     SVEMS::Vehicle::VehicleVoltageService::Update();
 
     ConsumeReverseChargePendingCommand();
-    
+
+    // ---------------------------------------------------------
+    // Reverse Charge Controller
+    // ---------------------------------------------------------
+
     UpdateReverseCharge();
 
     Logger::Info(
@@ -1030,9 +1034,9 @@ static void UpdateReverseCharge()
         DataManager::ReverseCharge.enabled
     );
 
-    SVEMS::Vehicle::ChargeControlService::Update(
-        g_reverseChargeController.IsChargeEnabled()
-    );
+    // SVEMS::Vehicle::ChargeControlService::Update(
+    //     g_reverseChargeController.IsChargeEnabled()
+    // );
 
     String message;
 

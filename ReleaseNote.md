@@ -803,6 +803,15 @@ v0.7.3 LCD Brightness Control
     5초 후 → LCD OFF
     첫 터치 Wake 전용
     이후 터치 정상 동작
+v0.8.0 차량 전압 입력 회로
+    100k / 22k 분압 구조 채택
+    100nF RC 필터 채택
+    1kΩ ADC 직렬저항 채택
+    analogReadMilliVolts() 사용
+    16-sample averaging 사용
+    6.0~16.0V 유효범위로 status.online 판단
+    현재 오차는 약 +0.04~0.06V 수준
+    최종 calibration은 PCB 제작 후 실차에서 수행
 v1.0.0 : 차량 실사용 버전(첫 번째 정식 릴리스)
 
 Architecture Status
