@@ -78,6 +78,16 @@ static void UpdateReverseCharge();
 
 static ReverseChargeController g_reverseChargeController;
 
+// test
+// static uint32_t g_reverseChargeTestStartedAt = 0;
+
+// static bool g_reverseChargeTestHardStarted =
+//     false;
+
+// static bool g_reverseChargeTestHardStopped =
+//     false;
+// test end
+
 static bool
     g_reverseChargeManualStart =
         false;
@@ -661,6 +671,67 @@ void Scheduler::Run1Sec()
     SVEMS::Vehicle::VehicleVoltageService::Update();
 
     ConsumeReverseChargePendingCommand();
+
+
+    // test
+    // if (g_reverseChargeTestStartedAt == 0)
+    // {
+    //     g_reverseChargeTestStartedAt =
+    //         millis();
+    // }
+
+    // const uint32_t testElapsed =
+    //     millis() -
+    //     g_reverseChargeTestStartedAt;
+
+    // // ---------------------------------------------------------
+    // // 5초 후 Hard Start
+    // // ---------------------------------------------------------
+
+    // if (
+    //     !g_reverseChargeTestHardStarted &&
+    //     testElapsed >= 5000UL
+    // )
+    // {
+    //     g_reverseChargeController.SetMode(
+    //         ReverseCharge::Mode::Hard
+    //     );
+
+    //     g_reverseChargeManualStart =
+    //         true;
+
+    //     g_reverseChargeTestHardStarted =
+    //         true;
+
+    //     Logger::Info(
+    //         "REV TEST",
+    //         "Hard Start"
+    //     );
+    // }
+
+    // // ---------------------------------------------------------
+    // // 15초 후 Hard Stop
+    // // ---------------------------------------------------------
+
+    // if (
+    //     g_reverseChargeTestHardStarted &&
+    //     !g_reverseChargeTestHardStopped &&
+    //     testElapsed >= 15000UL
+    // )
+    // {
+    //     g_reverseChargeManualStop =
+    //         true;
+
+    //     g_reverseChargeTestHardStopped =
+    //         true;
+
+    //     Logger::Info(
+    //         "REV TEST",
+    //         "Hard Stop"
+    //     );
+    // }
+
+    // test end
 
     // ---------------------------------------------------------
     // Reverse Charge Controller

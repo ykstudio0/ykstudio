@@ -827,4 +827,5 @@ DeviceManager   █████████░  90%
 Scheduler       █████████░  90%
 DataManager     █████████░  90%
 Display Engine  ██████████ 100%
-IoT             ████████░░  80%
+IoT             █████████░  90%
+Reserve Charg   ████████░░  80%
