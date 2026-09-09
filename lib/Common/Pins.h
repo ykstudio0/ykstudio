@@ -13,7 +13,8 @@
 // ===========================
 // STATUS LED Configuration
 // ===========================
-constexpr uint8_t PIN_STATUS_LED = 38;
+constexpr uint8_t PIN_STATUS_LED = 38;       // Onboard NeoPixel
+constexpr uint8_t PIN_HEART_LED  = 2;        // External Heart LED
 
 // ===========================
 // RS485 Configuration

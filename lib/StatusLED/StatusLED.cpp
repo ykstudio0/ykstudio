@@ -81,6 +81,8 @@ void StatusLED::Task()
             0
         );
 
+        digitalWrite(PIN_HEART_LED, HIGH);
+
         heartbeatActive =
             true;
 
@@ -104,6 +106,8 @@ void StatusLED::Task()
             0
         );
 
+        digitalWrite(PIN_HEART_LED, LOW);
+        
         heartbeatActive =
             false;
 

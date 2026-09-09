@@ -153,6 +153,9 @@ void setup()
     Logger::Info(
         "SYSTEM",
         SVEMS_DEVICE_ID);
+
+    pinMode(PIN_HEART_LED, OUTPUT);
+    digitalWrite(PIN_HEART_LED, LOW);
 }
 
 void loop()
@@ -177,6 +180,21 @@ void loop()
             brightness
         );
     }
+
+    // static uint32_t lastTime = 0;
+    // static bool ledOn = false;
+
+    // if (millis() - lastTime >= 1000)
+    // {
+    //     lastTime = millis();
+
+    //     ledOn = !ledOn;
+
+    //     digitalWrite(
+    //         PIN_HEART_LED,
+    //         ledOn ? HIGH : LOW
+    //     );
+    // }
 }
 
 void TestTFT()
