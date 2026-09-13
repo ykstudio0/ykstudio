@@ -160,7 +160,7 @@ namespace SVEMS::Telemetry
     struct SystemData
     {
         const char* deviceId =
-            "unknown";
+            "main-car";
 
         uint32_t uptimeSeconds = 0U;
 

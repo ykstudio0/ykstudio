@@ -10,5 +10,5 @@
 #pragma once
 
 #ifndef SVEMS_DEVICE_ID
-#define SVEMS_DEVICE_ID "unknown"
+#define SVEMS_DEVICE_ID "main-car"
 #endif
