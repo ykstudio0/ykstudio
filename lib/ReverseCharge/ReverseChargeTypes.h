@@ -104,7 +104,7 @@ namespace ReverseCharge
 
             // IG2 OFF 후 차량 Sleep 대기
             static constexpr uint32_t AFTER_IG2_OFF_DELAY_MS =
-                30UL * 60UL * 1000UL;
+                1UL * 60UL * 1000UL;
 
             // 저전압 지속 확인
             static constexpr uint32_t LOW_VOLTAGE_CONFIRM_MS =
