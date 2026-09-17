@@ -34,7 +34,7 @@ private:
 
     static constexpr uint32_t HEARTBEAT_INTERVAL_MS =
         // 60UL * 1000UL;
-        10UL * 1000UL;
+        5UL * 1000UL;
 
     static constexpr uint32_t HEARTBEAT_ON_TIME_MS =
         150UL;

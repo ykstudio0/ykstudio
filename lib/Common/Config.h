@@ -15,7 +15,6 @@
 //-------------------------------
 // Project
 //-------------------------------
-constexpr char SVEMS_VERSION[] = "0.6.0";
 constexpr char DEVICE_NAME[] = "SVEMS";
 constexpr uint16_t BOOT_DELAY_MS = 5000;
 
