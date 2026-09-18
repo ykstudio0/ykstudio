@@ -82,6 +82,33 @@ public:
         uint32_t modbusCrcErrorCount = 0U;
         uint32_t modbusExceptionCount = 0U;
         uint32_t modbusInvalidByteCount = 0U;
+
+        void ResetCounters()
+        {
+            solarTimeoutCount = 0U;
+            solarOfflineCount = 0U;
+
+            chargeTimeoutCount = 0U;
+            chargeOfflineCount = 0U;
+
+            batteryOfflineCount = 0U;
+            controllerBatteryOfflineCount = 0U;
+            loadOfflineCount = 0U;
+
+            powerBankTemperatureOfflineCount = 0U;
+            controllerTemperatureOfflineCount = 0U;
+
+            socOfflineCount = 0U;
+
+            modbusNoResponseCount = 0U;
+            modbusFrameTooShortCount = 0U;
+            modbusInvalidSlaveCount = 0U;
+            modbusInvalidFunctionCount = 0U;
+            modbusInvalidLengthCount = 0U;
+            modbusCrcErrorCount = 0U;
+            modbusExceptionCount = 0U;
+            modbusInvalidByteCount = 0U;
+        }
     };
 
     struct SolarData
@@ -196,6 +223,8 @@ public:
     struct SystemRuntimeData
     {
         uint32_t bootCount = 0U;
+
+        uint32_t counterResetCount = 0U;
 
         ResetReason resetReason =
             ResetReason::Unknown;

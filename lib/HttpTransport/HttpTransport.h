@@ -59,6 +59,8 @@ namespace SVEMS::Transport
         static bool FetchReverseChargeCommand(
             String& response);
 
+        static void ResetCounters();
+
     private:
 
         static void WorkerTask(

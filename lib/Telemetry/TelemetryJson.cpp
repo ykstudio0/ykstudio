@@ -358,6 +358,9 @@ namespace SVEMS::Telemetry
         system["deviceTotal"] =
             data.system.deviceTotal;
 
+        system["counterResetCount"] =
+            data.system.counterResetCount;
+
         JsonObject deviceConfig =
             doc["deviceConfig"].to<JsonObject>();
 

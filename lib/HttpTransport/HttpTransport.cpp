@@ -849,4 +849,20 @@ namespace SVEMS::Transport
 
         return true;
     }
+
+    void HttpTransport::ResetCounters()
+    {
+        portENTER_CRITICAL(
+            &StateMux);
+
+        SuccessCount = 0U;
+        FailureCount = 0U;
+        ConsecutiveFailures = 0U;
+        MaxConsecutiveFailures = 0U;
+
+        LastErrorCode = 0;
+
+        portEXIT_CRITICAL(
+            &StateMux);
+    }
 }

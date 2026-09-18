@@ -34,6 +34,7 @@
 #include "RS485.h"
 #include "ModbusRTU.h"
 #include "DisplayPowerManager.h"
+#include "DataManager.h"
 
 namespace
 {
@@ -241,6 +242,31 @@ static void ProcessReverseChargeCommand(
         Logger::Info(
             "REV CMD",
             "Hard Stop"
+        );
+
+        return;
+    }
+
+    //---------------------------------------------------------
+    // Reset Communication Counters
+    //---------------------------------------------------------
+
+    if (
+        strcmp(
+            commandName,
+            "resetCounters"
+        ) == 0
+    )
+    {
+        DataManager::CommStats.ResetCounters();
+
+        SVEMS::Transport::HttpTransport::ResetCounters();
+
+        ++DataManager::SystemRuntime.counterResetCount;
+
+        Logger::Info(
+            "SYSTEM",
+            "Communication Counters Reset"
         );
 
         return;

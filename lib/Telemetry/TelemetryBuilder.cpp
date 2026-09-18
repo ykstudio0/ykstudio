@@ -249,6 +249,9 @@ namespace SVEMS::Telemetry
         data.system.bootCount =
             DataManager::SystemRuntime.bootCount;
 
+        data.system.counterResetCount =
+            DataManager::SystemRuntime.counterResetCount;
+
         data.system.resetReason =
             DataManager::ResetReasonToString(
                 DataManager::SystemRuntime.resetReason

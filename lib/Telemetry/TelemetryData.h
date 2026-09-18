@@ -151,8 +151,8 @@ namespace SVEMS::Telemetry
         bool rs485Ready = false;
         bool modbusReady = false;
 
-        bool rs485CommunicationError;
-        bool modbusCommunicationError;
+        bool rs485CommunicationError = false;
+        bool modbusCommunicationError = false;
 
         HttpData http;
     };
@@ -180,6 +180,8 @@ namespace SVEMS::Telemetry
         bool bmsConfigured = false;
         bool sht40Configured = false;
         bool rtcConfigured = false;
+
+        uint32_t counterResetCount = 0U;
     };
 
     struct VehicleData
