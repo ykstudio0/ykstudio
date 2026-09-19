@@ -35,6 +35,8 @@
 #include "ModbusRTU.h"
 #include "DisplayPowerManager.h"
 #include "DataManager.h"
+#include "OtaService.h"
+#include "ChargeRelayDriver.h"
 
 namespace
 {
@@ -272,9 +274,79 @@ static void ProcessReverseChargeCommand(
         return;
     }
 
+    if (strcmp(commandName, "otaUpdate") == 0)
+    {
+        if (DataManager::Vehicle.active)
+        {
+            Logger::Warning(
+                "OTA",
+                "Blocked: IG2 ON"
+            );
+
+            return;
+        }
+
+        if (
+            SVEMS::Vehicle::ChargeRelayDriver::
+                IsEnabled()
+        )
+        {
+            Logger::Warning(
+                "OTA",
+                "Blocked: Reverse Charge ON"
+            );
+
+            return;
+        }
+
+        if (
+            !SVEMS::Service::WiFiService::
+                IsConnected()
+        )
+        {
+            Logger::Warning(
+                "OTA",
+                "Blocked: WiFi Offline"
+            );
+
+            return;
+        }
+        
+        if (
+            strcmp(
+                SVEMS_DEVICE_ID,
+                "main-car"
+            ) == 0 &&
+            !DataManager::VehicleBattery.status.online
+        )
+        {
+            Logger::Warning(
+                "OTA",
+                "Blocked: Vehicle Voltage Invalid"
+            );
+
+            return;
+        }
+
+        Logger::Info(
+            "OTA",
+            "Manual Update Requested"
+        );
+
+        SVEMS::Service::OtaService::
+            CheckForUpdate();
+
+        return;
+    }
+
     //---------------------------------------------------------
     // Unknown Command
     //---------------------------------------------------------
+
+    Logger::Warning(
+        "REV CMD",
+        commandName
+    );
 
     Logger::Warning(
         "REV CMD",

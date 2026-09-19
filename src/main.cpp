@@ -34,11 +34,17 @@
 #include "ChargeRelayDriver.h"
 #include "ChargeControlService.h"
 #include "DisplayPowerManager.h"
+#include "OtaService.h"
 
 namespace
 {
     LGFX_SVEMS display;
     TFTRenderTarget tftTarget(display);
+}
+
+extern "C" bool verifyRollbackLater(void)
+{
+    return true;
 }
 
 DisplayModel::Model displayModel;
@@ -124,7 +130,7 @@ void setup()
     SVEMS::Vehicle::ChargeRelayDriver::Begin();
     SVEMS::Vehicle::ChargeControlService::Begin();
     delay(2000);
-    
+
     if constexpr (!ENABLE_BMS_SERVICE)
     {
         Tests::RunDisplayTests();
@@ -164,7 +170,49 @@ void loop()
     
     Scheduler::Run();
 
-    // PWM 백라이트
+    //---------------------------------------------------------
+    // OTA Firmware Confirmation
+    //---------------------------------------------------------
+
+    static bool otaConfirmChecked =
+        false;
+
+    if (
+        !otaConfirmChecked &&
+        millis() >= 30000U
+    )
+    {
+        otaConfirmChecked =
+            true;
+
+        if (
+            SVEMS::Service::OtaService::
+                IsPendingVerification()
+        )
+        {
+            if (
+                SVEMS::Service::WiFiService::
+                    IsConnected()
+            )
+            {
+                SVEMS::Service::OtaService::
+                    ConfirmRunningFirmware();
+            }
+            else
+            {
+                Logger::Warning(
+                    "OTA",
+                    "Firmware Confirm Skipped"
+                );
+            }
+        }
+    }
+
+
+    //---------------------------------------------------------
+    // PWM Backlight
+    //---------------------------------------------------------
+
    static uint8_t lastBrightness =
         0xFFU;
 
@@ -180,21 +228,6 @@ void loop()
             brightness
         );
     }
-
-    // static uint32_t lastTime = 0;
-    // static bool ledOn = false;
-
-    // if (millis() - lastTime >= 1000)
-    // {
-    //     lastTime = millis();
-
-    //     ledOn = !ledOn;
-
-    //     digitalWrite(
-    //         PIN_HEART_LED,
-    //         ledOn ? HIGH : LOW
-    //     );
-    // }
 }
 
 void TestTFT()

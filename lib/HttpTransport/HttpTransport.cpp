@@ -415,10 +415,20 @@ namespace SVEMS::Transport
                             !command.isNull()
                         )
                         {
+                            Logger::Info(
+                                "HTTP CMD",
+                                "Command Received"
+                            );
+
                             Scheduler::
                                 SetReverseChargePendingCommand(
                                     response
                                 );
+
+                            Logger::Info(
+                                "HTTP CMD",
+                                "Command Queued"
+                            );
                         }
                     }
                 }
