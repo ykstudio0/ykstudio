@@ -854,6 +854,7 @@ v0.8.3 원격 업데이트
     - Secrets.h
     - .pio/
     - scripts/latest.json
+v0.8.4 Add LED indicator during firmware update
 
 v1.0.0 : 차량 실사용 버전(첫 번째 정식 릴리스)
 
