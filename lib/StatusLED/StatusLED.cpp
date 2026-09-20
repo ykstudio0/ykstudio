@@ -23,10 +23,19 @@ namespace
 LedState StatusLED::currentState =
     LedState::Off;
 
+OtaLedState StatusLED::otaState =
+    OtaLedState::Idle;
+
 uint32_t StatusLED::lastHeartbeatTime =
     0;
 
 bool StatusLED::heartbeatActive =
+    false;
+
+uint32_t StatusLED::otaLastToggleTime =
+    0;
+
+bool StatusLED::otaLedOn =
     false;
 
 // ---------------------------------------------------------
@@ -53,6 +62,20 @@ void StatusLED::Begin()
 
     heartbeatActive =
         false;
+
+    otaState =
+        OtaLedState::Idle;
+
+    otaLastToggleTime =
+        millis();
+
+    otaLedOn =
+        false;
+
+    digitalWrite(
+        PIN_HEART_LED,
+        LOW
+    );
 }
 
 // ---------------------------------------------------------
@@ -63,6 +86,74 @@ void StatusLED::Task()
 {
     const uint32_t now =
         millis();
+
+    //-----------------------------------------------------
+    // OTA LED Override
+    //-----------------------------------------------------
+
+    if (
+        otaState !=
+        OtaLedState::Idle
+    )
+    {
+        uint32_t intervalMs =
+            OTA_CHECK_INTERVAL_MS;
+
+        //-------------------------------------------------
+        // Updating
+        //-------------------------------------------------
+
+        if (
+            otaState ==
+            OtaLedState::Updating
+        )
+        {
+            intervalMs =
+                OTA_UPDATE_INTERVAL_MS;
+        }
+
+        //-------------------------------------------------
+        // Success
+        //-------------------------------------------------
+
+        if (
+            otaState ==
+            OtaLedState::Success
+        )
+        {
+            digitalWrite(
+                PIN_HEART_LED,
+                HIGH
+            );
+
+            return;
+        }
+
+        //-------------------------------------------------
+        // Checking / Updating / Failed
+        //-------------------------------------------------
+
+        if (
+            now - otaLastToggleTime >=
+            intervalMs
+        )
+        {
+            otaLastToggleTime =
+                now;
+
+            otaLedOn =
+                !otaLedOn;
+
+            digitalWrite(
+                PIN_HEART_LED,
+                otaLedOn
+                    ? HIGH
+                    : LOW
+            );
+        }
+
+        return;
+    }
 
     // -----------------------------------------------------
     // Heart Signal Start
@@ -224,4 +315,47 @@ void StatusLED::ShowColor(
     );
 
     pixel.show();
+}
+
+void StatusLED::SetOtaState(
+    OtaLedState state
+)
+{
+    otaState =
+        state;
+
+    otaLastToggleTime =
+        millis();
+
+    heartbeatActive =
+        false;
+
+    if (
+        state ==
+        OtaLedState::Success
+    )
+    {
+        otaLedOn =
+            true;
+
+        digitalWrite(
+            PIN_HEART_LED,
+            HIGH
+        );
+
+        return;
+    }
+
+    otaLedOn =
+        false;
+
+    digitalWrite(
+        PIN_HEART_LED,
+        LOW
+    );
+}
+
+OtaLedState StatusLED::GetOtaState()
+{
+    return otaState;
 }

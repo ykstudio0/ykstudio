@@ -37,6 +37,7 @@
 #include "DataManager.h"
 #include "OtaService.h"
 #include "ChargeRelayDriver.h"
+#include "StatusLED.h"
 
 namespace
 {
@@ -333,6 +334,10 @@ static void ProcessReverseChargeCommand(
             "Manual Update Requested"
         );
 
+        StatusLED::SetOtaState(
+            OtaLedState::Checking
+        );
+        
         SVEMS::Service::OtaService::
             CheckForUpdate();
 

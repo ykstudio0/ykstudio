@@ -812,6 +812,49 @@ v0.8.0 차량 전압 입력 회로
     6.0~16.0V 유효범위로 status.online 판단
     현재 오차는 약 +0.04~0.06V 수준
     최종 calibration은 PCB 제작 후 실차에서 수행
+v0.8.3 원격 업데이트
+    Dashboard OTA 명령
+    → Pi 서버 명령 전달
+    → Main 안전가드 확인
+    - IG2 ON 차단
+    - Reverse Charge ON 차단
+    - main-car 차량전압 Invalid 차단
+    → 외부 HTTPS 접속
+    → Root CA 검증
+    → Basic Auth
+    → latest.json 수신
+    → Version 비교
+    → Image SHA256 비교
+    → 필요 시 firmware.bin 다운로드
+    → File SHA256 무결성 검증
+    → OTA 파티션 기록
+    → 재부팅
+    → PENDING_VERIFY
+    → Firmware Confirmed
+    → 필요 시 rollback 가능
+    배포
+    PlatformIO Build
+    → deploy_ota.ps1
+    → File SHA256 자동 계산
+    → Image SHA256 자동 계산
+    → latest.json 자동 생성
+    → BOM 없는 UTF-8 저장
+    → firmware.bin.tmp 업로드
+    → latest.json.tmp 업로드
+    → 업로드 성공 후 실제 파일로 교체
+    Git 구조
+    Git 포함
+    - Certificates.h
+    - deploy_ota.ps1
+    - get_esp_image_sha.py
+    - partitions_ota_16mb.csv
+    - platformio.ini
+
+    Git 제외
+    - Secrets.h
+    - .pio/
+    - scripts/latest.json
+
 v1.0.0 : 차량 실사용 버전(첫 번째 정식 릴리스)
 
 Architecture Status

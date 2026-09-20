@@ -5,6 +5,6 @@
 #define SVEMS_VERSION_MINOR 8
 #define SVEMS_VERSION_PATCH 2
 
-#define SVEMS_VERSION_STRING "0.8.3"
+#define SVEMS_VERSION_STRING "0.8.4"
 
 #endif

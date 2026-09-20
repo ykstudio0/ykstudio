@@ -10,8 +10,11 @@
 #include <Update.h>
 #include <mbedtls/sha256.h>
 #include <esp_ota_ops.h>
-
+#include <WiFiClientSecure.h>
+#include <esp_partition.h>
+#include "Certificates.h"
 #include "OtaService.h"
+#include "Secrets.h"
 
 #include <Arduino.h>
 #include <HTTPClient.h>
@@ -19,14 +22,10 @@
 
 #include "Logger.h"
 #include "Version.h"
+#include "StatusLED.h"
 
 namespace SVEMS::Service
 {
-    static constexpr const char* OTA_VERSION_URL =
-        "http://192.168.0.15:8080/firmware/main-test/latest.json";
-
-    static constexpr const char* OTA_FIRMWARE_BASE_URL =
-        "http://192.168.0.15:8080/firmware/main-test/";
 
     static int CompareVersion(
         const char* currentVersion,
@@ -84,32 +83,137 @@ namespace SVEMS::Service
         return 0;
     }
 
+    static bool GetRunningImageSha256(
+        char* output,
+        size_t outputSize
+    )
+    {
+        //---------------------------------------------------------
+        // Validate Output Buffer
+        //---------------------------------------------------------
+
+        if (
+            output == nullptr ||
+            outputSize < 65U
+        )
+        {
+            return false;
+        }
+
+        //---------------------------------------------------------
+        // Get Running OTA Partition
+        //---------------------------------------------------------
+
+        const esp_partition_t* runningPartition =
+            esp_ota_get_running_partition();
+
+        if (runningPartition == nullptr)
+        {
+            return false;
+        }
+
+        //---------------------------------------------------------
+        // Read Image SHA256
+        //---------------------------------------------------------
+
+        uint8_t hash[32];
+
+        const esp_err_t result =
+            esp_partition_get_sha256(
+                runningPartition,
+                hash
+            );
+
+        if (result != ESP_OK)
+        {
+            return false;
+        }
+
+        //---------------------------------------------------------
+        // Convert To Hex String
+        //---------------------------------------------------------
+
+        for (
+            int i = 0;
+            i < 32;
+            ++i
+        )
+        {
+            snprintf(
+                &output[i * 2],
+                3,
+                "%02x",
+                hash[i]
+            );
+        }
+
+        output[64] =
+            '\0';
+
+        return true;
+    }
+
     bool OtaService::CheckForUpdate()
     {
+        WiFiClientSecure secureClient;
+
+        secureClient.setCACert(
+            SVEMS::Config::OTA_ROOT_CA
+        );
+
         HTTPClient http;
 
-        if (!http.begin(
-                OTA_VERSION_URL))
+        if (
+            !http.begin(
+                secureClient,
+                SVEMS::Config::OTA_VERSION_URL
+            )
+        )
         {
             Logger::Warning(
                 "OTA",
-                "HTTP Begin Failed"
+                "HTTPS Begin Failed"
+            );
+
+            StatusLED::SetOtaState(
+                OtaLedState::Idle
             );
 
             return false;
         }
 
+        http.setAuthorization(
+            SVEMS::Config::OTA_USERNAME,
+            SVEMS::Config::OTA_PASSWORD
+        );
+
         const int httpCode =
             http.GET();
 
-        if (httpCode != 200)
+        if (httpCode != HTTP_CODE_OK)
         {
+            char message[128];
+
+            snprintf(
+                message,
+                sizeof(message),
+                "Version Check Failed Code=%d Error=%s",
+                httpCode,
+                HTTPClient::errorToString(
+                    httpCode
+                ).c_str()
+            );
+
             Logger::Warning(
                 "OTA",
-                "Version Check Failed"
+                message
             );
 
             http.end();
+
+            StatusLED::SetOtaState(
+                OtaLedState::Idle
+            );
 
             return false;
         }
@@ -134,6 +238,10 @@ namespace SVEMS::Service
                 "JSON Parse Failed"
             );
 
+            StatusLED::SetOtaState(
+                OtaLedState::Idle
+            );
+
             return false;
         }
 
@@ -148,6 +256,19 @@ namespace SVEMS::Service
         const char* firmwareSha256 =
             doc["sha256"] |
             "";
+
+        const char* imageSha256 =
+            doc["imageSha256"] |
+            "";
+
+        char runningImageSha256[65] =
+            { 0 };
+
+        const bool runningImageShaReady =
+            GetRunningImageSha256(
+                runningImageSha256,
+                sizeof(runningImageSha256)
+            );
 
         char message[160];
 
@@ -186,15 +307,9 @@ namespace SVEMS::Service
                 latestVersion
             );
 
-        if (versionCompare == 0)
-        {
-            Logger::Info(
-                "OTA",
-                "Firmware Up To Date"
-            );
-
-            return false;
-        }
+        //---------------------------------------------------------
+        // Older Server Firmware
+        //---------------------------------------------------------
 
         if (versionCompare < 0)
         {
@@ -202,15 +317,88 @@ namespace SVEMS::Service
                 "OTA",
                 "Server Firmware Is Older"
             );
+            
+            StatusLED::SetOtaState(
+                OtaLedState::Idle
+            );
+            return false;
+        }
+
+        //---------------------------------------------------------
+        // Validate Image SHA256
+        //---------------------------------------------------------
+
+        if (
+            strlen(imageSha256) != 64U ||
+            !runningImageShaReady
+        )
+        {
+            Logger::Warning(
+                "OTA",
+                "Image SHA256 Not Available"
+            );
+
+            StatusLED::SetOtaState(
+                OtaLedState::Idle
+            );
 
             return false;
         }
 
-        if (versionCompare > 0)
+        const bool imageShaDifferent =
+            strcasecmp(
+                runningImageSha256,
+                imageSha256
+            ) != 0;
+
+        //---------------------------------------------------------
+        // Firmware Up To Date
+        //---------------------------------------------------------
+
+        if (
+            versionCompare == 0 &&
+            !imageShaDifferent
+        )
         {
             Logger::Info(
                 "OTA",
+                "Firmware Up To Date"
+            );
+
+            StatusLED::SetOtaState(
+                OtaLedState::Idle
+            );
+
+            return false;
+        }
+
+        //---------------------------------------------------------
+        // Update Required
+        //---------------------------------------------------------
+
+        if (
+            versionCompare > 0 ||
+            imageShaDifferent
+        )
+        {
+            if (
+                versionCompare == 0 &&
+                imageShaDifferent
+            )
+            {
+                Logger::Info(
+                    "OTA",
+                    "Same Version, Different Image"
+                );
+            }
+
+            Logger::Info(
+                "OTA",
                 "New Firmware Available"
+            );
+
+            StatusLED::SetOtaState(
+                OtaLedState::Updating
             );
 
             const bool updateResult =
@@ -226,6 +414,10 @@ namespace SVEMS::Service
                     "Update Completed"
                 );
 
+                StatusLED::SetOtaState(
+                    OtaLedState::Success
+                );
+
                 delay(
                     1000
                 );
@@ -233,10 +425,18 @@ namespace SVEMS::Service
                 ESP.restart();
             }
 
+            StatusLED::SetOtaState(
+                OtaLedState::Idle
+            );
+
             return updateResult;
         }
 
-        return true;
+        StatusLED::SetOtaState(
+            OtaLedState::Idle
+         );
+
+        return false;
     }
 
     bool OtaService::PerformUpdate(
@@ -275,7 +475,7 @@ namespace SVEMS::Service
         //---------------------------------------------------------
 
         String firmwareUrl =
-            OTA_FIRMWARE_BASE_URL;
+            SVEMS::Config::OTA_FIRMWARE_BASE_URL;
 
         firmwareUrl +=
             firmwareFile;
@@ -289,18 +489,33 @@ namespace SVEMS::Service
         // HTTP GET
         //---------------------------------------------------------
 
+        WiFiClientSecure secureClient;
+
+        secureClient.setCACert(
+            SVEMS::Config::OTA_ROOT_CA
+        );
+
         HTTPClient http;
 
-        if (!http.begin(
-                firmwareUrl))
+        if (
+            !http.begin(
+                secureClient,
+                firmwareUrl
+            )
+        )
         {
             Logger::Warning(
                 "OTA",
-                "HTTP Begin Failed"
+                "HTTPS Begin Failed"
             );
 
             return false;
         }
+
+        http.setAuthorization(
+            SVEMS::Config::OTA_USERNAME,
+            SVEMS::Config::OTA_PASSWORD
+        );
 
         const int httpCode =
             http.GET();
@@ -422,6 +637,8 @@ namespace SVEMS::Service
             )
         )
         {
+            StatusLED::Task();
+            
             const size_t available =
                 stream->available();
 
@@ -695,5 +912,58 @@ namespace SVEMS::Service
         return
             state ==
             ESP_OTA_IMG_PENDING_VERIFY;
+    }
+
+    static bool GetRunningFirmwareSha256(
+        char* output,
+        size_t outputSize
+    )
+    {
+        if (
+            output == nullptr ||
+            outputSize < 65U
+        )
+        {
+            return false;
+        }
+
+        const esp_partition_t* runningPartition =
+            esp_ota_get_running_partition();
+
+        if (runningPartition == nullptr)
+        {
+            return false;
+        }
+
+        uint8_t hash[32];
+
+        if (
+            esp_partition_get_sha256(
+                runningPartition,
+                hash
+            ) != ESP_OK
+        )
+        {
+            return false;
+        }
+
+        for (
+            int i = 0;
+            i < 32;
+            ++i
+        )
+        {
+            snprintf(
+                &output[i * 2],
+                3,
+                "%02x",
+                hash[i]
+            );
+        }
+
+        output[64] =
+            '\0';
+
+        return true;
     }
 }
