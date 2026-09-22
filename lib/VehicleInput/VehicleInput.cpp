@@ -11,6 +11,7 @@
 #include "DataManager.h"
 #include "Logger.h"
 #include "Pins.h"
+#include "driver/gpio.h"
 
 bool VehicleInput::Active = false;
 
@@ -19,6 +20,19 @@ bool VehicleInput::Begin()
     pinMode(
         PIN_IG2,
         INPUT_PULLUP
+    );
+
+    pinMode(
+        PIN_VEHICLE_BAT_ADC,
+        INPUT
+    );
+
+    gpio_pullup_dis(
+        (gpio_num_t)PIN_VEHICLE_BAT_ADC
+    );
+
+    gpio_pulldown_dis(
+        (gpio_num_t)PIN_VEHICLE_BAT_ADC
     );
 
     Active = false;
