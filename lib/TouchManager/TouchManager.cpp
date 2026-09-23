@@ -11,6 +11,7 @@
 
 #include "TouchManager.h"
 #include "Logger.h"
+#include "DisplayConfig.h"
 
 namespace
 {
@@ -299,19 +300,81 @@ namespace SVEMS::Manager
         //
         // Raw X : 0 ~ 239
         // Raw Y : 0 ~ 319
-        //
-        // Current LCD orientation:
-        //
-        // Screen X : 0 ~ 319
-        // Screen Y : 0 ~ 239
 
-        const int screenX =
-            static_cast<int>(rawY);
+        int screenX = 0;
+        int screenY = 0;
 
-        const int screenY =
-            static_cast<int>(
-                SCREEN_HEIGHT - 1U) -
-            static_cast<int>(rawX);
+        switch (DISPLAY_ROTATION)
+        {
+            //-------------------------------------------------
+            // Rotation 0
+            // Screen : 240 x 320
+            //-------------------------------------------------
+            case 0U:
+                screenX =
+                    static_cast<int>(
+                        rawX);
+
+                screenY =
+                    static_cast<int>(
+                        rawY);
+
+                break;
+
+            //-------------------------------------------------
+            // Rotation 1
+            // Screen : 320 x 240
+            //-------------------------------------------------
+            case 1U:
+                screenX =
+                    static_cast<int>(
+                        SCREEN_WIDTH - 1U) -
+                    static_cast<int>(
+                        rawY);
+
+                screenY =
+                    static_cast<int>(
+                        rawX);
+
+                break;
+
+            //-------------------------------------------------
+            // Rotation 2
+            // Screen : 240 x 320
+            //-------------------------------------------------
+            case 2U:
+                screenX =
+                    static_cast<int>(
+                        SCREEN_HEIGHT - 1U) -
+                    static_cast<int>(
+                        rawX);
+
+                screenY =
+                    static_cast<int>(
+                        SCREEN_WIDTH - 1U) -
+                    static_cast<int>(
+                        rawY);
+
+                break;
+
+            //-------------------------------------------------
+            // Rotation 3
+            // Screen : 320 x 240
+            //-------------------------------------------------
+            case 3U:
+            default:
+                screenX =
+                    static_cast<int>(
+                        rawY);
+
+                screenY =
+                    static_cast<int>(
+                        SCREEN_HEIGHT - 1U) -
+                    static_cast<int>(
+                        rawX);
+
+                break;
+        }
 
         point.x =
             static_cast<uint16_t>(

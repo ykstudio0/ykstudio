@@ -9,6 +9,7 @@
 
 #include "TFTRenderTarget.h"
 #include "DisplayLayout.h"
+#include "DisplayConfig.h"
 
 TFTRenderTarget::TFTRenderTarget(
     lgfx::LGFX_Device& display)
@@ -29,11 +30,24 @@ bool TFTRenderTarget::Begin()
 
     m_display->init();
 
-    m_display->setRotation(3);
+    m_display->setRotation(
+        DISPLAY_ROTATION);
+
+    const uint16_t expectedWidth =
+        (DISPLAY_ROTATION == 0U ||
+         DISPLAY_ROTATION == 2U)
+            ? 240U
+            : 320U;
+
+    const uint16_t expectedHeight =
+        (DISPLAY_ROTATION == 0U ||
+         DISPLAY_ROTATION == 2U)
+            ? 320U
+            : 240U;
 
     m_ready =
-        m_display->width() == DisplayLayout::SCREEN_WIDTH &&
-        m_display->height() == DisplayLayout::SCREEN_HEIGHT;
+        m_display->width() == expectedWidth &&
+        m_display->height() == expectedHeight;
 
     return true;
 }

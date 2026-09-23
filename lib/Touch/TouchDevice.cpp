@@ -12,6 +12,7 @@
 
 #include "TouchDevice.h"
 #include "Logger.h"
+#include "DisplayConfig.h"
 
 namespace
 {
@@ -150,6 +151,18 @@ namespace SVEMS::Device
         m_y |=
             static_cast<uint16_t>(
                 data[4]);
+
+        m_touched = true;
+
+        m_y |=
+            static_cast<uint16_t>(
+                data[4]);
+
+        Serial.printf(
+            "[TOUCH RAW] X=%u Y=%u Count=%u\n",
+            m_x,
+            m_y,
+            touchCount);
 
         m_touched = true;
 

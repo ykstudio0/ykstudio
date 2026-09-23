@@ -65,6 +65,6 @@ constexpr uint8_t PIN_VEHICLE_BAT_ADC = 1;
 // ===========================
 // Vehicle Charge Control
 // ===========================
-constexpr uint8_t PIN_REVERSE_CHARGE_ENABLE = 41;
+constexpr uint8_t PIN_REVERSE_CHARGE_ENABLE = 47;
 
 #endif
