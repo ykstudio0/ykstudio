@@ -278,73 +278,17 @@ void TestTFT()
 
 
 // 20260923 test
+
 // #include <Arduino.h>
-// #include "driver/gpio.h"
 
 // void setup()
 // {
 //     Serial.begin(115200);
 
 //     pinMode(1, INPUT);
-
-//     gpio_pullup_dis(GPIO_NUM_1);
-//     gpio_pulldown_dis(GPIO_NUM_1);
-
-//     delay(1000);
 // }
 
 // void loop()
 // {
-//     int raw = analogRead(1);
-
-//     Serial.printf(
-//         "GPIO1 RAW=%d\n",
-//         raw
-//     );
-
-//     delay(1000);
-// }
-
-// #include <Arduino.h>
-// #include "driver/gpio.h"
-
-// constexpr int PIN_VEHICLE_ADC = 1;
-// constexpr int PIN_RELAY       = 41;
-
-// void setup()
-// {
-//     Serial.begin(115200);
-
-//     // Vehicle ADC
-//     pinMode(PIN_VEHICLE_ADC, INPUT);
-//     gpio_pullup_dis(GPIO_NUM_1);
-//     gpio_pulldown_dis(GPIO_NUM_1);
-
-//     // Relay control
-//     pinMode(PIN_RELAY, OUTPUT);
-//     digitalWrite(PIN_RELAY, LOW);
-
-//     delay(3000);
-
-//     Serial.println("RELAY ON");
-//     digitalWrite(PIN_RELAY, HIGH);
-
-//     delay(5000);
-
-//     Serial.println("RELAY OFF");
-//     digitalWrite(PIN_RELAY, LOW);
-// }
-
-// void loop()
-// {
-//     int raw = analogRead(PIN_VEHICLE_ADC);
-//     int mv  = analogReadMilliVolts(PIN_VEHICLE_ADC);
-
-//     Serial.printf(
-//         "GPIO1 RAW=%d ADC=%dmV\n",
-//         raw,
-//         mv
-//     );
-
 //     delay(1000);
 // }
