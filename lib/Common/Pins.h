@@ -13,7 +13,8 @@
 // ===========================
 // STATUS LED Configuration
 // ===========================
-constexpr uint8_t PIN_STATUS_LED = 38;       // Onboard NeoPixel
+constexpr uint8_t PIN_STATUS_LED = 48;       // Onboard NeoPixel(v1.0)
+// constexpr uint8_t PIN_STATUS_LED = 38;       // Onboard NeoPixel(v1.1)
 constexpr uint8_t PIN_HEART_LED  = 2;        // External Heart LED
 
 // ===========================
