@@ -127,7 +127,7 @@ namespace ReverseCharge
         // 1차 안전 상한값
         // 실제 차량 테스트 후 조정
         static constexpr float MAX_CHARGE_VOLTAGE =
-            14.40f;
+            15.00f;
 
         // 비정상 ADC 판단용
         static constexpr float MIN_VALID_VOLTAGE =
