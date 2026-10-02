@@ -68,4 +68,10 @@ constexpr uint8_t PIN_VEHICLE_BAT_ADC = 1;
 // ===========================
 constexpr uint8_t PIN_REVERSE_CHARGE_ENABLE = 47;
 
+// ===========================
+// CAN / TWAI Configuration
+// ===========================
+constexpr uint8_t PIN_CAN_TX = 39;
+// constexpr uint8_t PIN_CAN_RX = 40;
+
 #endif
