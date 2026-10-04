@@ -74,4 +74,9 @@ constexpr uint8_t PIN_REVERSE_CHARGE_ENABLE = 47;
 constexpr uint8_t PIN_CAN_TX = 39;
 // constexpr uint8_t PIN_CAN_RX = 40;
 
+// ===========================
+// Power Bank Charge Protection
+// ===========================
+constexpr uint8_t PIN_CHARGE_INHIBIT = 42;
+
 #endif
