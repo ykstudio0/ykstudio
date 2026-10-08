@@ -38,6 +38,7 @@
 #include "OtaService.h"
 #include "ChargeRelayDriver.h"
 #include "StatusLED.h"
+#include "ChargeProtection.h"
 
 namespace
 {
@@ -410,18 +411,6 @@ static void ConsumeReverseChargePendingCommand()
 
 bool Scheduler::Begin()
 {
-    // char coreMessage[32];
-
-    // snprintf(
-    //     coreMessage,
-    //     sizeof(coreMessage),
-    //     "Core = %d",
-    //     xPortGetCoreID());
-
-    // Logger::Info(
-    //     "SCHEDULER",
-    //     coreMessage);
-
     if (!Touch.Begin())
     {
         Logger::Error(
@@ -466,6 +455,8 @@ void Scheduler::Run()
     {
         SVEMS::Service::BMSService::Update();
     }
+
+    ChargeProtection::Update();
     
     uint32_t now = millis();
 

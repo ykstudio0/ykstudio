@@ -190,34 +190,6 @@ namespace SVEMS::Service
             return false;
         }
 
-        // if constexpr (ENABLE_BMS_TRACE)
-        // {
-        //     Serial.print("[BMS RAW] LEN=");
-        //     Serial.println(length);
-
-        //     for (size_t i = 0; i < length; ++i)
-        //     {
-        //         if ((i % 16U) == 0U)
-        //         {
-        //             Serial.printf(
-        //                 "%04X: ",
-        //                 static_cast<unsigned>(i)
-        //             );
-        //         }
-
-        //         Serial.printf(
-        //             "%02X ",
-        //             frame[i]
-        //         );
-
-        //         if ((i % 16U) == 15U ||
-        //             i == length - 1U)
-        //         {
-        //             Serial.println();
-        //         }
-        //     }
-        // }
-
         if (frame[0] != BMS_HEADER[0] ||
             frame[1] != BMS_HEADER[1] ||
             frame[2] != BMS_HEADER[2] ||
@@ -372,6 +344,22 @@ namespace SVEMS::Service
 
         DataManager::Battery.cellVoltage[3] =
             parsed.cellVoltage4;
+
+        //---------------------------------------------------------
+        // Charge Inhibit Test
+        //---------------------------------------------------------
+
+        float maxCell =
+            DataManager::Battery.cellVoltage[0];
+
+        for (int i = 1; i < 4; ++i)
+        {
+            if (DataManager::Battery.cellVoltage[i] > maxCell)
+            {
+                maxCell =
+                    DataManager::Battery.cellVoltage[i];
+            }
+        }
 
         DataManager::Battery.cellCount =
             static_cast<uint8_t>(

@@ -36,6 +36,7 @@
 #include "DisplayPowerManager.h"
 #include "OtaService.h"
 #include "DisplayConfig.h"
+#include "ChargeProtection.h"
 
 namespace
 {
@@ -114,6 +115,8 @@ void setup()
 
     Logger::Info("I2C", result);
     StatusLED::Begin();
+
+    ChargeProtection::Begin();
 
     RS485::Begin();
     ModbusRTU::Begin();
@@ -276,87 +279,3 @@ void TestTFT()
     Serial.println("========== TFT READY ==========");
 }
 
-
-// 20260923 test
-
-// #include <Arduino.h>
-
-// void setup()
-// {
-//     Serial.begin(115200);
-
-//     pinMode(1, INPUT);
-// }
-
-// void loop()
-// {
-//     delay(1000);
-// }
-
-// #include <Arduino.h>
-// #include "driver/twai.h"
-
-// constexpr gpio_num_t CAN_TX_PIN = GPIO_NUM_42; // 물리적으로 CTX와 연결 안 함
-// constexpr gpio_num_t CAN_RX_PIN = GPIO_NUM_39;
-
-// void setup()
-// {
-//     Serial.begin(115200);
-//     delay(1000);
-
-//     Serial.println();
-//     Serial.println("=== TWAI LISTEN ONLY TEST ===");
-
-//     twai_general_config_t g_config =
-//         TWAI_GENERAL_CONFIG_DEFAULT(
-//             CAN_TX_PIN,
-//             CAN_RX_PIN,
-//             TWAI_MODE_LISTEN_ONLY
-//         );
-
-//     twai_timing_config_t t_config =
-//         TWAI_TIMING_CONFIG_500KBITS();
-
-//     twai_filter_config_t f_config =
-//         TWAI_FILTER_CONFIG_ACCEPT_ALL();
-
-//     esp_err_t result =
-//         twai_driver_install(&g_config, &t_config, &f_config);
-
-//     if (result != ESP_OK)
-//     {
-//         Serial.printf("TWAI install failed: %d\n", result);
-//         return;
-//     }
-
-//     result = twai_start();
-
-//     if (result != ESP_OK)
-//     {
-//         Serial.printf("TWAI start failed: %d\n", result);
-//         return;
-//     }
-
-//     Serial.println("TWAI started: Listen Only / 500 kbps");
-// }
-
-// void loop()
-// {
-//     twai_message_t message;
-
-//     if (twai_receive(&message, pdMS_TO_TICKS(1000)) == ESP_OK)
-//     {
-//         Serial.printf(
-//             "ID=%03lX DLC=%d DATA=",
-//             message.identifier,
-//             message.data_length_code
-//         );
-
-//         for (int i = 0; i < message.data_length_code; i++)
-//         {
-//             Serial.printf("%02X ", message.data[i]);
-//         }
-
-//         Serial.println();
-//     }
-// }
