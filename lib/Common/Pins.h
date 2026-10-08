@@ -78,6 +78,5 @@ constexpr uint8_t PIN_CAN_TX = 39;
 // Power Bank Charge Protection
 // ===========================
 constexpr uint8_t PIN_CHARGE_INHIBIT = 42;
-constexpr float CHARGE_INHIBIT_CELL_VOLTAGE = 3.30f;
 
 #endif
