@@ -21,7 +21,7 @@ bool ChargeProtection::s_inhibit = false;
 //-------------------------------------------------------------
 // TEST thresholds
 //-------------------------------------------------------------
-static constexpr float INHIBIT_ON_CELL  = 3.50f;
+static constexpr float INHIBIT_ON_CELL  = 3.52f;
 static constexpr float INHIBIT_OFF_CELL = 3.40f;
 
 
