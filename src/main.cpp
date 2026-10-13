@@ -279,3 +279,149 @@ void TestTFT()
     Serial.println("========== TFT READY ==========");
 }
 
+// #include <Arduino.h>
+// #include "driver/twai.h"
+
+// static constexpr gpio_num_t CAN_RX_PIN = GPIO_NUM_39;
+// static constexpr gpio_num_t CAN_TX_PIN = GPIO_NUM_41;
+
+// struct CanStat
+// {
+//     uint32_t id;
+//     uint32_t count;
+//     uint8_t  dlc;
+//     uint8_t  data[8];
+//     bool     ext;
+// };
+
+// static CanStat stats[128];
+// static int statCount = 0;
+
+// static uint32_t captureStart = 0;
+// static bool printed = false;
+
+
+// //-------------------------------------------------------------
+// // Find / Add ID
+// //-------------------------------------------------------------
+// int FindStat(
+//     uint32_t id,
+//     bool ext)
+// {
+//     for (int i = 0; i < statCount; ++i)
+//     {
+//         if (stats[i].id == id &&
+//             stats[i].ext == ext)
+//         {
+//             return i;
+//         }
+//     }
+
+//     if (statCount >= 128)
+//         return -1;
+
+//     stats[statCount].id = id;
+//     stats[statCount].count = 0;
+//     stats[statCount].dlc = 0;
+//     stats[statCount].ext = ext;
+
+//     memset(
+//         stats[statCount].data,
+//         0,
+//         sizeof(stats[statCount].data));
+
+//     return statCount++;
+// }
+
+
+// //-------------------------------------------------------------
+// // Setup
+// //-------------------------------------------------------------
+// void setup()
+// {
+//     Serial.begin(115200);
+//     delay(1500);
+
+//     Serial.println();
+//     Serial.println("===== CAN ID CAPTURE =====");
+
+//     twai_general_config_t g_config =
+//         TWAI_GENERAL_CONFIG_DEFAULT(
+//             CAN_TX_PIN,
+//             CAN_RX_PIN,
+//             TWAI_MODE_LISTEN_ONLY);
+
+//     twai_timing_config_t t_config =
+//         TWAI_TIMING_CONFIG_500KBITS();
+
+//     twai_filter_config_t f_config =
+//         TWAI_FILTER_CONFIG_ACCEPT_ALL();
+
+//     if (twai_driver_install(
+//             &g_config,
+//             &t_config,
+//             &f_config) != ESP_OK)
+//     {
+//         Serial.println("TWAI install failed");
+//         return;
+//     }
+
+//     if (twai_start() != ESP_OK)
+//     {
+//         Serial.println("TWAI start failed");
+//         return;
+//     }
+
+//     captureStart = millis();
+
+//     Serial.println("Capturing for 10 seconds...");
+// }
+
+
+// //-------------------------------------------------------------
+// // Loop - DAG3 Diagnostic CAN Capture
+// //-------------------------------------------------------------
+// void loop()
+// {
+//     twai_message_t msg;
+
+//     if (twai_receive(
+//             &msg,
+//             pdMS_TO_TICKS(100)) != ESP_OK)
+//     {
+//         return;
+//     }
+
+//     // Standard CAN data frames only
+//     if (msg.extd || msg.rtr)
+//         return;
+
+//     // DAG3 diagnostic request / ECU response
+//    if (msg.identifier == 0x7E8 &&
+//         msg.data_length_code == 8 &&
+//         msg.data[0] == 0x22)
+//     {
+//         uint8_t socCandidate = msg.data[2];
+
+//         Serial.printf(
+//             "[IBS SOC CANDIDATE] %u %%\n",
+//             socCandidate);
+//     }
+
+//     Serial.printf(
+//         "%08lu  ID=%03lX  DLC=%u  DATA=",
+//         (unsigned long)millis(),
+//         (unsigned long)msg.identifier,
+//         msg.data_length_code);
+
+//     for (int i = 0;
+//          i < msg.data_length_code;
+//          ++i)
+//     {
+//         Serial.printf(
+//             "%02X ",
+//             msg.data[i]);
+//     }
+
+//     Serial.println();
+// }
