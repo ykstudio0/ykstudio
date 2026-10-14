@@ -10,7 +10,6 @@
 #include "VehicleBatteryService.h"
 #include "VehicleSocEstimator.h"
 
-
 //-------------------------------------------------------------
 // Begin
 //-------------------------------------------------------------
@@ -18,6 +17,7 @@ void VehicleBatteryService::Begin()
 {
     m_ibsSoc = 0.0f;
     m_estimatedSoc = 0.0f;
+    m_parkingBaseSoc = 0.0f;
 
     m_lastIbsTimestamp = 0;
     m_parkingStartTimestamp = 0;
@@ -27,7 +27,6 @@ void VehicleBatteryService::Begin()
 
     m_powerState = VehiclePowerState::Unknown;
 }
-
 
 //-------------------------------------------------------------
 // Set IBS SOC
@@ -61,6 +60,35 @@ void VehicleBatteryService::SetIbsSoc(
     m_hasIbsSoc = true;
 }
 
+//-------------------------------------------------------------
+// ReceiveIbsSoc
+// Description:
+//   Receive a validated IBS SOC measurement.
+//
+//   Update the service only in EngineOn state.
+//   Preserve the parking baseline and NVS v1 compatibility.
+//-------------------------------------------------------------
+void VehicleBatteryService::ReceiveIbsSoc(
+    float soc,
+    uint32_t timestamp)
+{
+    // Reject invalid SOC values.
+    if (!isfinite(soc) ||
+        soc < 0.0f ||
+        soc > 100.0f)
+    {
+        return;
+    }
+
+    // Do not modify parking estimation or unknown state.
+    if (m_powerState != VehiclePowerState::EngineOn)
+    {
+        return;
+    }
+
+    // Reuse the existing validation and update logic.
+    SetIbsSoc(soc, timestamp);
+}
 
 //-------------------------------------------------------------
 // Start Engine
@@ -75,25 +103,26 @@ void VehicleBatteryService::StartEngine(
     m_powerState = VehiclePowerState::EngineOn;
 }
 
-
 //-------------------------------------------------------------
 // Start Parking
 //-------------------------------------------------------------
 void VehicleBatteryService::StartParking(
     uint32_t timestamp)
 {
-    // Record parking start only when leaving EngineOn.
-    // Repeated calls must not reset the parking timer.
+    // Parking estimation starts only when leaving EngineOn.
+    // Repeated calls must not reset the parking baseline.
 
     if (m_powerState != VehiclePowerState::EngineOn)
         return;
+
+    // Capture the SOC baseline for parking estimation.
+    m_parkingBaseSoc = m_ibsSoc;
 
     m_parkingStartTimestamp = timestamp;
     m_lastUpdateTimestamp = timestamp;
 
     m_powerState = VehiclePowerState::Parking;
 }
-
 
 //-------------------------------------------------------------
 // Update
@@ -120,13 +149,12 @@ void VehicleBatteryService::Update(
 
     m_estimatedSoc =
         CalculateVehicleSoc(
-            m_ibsSoc,
+            m_parkingBaseSoc,
             elapsedHours);
 
     // Record the last successfully processed timestamp
     m_lastUpdateTimestamp = timestamp;
 }
-
 
 //-------------------------------------------------------------
 // Getters
@@ -136,18 +164,15 @@ float VehicleBatteryService::GetIbsSoc() const
     return m_ibsSoc;
 }
 
-
 float VehicleBatteryService::GetEstimatedSoc() const
 {
     return m_estimatedSoc;
 }
 
-
 bool VehicleBatteryService::HasIbsSoc() const
 {
     return m_hasIbsSoc;
 }
-
 
 VehiclePowerState VehicleBatteryService::GetPowerState() const
 {
@@ -222,6 +247,9 @@ bool VehicleBatteryService::ImportPersistentData(
     // Restore only after all validations succeed.
     m_ibsSoc = data.ibsSoc;
     m_estimatedSoc = data.ibsSoc;
+
+    // Restore the parking baseline from NVS v1.
+    m_parkingBaseSoc = data.ibsSoc;
 
     m_lastIbsTimestamp = data.lastIbsTimestamp;
     m_parkingStartTimestamp = data.parkingStartTimestamp;

@@ -28,6 +28,10 @@ public:
         float soc,
         uint32_t timestamp);
 
+    void ReceiveIbsSoc(
+        float soc,
+        uint32_t timestamp);
+
     void StartParking(
         uint32_t timestamp);
 
@@ -55,6 +59,9 @@ public:
 private:
     float m_ibsSoc = 0.0f;
     float m_estimatedSoc = 0.0f;
+
+    // SOC baseline captured when parking estimation begins
+    float m_parkingBaseSoc = 0.0f;
 
     uint32_t m_lastIbsTimestamp = 0;
     uint32_t m_parkingStartTimestamp = 0;

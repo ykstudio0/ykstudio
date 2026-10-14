@@ -26,6 +26,10 @@ public:
     bool HasSoc() const;
     uint8_t GetSoc() const;
 
+    uint32_t GetLastSocMillis() const;
+
+    bool IsSocFresh(uint32_t nowMillis) const;
+
 private:
     bool m_hasSoc = false;
     uint8_t m_soc = 0;
@@ -40,4 +44,13 @@ private:
 
     // Last accepted response frame time
     uint32_t m_lastResponseMillis = 0;
+
+    uint16_t m_responseLength = 0;
+    uint8_t m_candidateSoc = 0;
+    bool m_hasCandidateSoc = false;
+
+    uint32_t m_lastSocMillis = 0;
+
+    // Maximum age of a fresh SOC sample
+    static constexpr uint32_t SOC_FRESH_TIMEOUT_MS = 5000UL;
 };
