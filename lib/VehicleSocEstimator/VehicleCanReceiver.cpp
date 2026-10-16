@@ -36,19 +36,26 @@ bool VehicleCanReceiver::Begin()
     twai_timing_config_t timingConfig =
         TWAI_TIMING_CONFIG_500KBITS();
 
+    // //---------------------------------------------------------
+    // // Hardware acceptance filter
+    // // Accept standard CAN IDs 0x7E0 - 0x7EF.
+    // //---------------------------------------------------------
+    // twai_filter_config_t filterConfig = {};
+
+    // filterConfig.acceptance_code =
+    //     (0x7E0UL << 21);
+
+    // filterConfig.acceptance_mask =
+    //     ~((0x7F0UL) << 21);
+
+    // filterConfig.single_filter = true;
+
     //---------------------------------------------------------
     // Hardware acceptance filter
-    // Accept standard CAN IDs 0x7E0 - 0x7EF.
+    // Diagnostic Mode: Accept all CAN IDs.
     //---------------------------------------------------------
-    twai_filter_config_t filterConfig = {};
-
-    filterConfig.acceptance_code =
-        (0x7E0UL << 21);
-
-    filterConfig.acceptance_mask =
-        ~((0x7F0UL) << 21);
-
-    filterConfig.single_filter = true;
+    twai_filter_config_t filterConfig =
+        TWAI_FILTER_CONFIG_ACCEPT_ALL();
 
     esp_err_t result = twai_driver_install(
         &generalConfig,
@@ -122,4 +129,36 @@ bool VehicleCanReceiver::Receive(
 bool VehicleCanReceiver::IsReady() const
 {
     return m_ready;
+}
+
+//-------------------------------------------------------------
+// ReceiveRaw
+// Description:
+//   Receive any standard CAN data frame.
+//   Diagnostic use only.
+//-------------------------------------------------------------
+bool VehicleCanReceiver::ReceiveRaw(
+    twai_message_t& message)
+{
+    if (!m_ready)
+    {
+        return false;
+    }
+
+    while (twai_receive(&message, 0) == ESP_OK)
+    {
+        if (message.extd || message.rtr)
+        {
+            continue;
+        }
+
+        if (message.data_length_code > 8)
+        {
+            continue;
+        }
+
+        return true;
+    }
+
+    return false;
 }

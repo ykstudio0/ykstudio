@@ -20,6 +20,8 @@ public:
     bool Receive(
         twai_message_t& message);
 
+    bool ReceiveRaw(twai_message_t& message);
+
     bool IsReady() const;
 
 private:
