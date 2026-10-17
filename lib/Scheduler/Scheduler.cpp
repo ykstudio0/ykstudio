@@ -40,6 +40,7 @@
 #include "StatusLED.h"
 #include "ChargeProtection.h"
 #include "VehicleCanService.h"
+#include "VehicleBatteryCoordinator.h"
 
 namespace
 {
@@ -769,69 +770,6 @@ void Scheduler::Run1Sec()
 
     ConsumeReverseChargePendingCommand();
 
-
-    // test
-    // if (g_reverseChargeTestStartedAt == 0)
-    // {
-    //     g_reverseChargeTestStartedAt =
-    //         millis();
-    // }
-
-    // const uint32_t testElapsed =
-    //     millis() -
-    //     g_reverseChargeTestStartedAt;
-
-
-    // // ---------------------------------------------------------
-    // // 5 sec -> Hard Start
-    // // ---------------------------------------------------------
-
-    // if (
-    //     !g_reverseChargeTestHardStarted &&
-    //     testElapsed >= 5000UL
-    // )
-    // {
-    //     g_reverseChargeController.SetMode(
-    //         ReverseCharge::Mode::Hard
-    //     );
-
-    //     g_reverseChargeManualStart =
-    //         true;
-
-    //     g_reverseChargeTestHardStarted =
-    //         true;
-
-    //     Logger::Info(
-    //         "REV TEST",
-    //         "Hard Start"
-    //     );
-    // }
-
-
-    // // ---------------------------------------------------------
-    // // 15 sec -> Hard Stop
-    // // ---------------------------------------------------------
-
-    // if (
-    //     g_reverseChargeTestHardStarted &&
-    //     !g_reverseChargeTestHardStopped &&
-    //     testElapsed >= 15000UL
-    // )
-    // {
-    //     g_reverseChargeManualStop =
-    //         true;
-
-    //     g_reverseChargeTestHardStopped =
-    //         true;
-
-    //     Logger::Info(
-    //         "REV TEST",
-    //         "Hard Stop"
-    //     );
-    // }
-
-    // test end
-
     // ---------------------------------------------------------
     // Reverse Charge Controller
     // ---------------------------------------------------------
@@ -858,12 +796,15 @@ void Scheduler::Run1Sec()
     {
         PollEpeverDistributed();
     }
+
+    VehicleBatteryCoordinator::Update();
 }
 
 // 5 Second Tasks
 void Scheduler::Run5Sec()
 {
     VehicleCanService::PrintStatus();
+    VehicleBatteryCoordinator::PrintStatus();
 }
 
 // 30 Second Tasks

@@ -18,6 +18,7 @@ class VehicleBatteryCoordinator
 public:
     static void Begin();
     static void Update();
+    static void PrintStatus();
 
 private:
     static VehicleBatteryService BatteryService;

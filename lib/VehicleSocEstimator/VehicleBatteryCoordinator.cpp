@@ -67,6 +67,8 @@ void VehicleBatteryCoordinator::Begin()
 
 //-------------------------------------------------------------
 // Update
+// Description:
+//   Update parking SOC using validated RTC time.
 //-------------------------------------------------------------
 void VehicleBatteryCoordinator::Update()
 {
@@ -75,8 +77,23 @@ void VehicleBatteryCoordinator::Update()
         return;
     }
 
-    // Engine / IG2 / IBS / RTC integration
-    // will be implemented step by step.
+    uint32_t timestamp = 0;
+
+    // RTC time must be valid.
+    if (!GetCurrentTimestamp(timestamp))
+    {
+        return;
+    }
+
+    // Only update an existing parking estimation.
+    if (BatteryService.GetPowerState() !=
+        VehiclePowerState::Parking)
+    {
+        return;
+    }
+
+    // VehicleBatteryService rejects backward timestamps.
+    BatteryService.Update(timestamp);
 }
 
 //-------------------------------------------------------------
@@ -113,4 +130,65 @@ bool VehicleBatteryCoordinator::GetCurrentTimestamp(
     timestamp = currentTimestamp;
 
     return true;
+}
+
+//-------------------------------------------------------------
+// PrintStatus
+// Description:
+//   Print vehicle battery SOC estimator status.
+//-------------------------------------------------------------
+void VehicleBatteryCoordinator::PrintStatus()
+{
+    if (!Ready)
+    {
+        Logger::Warning(
+            "VEH SOC",
+            "Not Ready");
+
+        return;
+    }
+
+    const VehiclePowerState state =
+        BatteryService.GetPowerState();
+
+    const char* stateText = "Unknown";
+
+    switch (state)
+    {
+        case VehiclePowerState::EngineOn:
+            stateText = "EngineOn";
+            break;
+
+        case VehiclePowerState::Parking:
+            stateText = "Parking";
+            break;
+
+        default:
+            break;
+    }
+
+    char message[128];
+
+    if (BatteryService.HasIbsSoc())
+    {
+        snprintf(
+            message,
+            sizeof(message),
+            "State=%s IBS=%.2f%% Estimated=%.2f%%",
+            stateText,
+            BatteryService.GetIbsSoc(),
+            BatteryService.GetEstimatedSoc());
+    }
+    else
+    {
+        snprintf(
+            message,
+            sizeof(message),
+            "State=%s IBS=N/A Estimated=N/A",
+            stateText);
+    }
+
+    Logger::Info(
+        "VEH SOC",
+        message);
 }
