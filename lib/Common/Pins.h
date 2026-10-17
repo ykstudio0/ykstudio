@@ -71,8 +71,8 @@ constexpr uint8_t PIN_REVERSE_CHARGE_ENABLE = 47;
 // ===========================
 // CAN / TWAI Configuration
 // ===========================
-constexpr uint8_t PIN_CAN_TX = 39;
-// constexpr uint8_t PIN_CAN_RX = 40;
+constexpr uint8_t PIN_CAN_TX = 41;
+constexpr uint8_t PIN_CAN_RX = 39;
 
 // ===========================
 // Power Bank Charge Protection

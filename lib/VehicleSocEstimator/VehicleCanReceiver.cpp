@@ -8,12 +8,7 @@
 //-------------------------------------------------------------
 
 #include "VehicleCanReceiver.h"
-
-//-------------------------------------------------------------
-// CAN configuration
-//-------------------------------------------------------------
-static constexpr gpio_num_t CAN_TX_PIN = GPIO_NUM_41;
-static constexpr gpio_num_t CAN_RX_PIN = GPIO_NUM_39;
+#include "Pins.h"
 
 //-------------------------------------------------------------
 // Begin
@@ -27,8 +22,8 @@ bool VehicleCanReceiver::Begin()
 
     twai_general_config_t generalConfig =
         TWAI_GENERAL_CONFIG_DEFAULT(
-            CAN_TX_PIN,
-            CAN_RX_PIN,
+            static_cast<gpio_num_t>(PIN_CAN_TX),
+            static_cast<gpio_num_t>(PIN_CAN_RX),
             TWAI_MODE_LISTEN_ONLY);
 
     generalConfig.rx_queue_len = 64;

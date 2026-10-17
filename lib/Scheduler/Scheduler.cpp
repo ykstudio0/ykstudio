@@ -39,6 +39,7 @@
 #include "ChargeRelayDriver.h"
 #include "StatusLED.h"
 #include "ChargeProtection.h"
+#include "VehicleCanService.h"
 
 namespace
 {
@@ -451,6 +452,8 @@ void Scheduler::RunInitial()
 
 void Scheduler::Run()
 {
+    VehicleCanService::Update();
+
     if constexpr (ENABLE_BMS_SERVICE)
     {
         SVEMS::Service::BMSService::Update();
@@ -860,6 +863,7 @@ void Scheduler::Run1Sec()
 // 5 Second Tasks
 void Scheduler::Run5Sec()
 {
+    VehicleCanService::PrintStatus();
 }
 
 // 30 Second Tasks

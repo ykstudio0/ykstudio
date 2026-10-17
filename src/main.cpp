@@ -37,8 +37,8 @@
 #include "OtaService.h"
 #include "DisplayConfig.h"
 #include "ChargeProtection.h"
-// #include "TimeService.h"
-// #include "VehicleTime.h"
+#include "VehicleCanService.h"
+#include "VehicleBatteryCoordinator.h"
 
 namespace
 {
@@ -123,6 +123,14 @@ void setup()
     RS485::Begin();
     ModbusRTU::Begin();
     DeviceManager::Begin();
+    const bool vehicleCanReady =
+        VehicleCanService::Begin();
+
+    Serial.printf(
+        "[VEH CAN] %s\n",
+        vehicleCanReady ? "Ready" : "Init Failed"
+    );
+    VehicleBatteryCoordinator::Begin();
     Display::Begin();
     DisplayPowerManager::Begin();
     lcd.setBrightness(
