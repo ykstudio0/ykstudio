@@ -35,10 +35,18 @@ public:
 
     bool Clear();
 
-private:
-    static constexpr const char* NVS_NAMESPACE =
-        "sv_vehicle_bat";
+    // Mark previous Parking data as non-restorable.
+    bool InvalidateParking();
 
-    static constexpr const char* NVS_KEY =
-        "state";
+private:
+    #ifdef VEHICLE_SOC_NVS_TEST
+        static constexpr const char* NVS_NAMESPACE =
+            "sv_vehicle_test";
+    #else
+        static constexpr const char* NVS_NAMESPACE =
+            "sv_vehicle_bat";
+    #endif
+
+        static constexpr const char* NVS_KEY =
+            "state";
 };

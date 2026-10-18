@@ -28,7 +28,7 @@ public:
         float soc,
         uint32_t timestamp);
 
-    void ReceiveIbsSoc(
+    bool ReceiveIbsSoc(
         float soc,
         uint32_t timestamp);
 

@@ -19,6 +19,10 @@ public:
     static void Begin();
     static void Update();
     static void PrintStatus();
+    #ifdef VEHICLE_SOC_NVS_TEST
+        static void RunNvsTest();
+        static void RunNvsInvalidateTest();
+    #endif
 
 private:
     static VehicleBatteryService BatteryService;
@@ -28,6 +32,21 @@ private:
 
     static uint32_t LastProcessedIbsMillis;
 
+    // Confirmed engine stop during the current driving session
+    static bool EngineStopConfirmed;
+
+    // Valid IBS SOC received during the current driving session
+    static bool CurrentTripIbsReceived;
+
     static bool GetCurrentTimestamp(
         uint32_t& timestamp);
+
+    // Engine session start time in millis()
+    static uint32_t EngineSessionStartMillis;
+
+    // Last confirmed engine stop time (millis)
+    static uint32_t EngineStopConfirmedMillis;
+
+    // IG2 ON observed during current engine session
+    static bool Ig2OnObserved;
 };

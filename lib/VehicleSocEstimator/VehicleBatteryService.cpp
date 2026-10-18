@@ -68,7 +68,7 @@ void VehicleBatteryService::SetIbsSoc(
 //   Update the service only in EngineOn state.
 //   Preserve the parking baseline and NVS v1 compatibility.
 //-------------------------------------------------------------
-void VehicleBatteryService::ReceiveIbsSoc(
+bool VehicleBatteryService::ReceiveIbsSoc(
     float soc,
     uint32_t timestamp)
 {
@@ -77,17 +77,26 @@ void VehicleBatteryService::ReceiveIbsSoc(
         soc < 0.0f ||
         soc > 100.0f)
     {
-        return;
+        return false;
     }
 
-    // Do not modify parking estimation or unknown state.
+    // Accept IBS measurements only while engine is ON.
     if (m_powerState != VehiclePowerState::EngineOn)
     {
-        return;
+        return false;
     }
 
-    // Reuse the existing validation and update logic.
+    // Reject older IBS measurements.
+    if (m_hasIbsSoc &&
+        timestamp < m_lastIbsTimestamp)
+    {
+        return false;
+    }
+
+    // Apply the validated IBS SOC.
     SetIbsSoc(soc, timestamp);
+
+    return true;
 }
 
 //-------------------------------------------------------------
