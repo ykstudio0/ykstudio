@@ -22,6 +22,8 @@ public:
     #ifdef VEHICLE_SOC_NVS_TEST
         static void RunNvsTest();
         static void RunNvsInvalidateTest();
+        static void RunParkingSaveFailureTest();
+        static void RunParkingInvalidateFailureTest();
     #endif
 
 private:
@@ -49,4 +51,11 @@ private:
 
     // IG2 ON observed during current engine session
     static bool Ig2OnObserved;
+
+    static bool ParkingInvalidationPending;
+    static uint32_t LastParkingInvalidationAttemptMillis;
+
+    static bool ParkingSavePending;
+
+    static uint32_t LastParkingSaveAttemptMillis;
 };

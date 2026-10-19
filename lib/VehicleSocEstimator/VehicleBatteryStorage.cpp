@@ -39,6 +39,23 @@ bool VehicleBatteryStorage::Save(
     }
 
     //---------------------------------------------------------
+    // Test only: fail the first two NVS save attempts
+    //---------------------------------------------------------
+    #if defined(VEHICLE_SOC_NVS_TEST) && \
+        defined(VEHICLE_SOC_FORCE_SAVE_FAIL)
+
+        static uint32_t testSaveAttempts = 0;
+
+        ++testSaveAttempts;
+
+        if (testSaveAttempts <= 2)
+        {
+            return false;
+        }
+
+    #endif
+
+    //---------------------------------------------------------
     // Write to NVS
     //---------------------------------------------------------
     Preferences prefs;
@@ -206,6 +223,20 @@ bool VehicleBatteryStorage::InvalidateParking()
     //---------------------------------------------------------
     data.powerState = 0;
 
+    //---------------------------------------------------------
+    // Test only: simulate NVS invalidation write failure
+    //---------------------------------------------------------
+    #if defined(VEHICLE_SOC_NVS_TEST) && \
+        defined(VEHICLE_SOC_FORCE_INVALIDATE_FAIL)
+
+        prefs.end();
+        return false;
+
+    #endif
+
+    //---------------------------------------------------------
+    // Write invalidated state to NVS
+    //---------------------------------------------------------
     const size_t written =
         prefs.putBytes(
             NVS_KEY,

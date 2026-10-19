@@ -131,6 +131,12 @@ void setup()
         vehicleCanReady ? "Ready" : "Init Failed"
     );
     VehicleBatteryCoordinator::Begin();
+    #if defined(VEHICLE_SOC_NVS_TEST) && \
+        defined(VEHICLE_SOC_FORCE_INVALIDATE_FAIL)
+
+        VehicleBatteryCoordinator::RunParkingInvalidateFailureTest();
+
+    #endif
     Display::Begin();
     DisplayPowerManager::Begin();
     lcd.setBrightness(

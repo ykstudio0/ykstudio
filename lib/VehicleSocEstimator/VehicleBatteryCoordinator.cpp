@@ -34,6 +34,14 @@ uint32_t VehicleBatteryCoordinator::EngineStopConfirmedMillis = 0;
 
 bool VehicleBatteryCoordinator::Ig2OnObserved = false;
 
+bool VehicleBatteryCoordinator::ParkingInvalidationPending = false;
+
+uint32_t VehicleBatteryCoordinator::LastParkingInvalidationAttemptMillis = 0;
+
+bool VehicleBatteryCoordinator::ParkingSavePending = false;
+
+uint32_t VehicleBatteryCoordinator::LastParkingSaveAttemptMillis = 0;
+
 //-------------------------------------------------------------
 // Begin
 //-------------------------------------------------------------
@@ -56,6 +64,12 @@ void VehicleBatteryCoordinator::Begin()
     EngineStopConfirmedMillis = 0;
 
     Ig2OnObserved = false;
+
+    ParkingInvalidationPending = false;
+    LastParkingInvalidationAttemptMillis = 0;
+
+    ParkingSavePending = false;
+    LastParkingSaveAttemptMillis = 0;
 
     VehicleBatteryStorage storage;
     VehicleBatteryPersistentData data{};
@@ -116,6 +130,9 @@ void VehicleBatteryCoordinator::Update()
         {
             BatteryService.StartEngine(timestamp);
 
+            // Cancel any pending Parking save from the previous session.
+            ParkingSavePending = false;
+
             EngineRunningObserved = true;
             CurrentTripIbsReceived = false;
             EngineSessionStartMillis = millis();
@@ -128,23 +145,63 @@ void VehicleBatteryCoordinator::Update()
             Logger::Info(
                 "VEH SOC",
                 "EngineOn Confirmed");
-
+            
             //-------------------------------------------------------------
             // Invalidate previous Parking snapshot on new EngineOn
             //-------------------------------------------------------------
             VehicleBatteryStorage storage;
 
+            LastParkingInvalidationAttemptMillis = millis();
+
             if (storage.InvalidateParking())
             {
+                ParkingInvalidationPending = false;
+
                 Logger::Info(
                     "VEH SOC",
                     "Previous Parking Invalidated");
             }
             else
             {
+                ParkingInvalidationPending = true;
+
                 Logger::Warning(
                     "VEH SOC",
                     "Parking Invalidation Failed");
+            }
+        }
+
+        //-------------------------------------------------------------
+        // Retry Parking NVS invalidation while engine is running
+        //-------------------------------------------------------------
+        if (ParkingInvalidationPending)
+        {
+            static constexpr uint32_t RETRY_INTERVAL_MS = 10000UL;
+
+            const uint32_t nowMillis = millis();
+
+            if (static_cast<uint32_t>(
+                    nowMillis - LastParkingInvalidationAttemptMillis)
+                >= RETRY_INTERVAL_MS)
+            {
+                LastParkingInvalidationAttemptMillis = nowMillis;
+
+                VehicleBatteryStorage storage;
+
+                if (storage.InvalidateParking())
+                {
+                    ParkingInvalidationPending = false;
+
+                    Logger::Info(
+                        "VEH SOC",
+                        "Parking Invalidation Retry Success");
+                }
+                else
+                {
+                    Logger::Warning(
+                        "VEH SOC",
+                        "Parking Invalidation Retry Failed");
+                }
             }
         }
 
@@ -263,14 +320,28 @@ void VehicleBatteryCoordinator::Update()
             {
                 VehicleBatteryStorage storage;
 
+                // Record the initial Parking NVS save attempt.
+                LastParkingSaveAttemptMillis = millis();
+
                 if (storage.Save(data))
                 {
+                    //-----------------------------------------------------
+                    // New Parking snapshot saved successfully
+                    //-----------------------------------------------------
+                    ParkingSavePending = false;
+                    ParkingInvalidationPending = false;
+
                     Logger::Info(
                         "VEH SOC",
                         "Parking State Saved");
                 }
                 else
                 {
+                    //-----------------------------------------------------
+                    // Keep pending status for a later retry
+                    //-----------------------------------------------------
+                    ParkingSavePending = true;
+
                     Logger::Warning(
                         "VEH SOC",
                         "Parking State Save Failed");
@@ -278,9 +349,63 @@ void VehicleBatteryCoordinator::Update()
             }
             else
             {
+                //-----------------------------------------------------
+                // Retry export and NVS save later
+                //-----------------------------------------------------
+                ParkingSavePending = true;
+
+                LastParkingSaveAttemptMillis = millis();
+
                 Logger::Warning(
                     "VEH SOC",
                     "Parking State Export Failed");
+            }
+        }
+    }
+
+    //-------------------------------------------------------------
+    // Retry Parking NVS save after a failure
+    //-------------------------------------------------------------
+    if (ParkingSavePending &&
+        BatteryService.GetPowerState() == VehiclePowerState::Parking)
+    {
+        static constexpr uint32_t RETRY_INTERVAL_MS = 10000UL;
+
+        const uint32_t nowMillis = millis();
+
+        if (static_cast<uint32_t>(
+                nowMillis - LastParkingSaveAttemptMillis)
+            >= RETRY_INTERVAL_MS)
+        {
+            LastParkingSaveAttemptMillis = nowMillis;
+
+            VehicleBatteryPersistentData data{};
+
+            if (BatteryService.ExportPersistentData(data))
+            {
+                VehicleBatteryStorage storage;
+
+                if (storage.Save(data))
+                {
+                    ParkingSavePending = false;
+                    ParkingInvalidationPending = false;
+
+                    Logger::Info(
+                        "VEH SOC",
+                        "Parking Save Retry Success");
+                }
+                else
+                {
+                    Logger::Warning(
+                        "VEH SOC",
+                        "Parking Save Retry Failed");
+                }
+            }
+            else
+            {
+                Logger::Warning(
+                    "VEH SOC",
+                    "Parking Export Retry Failed");
             }
         }
     }
@@ -527,6 +652,131 @@ void VehicleBatteryCoordinator::RunNvsInvalidateTest()
         Logger::Warning(
             "VEH NVS",
             "Invalidate Verify Failed");
+    }
+}
+
+#endif
+
+#if defined(VEHICLE_SOC_NVS_TEST) && \
+    defined(VEHICLE_SOC_FORCE_SAVE_FAIL)
+
+//-------------------------------------------------------------
+// Test forced NVS save failure
+//-------------------------------------------------------------
+void VehicleBatteryCoordinator::RunParkingSaveFailureTest()
+{
+    Logger::Info(
+        "VEH NVS",
+        "Save Failure Test Start");
+
+    //---------------------------------------------------------
+    // Prepare valid test data
+    //---------------------------------------------------------
+    VehicleBatteryPersistentData data{};
+
+    data.version = 1;
+    data.ibsSoc = 64.0f;
+    data.lastIbsTimestamp = 1792280000UL;
+    data.parkingStartTimestamp = 1792280060UL;
+    data.powerState = 2;
+
+    //---------------------------------------------------------
+    // Verify forced save failure
+    //---------------------------------------------------------
+    VehicleBatteryStorage storage;
+
+    if (!storage.Save(data))
+    {
+        Logger::Info(
+            "VEH NVS",
+            "Forced Save Failure Verified");
+    }
+    else
+    {
+        Logger::Warning(
+            "VEH NVS",
+            "Forced Save Failure NOT Detected");
+    }
+
+    //---------------------------------------------------------
+    // Prepare Coordinator retry test state
+    //---------------------------------------------------------
+    if (!BatteryService.ImportPersistentData(data))
+    {
+        Logger::Warning(
+            "VEH NVS",
+            "Parking Test State Import Failed");
+        return;
+    }
+
+    ParkingSavePending = true;
+    LastParkingSaveAttemptMillis = millis();
+
+    Logger::Info(
+        "VEH NVS",
+        "Parking Retry State Prepared");
+}
+
+#endif
+
+#if defined(VEHICLE_SOC_NVS_TEST) && \
+    defined(VEHICLE_SOC_FORCE_INVALIDATE_FAIL)
+
+//-------------------------------------------------------------
+// Test NVS invalidation failure
+//-------------------------------------------------------------
+void VehicleBatteryCoordinator::RunParkingInvalidateFailureTest()
+{
+    Logger::Info(
+        "VEH NVS",
+        "Invalidate Failure Test Start");
+
+    //---------------------------------------------------------
+    // Verify existing Parking snapshot
+    //---------------------------------------------------------
+    VehicleBatteryStorage storage;
+    VehicleBatteryPersistentData before{};
+
+    if (!storage.Load(before) || before.powerState != 2)
+    {
+        Logger::Warning(
+            "VEH NVS",
+            "Valid Parking Snapshot Not Found");
+        return;
+    }
+
+    //---------------------------------------------------------
+    // Simulate invalidation failure
+    //---------------------------------------------------------
+    if (storage.InvalidateParking())
+    {
+        Logger::Warning(
+            "VEH NVS",
+            "Forced Invalidate Failure NOT Detected");
+        return;
+    }
+
+    //---------------------------------------------------------
+    // Verify that NVS data was not modified
+    //---------------------------------------------------------
+    VehicleBatteryPersistentData after{};
+
+    if (storage.Load(after) &&
+        after.version == before.version &&
+        after.ibsSoc == before.ibsSoc &&
+        after.lastIbsTimestamp == before.lastIbsTimestamp &&
+        after.parkingStartTimestamp == before.parkingStartTimestamp &&
+        after.powerState == 2)
+    {
+        Logger::Info(
+            "VEH NVS",
+            "Forced Invalidate Failure Verified");
+    }
+    else
+    {
+        Logger::Warning(
+            "VEH NVS",
+            "Invalidate Failure Verify Failed");
     }
 }
 
