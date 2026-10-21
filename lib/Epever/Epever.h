@@ -89,6 +89,26 @@ public:
     static bool ProcessAsyncBatteryResponse();
     static void HandleAsyncBatteryFailure();
 
+    static bool StartAsyncLoad();
+    static bool ProcessAsyncLoadResponse();
+    static void HandleAsyncLoadFailure();
+
+    static bool StartAsyncChargingStatus();
+    static bool ProcessAsyncChargingStatusResponse();
+    static void HandleAsyncChargingStatusFailure();
+
+    static bool StartAsyncTemperature();
+    static bool ProcessAsyncTemperatureResponse();
+    static void HandleAsyncTemperatureFailure();
+
+    static bool StartAsyncSoc();
+    static bool ProcessAsyncSocResponse();
+    static void HandleAsyncSocFailure();
+
+    static bool StartAsyncEnergy();
+    static bool ProcessAsyncEnergyResponse();
+    static void HandleAsyncEnergyFailure();
+
 private:
     static bool ReadRegisters(
         uint16_t address,
@@ -104,6 +124,19 @@ private:
     static void ApplyBatteryData(
         const EpeverMap::Battery& battery);
 
+    static void ApplyLoadData(
+        const EpeverMap::Load& load);
+
+    static void ApplyChargingStatus(
+        const EpeverMap::ChargingStatus& status);
+
+    static void ApplyTemperatureData(
+        const EpeverMap::Temperature& temp);
+
+    static void ApplySocData(const EpeverMap::Soc& soc);
+
+    static void ApplyEnergyData(const EpeverMap::Energy& energy);
+
     //---------------------------------------------------------
     // Decode asynchronous Solar response
     //---------------------------------------------------------
@@ -115,8 +148,32 @@ private:
     static bool DecodeBatteryResponse(
         const uint8_t* response,
         size_t length,
-        EpeverMap::Battery& battery
-    );
+        EpeverMap::Battery& battery);
+
+    static bool DecodeLoadResponse(
+        const uint8_t* response,
+        size_t length,
+        EpeverMap::Load& load);
+
+    static bool DecodeChargingStatusResponse(
+        const uint8_t* response,
+        size_t length,
+        EpeverMap::ChargingStatus& status);
+
+    static bool DecodeTemperatureResponse(
+        const uint8_t* response,
+        size_t length,
+        EpeverMap::Temperature& temp);
+
+    static bool DecodeSocResponse(
+        const uint8_t* response,
+        size_t length,
+        EpeverMap::Soc& soc);
+    
+    static bool DecodeEnergyResponse(
+        const uint8_t* response,
+        size_t length,
+        EpeverMap::Energy& energy);
 };
 
 #endif

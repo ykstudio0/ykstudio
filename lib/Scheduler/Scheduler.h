@@ -51,6 +51,16 @@ private:
     static void PollSolarAsync();
 
     static void PollBatteryAsync();
+    
+    static void PollLoadAsync();
+
+    static void PollChargingAsync();
+
+    static void PollTemperatureAsync();
+
+    static void PollSocAsync();
+
+    static void PollEnergyAsync();
 
     //---------------------------------------------------------
     // Start asynchronous Solar polling
@@ -58,6 +68,16 @@ private:
     static void StartSolarAsyncPoll();
 
     static void StartBatteryAsyncPoll();
+
+    static void StartLoadAsyncPoll();
+
+    static void StartChargingAsyncPoll();
+
+    static void StartTemperatureAsyncPoll();
+
+    static void StartSocAsyncPoll();
+
+    static void StartEnergyAsyncPoll();
 };
 
 #endif

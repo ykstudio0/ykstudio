@@ -508,6 +508,11 @@ void Scheduler::Run()
 
             PollSolarAsync();
             PollBatteryAsync();
+            PollLoadAsync();
+            PollChargingAsync();
+            PollTemperatureAsync();
+            PollSocAsync();
+            PollEnergyAsync();
         }
     }
     
@@ -848,54 +853,63 @@ void Scheduler::Run1Sec()
             if (g_epeverAsyncPoll.activePoll ==
                 EpeverAsyncPollType::None)
             {
-                if (g_epeverAsyncPoll.nextPoll ==
-                    EpeverAsyncPollType::Solar)
+                EpeverAsyncPollType candidate =
+                    g_epeverAsyncPoll.nextPoll;
+
+                // Solar / Battery / Load / Charging
+                // Temperature / SOC / Energy
+                for (uint8_t i = 0; i < 7; ++i)
                 {
-                    StartSolarAsyncPoll();
-
-                    if (g_epeverAsyncPoll.activePoll ==
-                        EpeverAsyncPollType::Solar)
+                    switch (candidate)
                     {
-                        g_epeverAsyncPoll.nextPoll =
-                            EpeverAsyncPollType::Battery;
+                        case EpeverAsyncPollType::Solar:
+                            StartSolarAsyncPoll();
+                            candidate = EpeverAsyncPollType::Battery;
+                            break;
+
+                        case EpeverAsyncPollType::Battery:
+                            StartBatteryAsyncPoll();
+                            candidate = EpeverAsyncPollType::Load;
+                            break;
+
+                        case EpeverAsyncPollType::Load:
+                            StartLoadAsyncPoll();
+                            candidate = EpeverAsyncPollType::Charging;
+                            break;
+
+                        case EpeverAsyncPollType::Charging:
+                            StartChargingAsyncPoll();
+                            candidate = EpeverAsyncPollType::Temperature;
+                            break;
+
+                        case EpeverAsyncPollType::Temperature:
+                            StartTemperatureAsyncPoll();
+                            candidate = EpeverAsyncPollType::Soc;
+                            break;
+
+                        case EpeverAsyncPollType::Soc:
+                            StartSocAsyncPoll();
+                            candidate = EpeverAsyncPollType::Energy;
+                            break;
+
+                        case EpeverAsyncPollType::Energy:
+                            StartEnergyAsyncPoll();
+                            candidate = EpeverAsyncPollType::Solar;
+                            break;
+
+                        default:
+                            candidate = EpeverAsyncPollType::Solar;
+                            break;
                     }
-                    else
-                    {
-                        // Solar가 아직 실행할 시점이 아니라면
-                        // Battery 요청도 확인
-                        StartBatteryAsyncPoll();
 
-                        if (g_epeverAsyncPoll.activePoll ==
-                            EpeverAsyncPollType::Battery)
-                        {
-                            g_epeverAsyncPoll.nextPoll =
-                                EpeverAsyncPollType::Solar;
-                        }
-                    }
-                }
-                else if (g_epeverAsyncPoll.nextPoll ==
-                        EpeverAsyncPollType::Battery)
-                {
-                    StartBatteryAsyncPoll();
-
-                    if (g_epeverAsyncPoll.activePoll ==
-                        EpeverAsyncPollType::Battery)
+                    //-------------------------------------------------
+                    // Successful transaction start
+                    //-------------------------------------------------
+                    if (g_epeverAsyncPoll.activePoll !=
+                        EpeverAsyncPollType::None)
                     {
-                        g_epeverAsyncPoll.nextPoll =
-                            EpeverAsyncPollType::Solar;
-                    }
-                    else
-                    {
-                        // Battery가 아직 실행할 시점이 아니라면
-                        // Solar 요청도 확인
-                        StartSolarAsyncPoll();
-
-                        if (g_epeverAsyncPoll.activePoll ==
-                            EpeverAsyncPollType::Solar)
-                        {
-                            g_epeverAsyncPoll.nextPoll =
-                                EpeverAsyncPollType::Battery;
-                        }
+                        g_epeverAsyncPoll.nextPoll = candidate;
+                        break;
                     }
                 }
             }
@@ -1189,6 +1203,609 @@ void Scheduler::StartBatteryAsyncPoll()
 
         g_epeverAsyncPoll.lastTransaction = now;
         g_epeverPoll.battery = now;
+    }
+}
+
+void Scheduler::StartLoadAsyncPoll()
+{
+    //---------------------------------------------------------
+    // RS485 communication required
+    //---------------------------------------------------------
+    if (!DeviceManager::IsRs485Required())
+        return;
+
+    //---------------------------------------------------------
+    // Another asynchronous transaction is active
+    //---------------------------------------------------------
+    if (g_epeverAsyncPoll.activePoll !=
+        EpeverAsyncPollType::None)
+        return;
+
+    if (ModbusRTU::GetAsyncState() !=
+        ModbusRTU::AsyncState::Idle)
+        return;
+
+    const uint32_t now = millis();
+
+    //---------------------------------------------------------
+    // Minimum interval between Modbus requests
+    //---------------------------------------------------------
+    if (now - g_epeverAsyncPoll.lastTransaction <
+        EPEVER_MIN_GAP_MS)
+        return;
+
+    //---------------------------------------------------------
+    // Load polling interval
+    //---------------------------------------------------------
+    if (now - g_epeverPoll.load <
+        EPEVER_LOAD_INTERVAL_MS)
+        return;
+
+    //---------------------------------------------------------
+    // Start non-blocking Load request
+    //---------------------------------------------------------
+    if (Epever::StartAsyncLoad())
+    {
+        Logger::Info(
+            "EPEVER ASYNC",
+            "START LOAD"
+        );
+
+        g_epeverAsyncPoll.activePoll =
+            EpeverAsyncPollType::Load;
+
+        g_epeverAsyncPoll.lastTransaction = now;
+        g_epeverPoll.load = now;
+    }
+}
+
+void Scheduler::PollLoadAsync()
+{
+    //---------------------------------------------------------
+    // Check active poll
+    //---------------------------------------------------------
+    if (g_epeverAsyncPoll.activePoll !=
+        EpeverAsyncPollType::Load)
+        return;
+
+    const auto state =
+        ModbusRTU::GetAsyncState();
+
+    //---------------------------------------------------------
+    // Transaction in progress
+    //---------------------------------------------------------
+    if (state == ModbusRTU::AsyncState::Waiting)
+        return;
+
+    //---------------------------------------------------------
+    // Successful response
+    //---------------------------------------------------------
+    if (state == ModbusRTU::AsyncState::Success)
+    {
+        if (!Epever::ProcessAsyncLoadResponse())
+        {
+            Epever::HandleAsyncLoadFailure();
+        }
+
+        ModbusRTU::ResetAsync();
+
+        g_epeverAsyncPoll.activePoll =
+            EpeverAsyncPollType::None;
+
+        return;
+    }
+
+    //---------------------------------------------------------
+    // Communication failure
+    //---------------------------------------------------------
+    if (state == ModbusRTU::AsyncState::Failed)
+    {
+        Epever::HandleAsyncLoadFailure();
+
+        ModbusRTU::ResetAsync();
+
+        g_epeverAsyncPoll.activePoll =
+            EpeverAsyncPollType::None;
+
+        return;
+    }
+
+    //---------------------------------------------------------
+    // Unexpected Idle state
+    //---------------------------------------------------------
+    if (state == ModbusRTU::AsyncState::Idle)
+    {
+        Logger::Warning(
+            "EPEVER ASYNC",
+            "Load unexpected Idle state"
+        );
+
+        Epever::HandleAsyncLoadFailure();
+
+        ModbusRTU::ResetAsync();
+
+        g_epeverAsyncPoll.activePoll =
+            EpeverAsyncPollType::None;
+    }
+}
+
+void Scheduler::StartChargingAsyncPoll()
+{
+    //---------------------------------------------------------
+    // Check RS485 availability
+    //---------------------------------------------------------
+    if (!DeviceManager::IsRs485Required())
+        return;
+
+    //---------------------------------------------------------
+    // Check active transaction
+    //---------------------------------------------------------
+    if (g_epeverAsyncPoll.activePoll !=
+        EpeverAsyncPollType::None)
+        return;
+
+    if (ModbusRTU::GetAsyncState() !=
+        ModbusRTU::AsyncState::Idle)
+        return;
+
+    //---------------------------------------------------------
+    // Check polling intervals
+    //---------------------------------------------------------
+    const uint32_t now = millis();
+
+    if (now - g_epeverAsyncPoll.lastTransaction <
+        EPEVER_MIN_GAP_MS)
+        return;
+
+    if (now - g_epeverPoll.charging <
+        EPEVER_CHARGE_INTERVAL_MS)
+        return;
+
+    //---------------------------------------------------------
+    // Start asynchronous request
+    //---------------------------------------------------------
+    if (Epever::StartAsyncChargingStatus())
+    {
+        Logger::Info(
+            "EPEVER ASYNC",
+            "START CHARGING"
+        );
+
+        g_epeverAsyncPoll.activePoll =
+            EpeverAsyncPollType::Charging;
+
+        g_epeverAsyncPoll.lastTransaction = now;
+        g_epeverPoll.charging = now;
+    }
+}
+
+void Scheduler::PollChargingAsync()
+{
+    //---------------------------------------------------------
+    // Check active poll
+    //---------------------------------------------------------
+    if (g_epeverAsyncPoll.activePoll !=
+        EpeverAsyncPollType::Charging)
+        return;
+
+    const auto state =
+        ModbusRTU::GetAsyncState();
+
+    //---------------------------------------------------------
+    // Transaction in progress
+    //---------------------------------------------------------
+    if (state == ModbusRTU::AsyncState::Waiting)
+        return;
+
+    //---------------------------------------------------------
+    // Successful response
+    //---------------------------------------------------------
+    if (state == ModbusRTU::AsyncState::Success)
+    {
+        if (!Epever::ProcessAsyncChargingStatusResponse())
+        {
+            Epever::HandleAsyncChargingStatusFailure();
+        }
+
+        ModbusRTU::ResetAsync();
+
+        g_epeverAsyncPoll.activePoll =
+            EpeverAsyncPollType::None;
+
+        return;
+    }
+
+    //---------------------------------------------------------
+    // Communication failure
+    //---------------------------------------------------------
+    if (state == ModbusRTU::AsyncState::Failed)
+    {
+        Epever::HandleAsyncChargingStatusFailure();
+
+        ModbusRTU::ResetAsync();
+
+        g_epeverAsyncPoll.activePoll =
+            EpeverAsyncPollType::None;
+
+        return;
+    }
+
+    //---------------------------------------------------------
+    // Unexpected Idle state
+    //---------------------------------------------------------
+    if (state == ModbusRTU::AsyncState::Idle)
+    {
+        Logger::Warning(
+            "EPEVER ASYNC",
+            "Charging unexpected Idle state"
+        );
+
+        Epever::HandleAsyncChargingStatusFailure();
+
+        ModbusRTU::ResetAsync();
+
+        g_epeverAsyncPoll.activePoll =
+            EpeverAsyncPollType::None;
+    }
+}
+
+void Scheduler::StartTemperatureAsyncPoll()
+{
+    //---------------------------------------------------------
+    // Check RS485 availability
+    //---------------------------------------------------------
+    if (!DeviceManager::IsRs485Required())
+        return;
+
+    //---------------------------------------------------------
+    // Check active transaction
+    //---------------------------------------------------------
+    if (g_epeverAsyncPoll.activePoll !=
+        EpeverAsyncPollType::None)
+        return;
+
+    if (ModbusRTU::GetAsyncState() !=
+        ModbusRTU::AsyncState::Idle)
+        return;
+
+    //---------------------------------------------------------
+    // Check polling intervals
+    //---------------------------------------------------------
+    const uint32_t now = millis();
+
+    if (now - g_epeverAsyncPoll.lastTransaction <
+        EPEVER_MIN_GAP_MS)
+        return;
+
+    if (now - g_epeverPoll.temperature <
+        EPEVER_TEMPERATURE_INTERVAL_MS)
+        return;
+
+    //---------------------------------------------------------
+    // Start asynchronous request
+    //---------------------------------------------------------
+    if (Epever::StartAsyncTemperature())
+    {
+        Logger::Info(
+            "EPEVER ASYNC",
+            "START TEMPERATURE"
+        );
+
+        g_epeverAsyncPoll.activePoll =
+            EpeverAsyncPollType::Temperature;
+
+        g_epeverAsyncPoll.lastTransaction = now;
+        g_epeverPoll.temperature = now;
+    }
+}
+
+void Scheduler::PollTemperatureAsync()
+{
+    //---------------------------------------------------------
+    // Check active poll
+    //---------------------------------------------------------
+    if (g_epeverAsyncPoll.activePoll !=
+        EpeverAsyncPollType::Temperature)
+        return;
+
+    const auto state =
+        ModbusRTU::GetAsyncState();
+
+    //---------------------------------------------------------
+    // Transaction in progress
+    //---------------------------------------------------------
+    if (state == ModbusRTU::AsyncState::Waiting)
+        return;
+
+    //---------------------------------------------------------
+    // Successful response
+    //---------------------------------------------------------
+    if (state == ModbusRTU::AsyncState::Success)
+    {
+        if (!Epever::ProcessAsyncTemperatureResponse())
+        {
+            Epever::HandleAsyncTemperatureFailure();
+        }
+
+        ModbusRTU::ResetAsync();
+
+        g_epeverAsyncPoll.activePoll =
+            EpeverAsyncPollType::None;
+
+        return;
+    }
+
+    //---------------------------------------------------------
+    // Communication failure
+    //---------------------------------------------------------
+    if (state == ModbusRTU::AsyncState::Failed)
+    {
+        Epever::HandleAsyncTemperatureFailure();
+
+        ModbusRTU::ResetAsync();
+
+        g_epeverAsyncPoll.activePoll =
+            EpeverAsyncPollType::None;
+
+        return;
+    }
+
+    //---------------------------------------------------------
+    // Unexpected Idle state
+    //---------------------------------------------------------
+    if (state == ModbusRTU::AsyncState::Idle)
+    {
+        Logger::Warning(
+            "EPEVER ASYNC",
+            "Temperature unexpected Idle state"
+        );
+
+        Epever::HandleAsyncTemperatureFailure();
+
+        ModbusRTU::ResetAsync();
+
+        g_epeverAsyncPoll.activePoll =
+            EpeverAsyncPollType::None;
+    }
+}
+
+void Scheduler::StartSocAsyncPoll()
+{
+    //---------------------------------------------------------
+    // Check RS485 availability
+    //---------------------------------------------------------
+    if (!DeviceManager::IsRs485Required())
+        return;
+
+    //---------------------------------------------------------
+    // Check active transaction
+    //---------------------------------------------------------
+    if (g_epeverAsyncPoll.activePoll !=
+        EpeverAsyncPollType::None)
+        return;
+
+    if (ModbusRTU::GetAsyncState() !=
+        ModbusRTU::AsyncState::Idle)
+        return;
+
+    //---------------------------------------------------------
+    // Check polling intervals
+    //---------------------------------------------------------
+    const uint32_t now = millis();
+
+    if (now - g_epeverAsyncPoll.lastTransaction <
+        EPEVER_MIN_GAP_MS)
+        return;
+
+    if (now - g_epeverPoll.soc <
+        EPEVER_SOC_INTERVAL_MS)
+        return;
+
+    //---------------------------------------------------------
+    // Start asynchronous request
+    //---------------------------------------------------------
+    if (Epever::StartAsyncSoc())
+    {
+        Logger::Info(
+            "EPEVER ASYNC",
+            "START SOC"
+        );
+
+        g_epeverAsyncPoll.activePoll =
+            EpeverAsyncPollType::Soc;
+
+        g_epeverAsyncPoll.lastTransaction = now;
+        g_epeverPoll.soc = now;
+    }
+}
+
+void Scheduler::PollSocAsync()
+{
+    //---------------------------------------------------------
+    // Check active poll
+    //---------------------------------------------------------
+    if (g_epeverAsyncPoll.activePoll !=
+        EpeverAsyncPollType::Soc)
+        return;
+
+    const auto state =
+        ModbusRTU::GetAsyncState();
+
+    //---------------------------------------------------------
+    // Transaction in progress
+    //---------------------------------------------------------
+    if (state == ModbusRTU::AsyncState::Waiting)
+        return;
+
+    //---------------------------------------------------------
+    // Successful response
+    //---------------------------------------------------------
+    if (state == ModbusRTU::AsyncState::Success)
+    {
+        if (!Epever::ProcessAsyncSocResponse())
+        {
+            Epever::HandleAsyncSocFailure();
+        }
+
+        ModbusRTU::ResetAsync();
+
+        g_epeverAsyncPoll.activePoll =
+            EpeverAsyncPollType::None;
+
+        return;
+    }
+
+    //---------------------------------------------------------
+    // Communication failure
+    //---------------------------------------------------------
+    if (state == ModbusRTU::AsyncState::Failed)
+    {
+        Epever::HandleAsyncSocFailure();
+
+        ModbusRTU::ResetAsync();
+
+        g_epeverAsyncPoll.activePoll =
+            EpeverAsyncPollType::None;
+
+        return;
+    }
+
+    //---------------------------------------------------------
+    // Unexpected Idle state
+    //---------------------------------------------------------
+    if (state == ModbusRTU::AsyncState::Idle)
+    {
+        Logger::Warning(
+            "EPEVER ASYNC",
+            "SOC unexpected Idle state"
+        );
+
+        Epever::HandleAsyncSocFailure();
+
+        ModbusRTU::ResetAsync();
+
+        g_epeverAsyncPoll.activePoll =
+            EpeverAsyncPollType::None;
+    }
+}
+
+void Scheduler::PollEnergyAsync()
+{
+    //---------------------------------------------------------
+    // Check active poll
+    //---------------------------------------------------------
+    if (g_epeverAsyncPoll.activePoll !=
+        EpeverAsyncPollType::Energy)
+        return;
+
+    const auto state =
+        ModbusRTU::GetAsyncState();
+
+    //---------------------------------------------------------
+    // Transaction in progress
+    //---------------------------------------------------------
+    if (state == ModbusRTU::AsyncState::Waiting)
+        return;
+
+    //---------------------------------------------------------
+    // Successful response
+    //---------------------------------------------------------
+    if (state == ModbusRTU::AsyncState::Success)
+    {
+        if (!Epever::ProcessAsyncEnergyResponse())
+        {
+            Epever::HandleAsyncEnergyFailure();
+        }
+
+        ModbusRTU::ResetAsync();
+
+        g_epeverAsyncPoll.activePoll =
+            EpeverAsyncPollType::None;
+
+        return;
+    }
+
+    //---------------------------------------------------------
+    // Communication failure
+    //---------------------------------------------------------
+    if (state == ModbusRTU::AsyncState::Failed)
+    {
+        Epever::HandleAsyncEnergyFailure();
+
+        ModbusRTU::ResetAsync();
+
+        g_epeverAsyncPoll.activePoll =
+            EpeverAsyncPollType::None;
+
+        return;
+    }
+
+    //---------------------------------------------------------
+    // Unexpected Idle state
+    //---------------------------------------------------------
+    if (state == ModbusRTU::AsyncState::Idle)
+    {
+        Logger::Warning(
+            "EPEVER ASYNC",
+            "Energy unexpected Idle state"
+        );
+
+        Epever::HandleAsyncEnergyFailure();
+
+        ModbusRTU::ResetAsync();
+
+        g_epeverAsyncPoll.activePoll =
+            EpeverAsyncPollType::None;
+    }
+}
+
+void Scheduler::StartEnergyAsyncPoll()
+{
+    //---------------------------------------------------------
+    // Check RS485 availability
+    //---------------------------------------------------------
+    if (!DeviceManager::IsRs485Required())
+        return;
+
+    //---------------------------------------------------------
+    // Check active transaction
+    //---------------------------------------------------------
+    if (g_epeverAsyncPoll.activePoll !=
+        EpeverAsyncPollType::None)
+        return;
+
+    if (ModbusRTU::GetAsyncState() !=
+        ModbusRTU::AsyncState::Idle)
+        return;
+
+    //---------------------------------------------------------
+    // Check polling intervals
+    //---------------------------------------------------------
+    const uint32_t now = millis();
+
+    if (now - g_epeverAsyncPoll.lastTransaction <
+        EPEVER_MIN_GAP_MS)
+        return;
+
+    if (now - g_epeverPoll.energy <
+        EPEVER_ENERGY_INTERVAL_MS)
+        return;
+
+    //---------------------------------------------------------
+    // Start asynchronous request
+    //---------------------------------------------------------
+    if (Epever::StartAsyncEnergy())
+    {
+        Logger::Info(
+            "EPEVER ASYNC",
+            "START ENERGY"
+        );
+
+        g_epeverAsyncPoll.activePoll =
+            EpeverAsyncPollType::Energy;
+
+        g_epeverAsyncPoll.lastTransaction = now;
+        g_epeverPoll.energy = now;
     }
 }
 

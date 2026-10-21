@@ -419,36 +419,141 @@ void Epever::ApplyBatteryData(
 
 bool Epever::ReadLoad()
 {
-    EpeverMap::Load load;
+    EpeverMap::Load load{};
 
     if (!ReadRegisters(
             EpeverRegister::EPEVER_LOAD_VOLTAGE,
             sizeof(load) / sizeof(uint16_t),
-            (uint16_t*)&load))
+            reinterpret_cast<uint16_t*>(&load)))
     {
         DataManager::Load.status.updated = false;
         return false;
     }
 
+    ApplyLoadData(load);
+
+    return true;
+}
+
+void Epever::ApplyLoadData(
+    const EpeverMap::Load& load)
+{
     // Load Voltage
-    DataManager::Load.voltage = ToVoltage(load.voltage);
+    DataManager::Load.voltage =
+        ToVoltage(load.voltage);
 
     // Load Current
-    DataManager::Load.current = ToCurrent(load.current);
+    DataManager::Load.current =
+        ToCurrent(load.current);
 
     // Load Power
-    uint32_t rawPower =
-        ((uint32_t)load.powerHigh << 16) |
+    const uint32_t rawPower =
+        (static_cast<uint32_t>(load.powerHigh) << 16) |
         load.powerLow;
-    
-    DataManager::Load.power = 
+
+    DataManager::Load.power =
         ToPower(rawPower);
 
+    // Communication Status
     DataManager::Load.status.updated = true;
     DataManager::Load.status.online = true;
     DataManager::Load.status.lastUpdate = millis();
+}
+
+bool Epever::DecodeLoadResponse(
+    const uint8_t* response,
+    size_t length,
+    EpeverMap::Load& load)
+{
+    constexpr size_t REGISTER_COUNT = 4U;
+    constexpr size_t EXPECTED_LENGTH =
+        5U + REGISTER_COUNT * 2U;
+
+    if (response == nullptr ||
+        length != EXPECTED_LENGTH)
+    {
+        return false;
+    }
+
+    if (response[0] != MODBUS_SLAVE_ID ||
+        response[1] != 0x04U ||
+        response[2] != REGISTER_COUNT * 2U)
+    {
+        return false;
+    }
+
+    auto readRegister =
+        [response](size_t offset) -> uint16_t
+    {
+        return
+            (static_cast<uint16_t>(response[offset]) << 8) |
+            static_cast<uint16_t>(response[offset + 1U]);
+    };
+
+    load.voltage   = readRegister(3U);
+    load.current   = readRegister(5U);
+    load.powerLow  = readRegister(7U);
+    load.powerHigh = readRegister(9U);
 
     return true;
+}
+
+bool Epever::StartAsyncLoad()
+{
+    return ModbusRTU::StartReadInputRegisters(
+        MODBUS_SLAVE_ID,
+        EpeverRegister::EPEVER_LOAD_VOLTAGE,
+        4U
+    );
+}
+
+bool Epever::ProcessAsyncLoadResponse()
+{
+    uint8_t response[64] = {};
+    size_t responseLength = 0U;
+
+    if (!ModbusRTU::CopyAsyncResponse(
+            response,
+            sizeof(response),
+            responseLength))
+    {
+        return false;
+    }
+
+    EpeverMap::Load load{};
+
+    if (!DecodeLoadResponse(
+            response,
+            responseLength,
+            load))
+    {
+        return false;
+    }
+
+    ApplyLoadData(load);
+
+    Logger::Info(
+        "LOAD",
+        "Async Read OK"
+    );
+
+    return true;
+}
+
+void Epever::HandleAsyncLoadFailure()
+{
+    // 이번 통신에서 데이터 갱신 실패
+    DataManager::Load.status.updated = false;
+
+    // Modbus 실패 원인 확인
+    const auto reason =
+        ModbusRTU::GetLastErrorReason();
+
+    Logger::Warning(
+        "EPEVER ASYNC",
+        "Load Failed, Reason=" +
+        String(static_cast<uint8_t>(reason))
+    );
 }
 
 bool Epever::ReadTemperature()
@@ -466,16 +571,28 @@ bool Epever::ReadTemperature()
         return false;
     }
 
+    ApplyTemperatureData(temp);
+
+    return true;
+}
+
+void Epever::ApplyTemperatureData(
+    const EpeverMap::Temperature& temp)
+{
+    //---------------------------------------------------------
+    // Convert temperature values
+    //---------------------------------------------------------
     DataManager::Temperature.controller =
         ToTemperature(
-            static_cast<int16_t>(
-                temp.battery));
+            static_cast<int16_t>(temp.battery));
 
     DataManager::Temperature.controllerBoard =
         ToTemperature(
-            static_cast<int16_t>(
-                temp.device));
+            static_cast<int16_t>(temp.device));
 
+    //---------------------------------------------------------
+    // Update communication status
+    //---------------------------------------------------------
     DataManager::Temperature
         .controllerStatus.updated = true;
 
@@ -488,8 +605,129 @@ bool Epever::ReadTemperature()
 
     DataManager::Temperature
         .controllerStatus.lastUpdate = millis();
+}
+
+bool Epever::DecodeTemperatureResponse(
+    const uint8_t* response,
+    size_t length,
+    EpeverMap::Temperature& temp)
+{
+    //---------------------------------------------------------
+    // Validate response
+    //---------------------------------------------------------
+    if (response == nullptr)
+        return false;
+
+    // Slave(1) + Function(1) + ByteCount(1)
+    // + Data(4) + CRC(2)
+    if (length != 9U)
+        return false;
+
+    if (response[0] != MODBUS_SLAVE_ID)
+        return false;
+
+    if (response[1] != 0x04U)
+        return false;
+
+    if (response[2] != 0x04U)
+        return false;
+
+    //---------------------------------------------------------
+    // Decode Battery Temperature (0x3110)
+    //---------------------------------------------------------
+    temp.battery =
+        (static_cast<uint16_t>(response[3]) << 8) |
+         static_cast<uint16_t>(response[4]);
+
+    //---------------------------------------------------------
+    // Decode Device Temperature (0x3111)
+    //---------------------------------------------------------
+    temp.device =
+        (static_cast<uint16_t>(response[5]) << 8) |
+         static_cast<uint16_t>(response[6]);
 
     return true;
+}
+
+bool Epever::StartAsyncTemperature()
+{
+    //---------------------------------------------------------
+    // Start asynchronous Temperature read
+    //
+    // Register : 0x3110
+    // Count    : 2 registers
+    //
+    // 0x3110 : Battery Temperature
+    // 0x3111 : Device Temperature
+    //---------------------------------------------------------
+    return ModbusRTU::StartReadInputRegisters(
+        MODBUS_SLAVE_ID,
+        EpeverRegister::EPEVER_BATTERY_TEMPERATURE,
+        2U
+    );
+}
+
+bool Epever::ProcessAsyncTemperatureResponse()
+{
+    //---------------------------------------------------------
+    // Copy asynchronous Modbus response
+    //---------------------------------------------------------
+    uint8_t response[64];
+    size_t length = 0;
+
+    if (!ModbusRTU::CopyAsyncResponse(
+            response,
+            sizeof(response),
+            length))
+    {
+        return false;
+    }
+
+    //---------------------------------------------------------
+    // Decode Temperature response
+    //---------------------------------------------------------
+    EpeverMap::Temperature temp{};
+
+    if (!DecodeTemperatureResponse(
+            response,
+            length,
+            temp))
+    {
+        return false;
+    }
+
+    //---------------------------------------------------------
+    // Update DataManager
+    //---------------------------------------------------------
+    ApplyTemperatureData(temp);
+
+    Logger::Info(
+        "TEMPERATURE",
+        "Async Read OK"
+    );
+
+    return true;
+}
+
+void Epever::HandleAsyncTemperatureFailure()
+{
+    //---------------------------------------------------------
+    // Mark Temperature update failure
+    //---------------------------------------------------------
+    DataManager::Temperature
+        .controllerStatus.updated = false;
+
+    //---------------------------------------------------------
+    // Diagnostic log
+    //---------------------------------------------------------
+    const auto reason =
+        ModbusRTU::GetLastErrorReason();
+
+    Logger::Warning(
+        "EPEVER ASYNC",
+        "Temperature Failed, Reason=" +
+        String(static_cast<uint8_t>(reason))
+    );
 }
 
 bool Epever::ReadSOC()
@@ -504,10 +742,122 @@ bool Epever::ReadSOC()
         return false;
     }
 
-    DataManager::ControllerBattery.soc =
-        static_cast<uint8_t>(soc.value);
+    ApplySocData(soc);
 
     return true;
+}
+
+void Epever::ApplySocData(const EpeverMap::Soc& soc)
+{
+    DataManager::ControllerBattery.soc =
+        static_cast<uint8_t>(soc.value);
+}
+
+bool Epever::DecodeSocResponse(
+    const uint8_t* response,
+    size_t length,
+    EpeverMap::Soc& soc)
+{
+    //---------------------------------------------------------
+    // Validate response
+    //---------------------------------------------------------
+    if (response == nullptr)
+        return false;
+
+    // Slave(1) + Function(1) + ByteCount(1)
+    // + Data(2) + CRC(2)
+    if (length != 7U)
+        return false;
+
+    if (response[0] != MODBUS_SLAVE_ID)
+        return false;
+
+    if (response[1] != 0x04U)
+        return false;
+
+    if (response[2] != 0x02U)
+        return false;
+
+    //---------------------------------------------------------
+    // Decode SOC (0x311A)
+    //---------------------------------------------------------
+    soc.value =
+        (static_cast<uint16_t>(response[3]) << 8) |
+         static_cast<uint16_t>(response[4]);
+
+    return true;
+}
+
+bool Epever::StartAsyncSoc()
+{
+    //---------------------------------------------------------
+    // Start asynchronous Battery SOC read
+    //
+    // Register : 0x311A
+    // Count    : 1 register
+    //---------------------------------------------------------
+    return ModbusRTU::StartReadInputRegisters(
+        MODBUS_SLAVE_ID,
+        EpeverRegister::EPEVER_BATTERY_SOC,
+        1U
+    );
+}
+
+bool Epever::ProcessAsyncSocResponse()
+{
+    //---------------------------------------------------------
+    // Copy asynchronous Modbus response
+    //---------------------------------------------------------
+    uint8_t response[64];
+    size_t length = 0;
+
+    if (!ModbusRTU::CopyAsyncResponse(
+            response,
+            sizeof(response),
+            length))
+    {
+        return false;
+    }
+
+    //---------------------------------------------------------
+    // Decode SOC response
+    //---------------------------------------------------------
+    EpeverMap::Soc soc{};
+
+    if (!DecodeSocResponse(
+            response,
+            length,
+            soc))
+    {
+        return false;
+    }
+
+    //---------------------------------------------------------
+    // Update DataManager
+    //---------------------------------------------------------
+    ApplySocData(soc);
+
+    Logger::Info(
+        "SOC",
+        "Async Read OK"
+    );
+
+    return true;
+}
+
+void Epever::HandleAsyncSocFailure()
+{
+    //---------------------------------------------------------
+    // Diagnostic log
+    //---------------------------------------------------------
+    const auto reason =
+        ModbusRTU::GetLastErrorReason();
+
+    Logger::Warning(
+        "EPEVER ASYNC",
+        "SOC Failed, Reason=" +
+        String(static_cast<uint8_t>(reason))
+    );
 }
 
 bool Epever::ReadEnergy()
@@ -515,50 +865,188 @@ bool Epever::ReadEnergy()
     EpeverMap::Energy energy;
 
     if (!ReadRegisters(
-        EpeverRegister::GENERATED_ENERGY_TODAY,
-        sizeof(energy) / sizeof(uint16_t),
-        (uint16_t*)&energy))
+            EpeverRegister::GENERATED_ENERGY_TODAY,
+            sizeof(energy) / sizeof(uint16_t),
+            reinterpret_cast<uint16_t*>(&energy)))
     {
         return false;
     }
 
+    ApplyEnergyData(energy);
+
+    return true;
+}
+
+void Epever::ApplyEnergyData(
+    const EpeverMap::Energy& energy)
+{
+    //---------------------------------------------------------
+    // Combine 16-bit registers into 32-bit values
+    //---------------------------------------------------------
     uint32_t rawDaily =
-        ((uint32_t)energy.dailyHigh << 16) |
+        (static_cast<uint32_t>(energy.dailyHigh) << 16) |
         energy.dailyLow;
 
     uint32_t rawTotal =
-        ((uint32_t)energy.totalHigh << 16) |
+        (static_cast<uint32_t>(energy.totalHigh) << 16) |
         energy.totalLow;
 
+    //---------------------------------------------------------
+    // Update DataManager
+    //---------------------------------------------------------
     DataManager::Solar.dailyEnergy =
-        ToEnergy(
-            rawDaily
-        );
+        ToEnergy(rawDaily);
 
     DataManager::Solar.totalEnergy =
-        ToEnergy(
-            rawTotal
-        );
+        ToEnergy(rawTotal);
 
+    //---------------------------------------------------------
+    // Diagnostic logs
+    //---------------------------------------------------------
     Logger::Info(
         "ENERGY",
         String("Daily = ") +
-        String(
-            DataManager::Solar.dailyEnergy,
-            1
-        ) + "Wh"
+        String(DataManager::Solar.dailyEnergy, 1) +
+        "Wh"
     );
 
     Logger::Info(
         "ENERGY",
         String("Total = ") +
-        String(
-            DataManager::Solar.totalEnergy,
-            1
-        ) + "Wh"
+        String(DataManager::Solar.totalEnergy, 1) +
+        "Wh"
+    );
+}
+
+bool Epever::DecodeEnergyResponse(
+    const uint8_t* response,
+    size_t length,
+    EpeverMap::Energy& energy)
+{
+    //---------------------------------------------------------
+    // Validate response
+    //---------------------------------------------------------
+    if (response == nullptr)
+        return false;
+
+    // Slave(1) + Function(1) + ByteCount(1)
+    // + Data(16) + CRC(2)
+    if (length != 21U)
+        return false;
+
+    if (response[0] != MODBUS_SLAVE_ID)
+        return false;
+
+    if (response[1] != 0x04U)
+        return false;
+
+    if (response[2] != 0x10U)
+        return false;
+
+    //---------------------------------------------------------
+    // Decode 8 consecutive registers
+    //---------------------------------------------------------
+    uint16_t registers[8];
+
+    for (uint8_t i = 0; i < 8; ++i)
+    {
+        const size_t offset = 3U + (i * 2U);
+
+        registers[i] =
+            (static_cast<uint16_t>(response[offset]) << 8) |
+             static_cast<uint16_t>(response[offset + 1U]);
+    }
+
+    //---------------------------------------------------------
+    // Map registers to Energy structure
+    //---------------------------------------------------------
+    energy.dailyLow  = registers[0];
+    energy.dailyHigh = registers[1];
+
+    energy.monthLow  = registers[2];
+    energy.monthHigh = registers[3];
+
+    energy.yearLow   = registers[4];
+    energy.yearHigh  = registers[5];
+
+    energy.totalLow  = registers[6];
+    energy.totalHigh = registers[7];
+
+    return true;
+}
+
+bool Epever::StartAsyncEnergy()
+{
+    //---------------------------------------------------------
+    // Start asynchronous Energy read
+    //
+    // Start Register : 0x330C
+    // Register Count : 8
+    //
+    // Daily / Monthly / Yearly / Total Energy
+    //---------------------------------------------------------
+    return ModbusRTU::StartReadInputRegisters(
+        MODBUS_SLAVE_ID,
+        EpeverRegister::GENERATED_ENERGY_TODAY,
+        8U
+    );
+}
+
+bool Epever::ProcessAsyncEnergyResponse()
+{
+    //---------------------------------------------------------
+    // Copy asynchronous Modbus response
+    //---------------------------------------------------------
+    uint8_t response[64];
+    size_t length = 0;
+
+    if (!ModbusRTU::CopyAsyncResponse(
+            response,
+            sizeof(response),
+            length))
+    {
+        return false;
+    }
+
+    //---------------------------------------------------------
+    // Decode Energy response
+    //---------------------------------------------------------
+    EpeverMap::Energy energy{};
+
+    if (!DecodeEnergyResponse(
+            response,
+            length,
+            energy))
+    {
+        return false;
+    }
+
+    //---------------------------------------------------------
+    // Update DataManager
+    //---------------------------------------------------------
+    ApplyEnergyData(energy);
+
+    Logger::Info(
+        "ENERGY",
+        "Async Read OK"
     );
 
     return true;
+}
+
+void Epever::HandleAsyncEnergyFailure()
+{
+    //---------------------------------------------------------
+    // Diagnostic log
+    //---------------------------------------------------------
+    const auto reason =
+        ModbusRTU::GetLastErrorReason();
+
+    Logger::Warning(
+        "EPEVER ASYNC",
+        "Energy Failed, Reason=" +
+        String(static_cast<uint8_t>(reason))
+    );
 }
 
 bool Epever::ReadChargingStatus()
@@ -567,7 +1055,7 @@ bool Epever::ReadChargingStatus()
 
     if (!ReadRegisters(
             EpeverRegister::CHARGING_EQUIPMENT_STATUS,
-            sizeof(status) /sizeof(uint16_t),
+            sizeof(status) / sizeof(uint16_t),
             (uint16_t*)&status))
     {
         ++DataManager::CommStats.chargeTimeoutCount;
@@ -578,6 +1066,14 @@ bool Epever::ReadChargingStatus()
         return false;
     }
 
+    ApplyChargingStatus(status);
+
+    return true;
+}
+
+void Epever::ApplyChargingStatus(
+    const EpeverMap::ChargingStatus& status)
+{
     char buffer[32];
 
     snprintf(
@@ -591,13 +1087,14 @@ bool Epever::ReadChargingStatus()
     EpeverStatusParser::ChargingStatus parsed =
         EpeverStatusParser::ParseChargingStatus(status.value);
 
-    DataManager::Charge.stage        = parsed.stage;
+    DataManager::Charge.stage = parsed.stage;
     DataManager::Charge.inputVoltage = parsed.inputVoltage;
-    DataManager::Charge.running      = parsed.running;
+    DataManager::Charge.running = parsed.running;
+
     DataManager::Charge.status.updated = true;
     DataManager::Charge.status.online = true;
     DataManager::Charge.status.state =
-            DataManager::CommunicationState::Online;
+        DataManager::CommunicationState::Online;
     DataManager::Charge.status.lastUpdate = millis();
 
     snprintf(
@@ -623,8 +1120,125 @@ bool Epever::ReadChargingStatus()
         EpeverStatusParser::ToString(parsed.inputVoltage));
 
     Logger::Info("EPEVER", buffer);
-    
+}
+
+bool Epever::DecodeChargingStatusResponse(
+    const uint8_t* response,
+    size_t length,
+    EpeverMap::ChargingStatus& status)
+{
+    //---------------------------------------------------------
+    // Validate response
+    //---------------------------------------------------------
+    if (response == nullptr)
+        return false;
+
+    // Slave(1) + Function(1) + ByteCount(1)
+    // + Data(2) + CRC(2)
+    if (length != 7U)
+        return false;
+
+    if (response[0] != MODBUS_SLAVE_ID)
+        return false;
+
+    if (response[1] != 0x04U)
+        return false;
+
+    if (response[2] != 0x02U)
+        return false;
+
+    //---------------------------------------------------------
+    // Decode Charging Status (16-bit)
+    //---------------------------------------------------------
+    status.value =
+        (static_cast<uint16_t>(response[3]) << 8) |
+         static_cast<uint16_t>(response[4]);
+
     return true;
+}
+
+bool Epever::StartAsyncChargingStatus()
+{
+    //---------------------------------------------------------
+    // Start asynchronous Charging Status read
+    //
+    // Register : 0x3201
+    // Count    : 1 register (16-bit)
+    //---------------------------------------------------------
+    return ModbusRTU::StartReadInputRegisters(
+        MODBUS_SLAVE_ID,
+        EpeverRegister::CHARGING_EQUIPMENT_STATUS,
+        1U
+    );
+}
+
+bool Epever::ProcessAsyncChargingStatusResponse()
+{
+    //---------------------------------------------------------
+    // Copy asynchronous Modbus response
+    //---------------------------------------------------------
+    uint8_t response[64];
+    size_t length = 0;
+
+    if (!ModbusRTU::CopyAsyncResponse(
+            response,
+            sizeof(response),
+            length))
+    {
+        return false;
+    }
+
+    //---------------------------------------------------------
+    // Decode Charging Status
+    //---------------------------------------------------------
+    EpeverMap::ChargingStatus status{};
+
+    if (!DecodeChargingStatusResponse(
+            response,
+            length,
+            status))
+    {
+        return false;
+    }
+
+    //---------------------------------------------------------
+    // Update DataManager
+    //---------------------------------------------------------
+    ApplyChargingStatus(status);
+
+    Logger::Info(
+        "CHARGING",
+        "Async Read OK"
+    );
+
+    return true;
+}
+
+void Epever::HandleAsyncChargingStatusFailure()
+{
+    //---------------------------------------------------------
+    // Update communication error statistics
+    //---------------------------------------------------------
+    ++DataManager::CommStats.chargeTimeoutCount;
+
+    CountModbusError();
+
+    //---------------------------------------------------------
+    // Mark Charging Status update failure
+    //---------------------------------------------------------
+    DataManager::Charge.status.updated = false;
+
+    //---------------------------------------------------------
+    // Diagnostic log
+    //---------------------------------------------------------
+    const auto reason =
+        ModbusRTU::GetLastErrorReason();
+
+    Logger::Warning(
+        "EPEVER ASYNC",
+        "Charging Status Failed, Reason=" +
+        String(static_cast<uint8_t>(reason))
+    );
 }
 
 bool Epever::ReadRegisters(
