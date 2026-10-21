@@ -76,7 +76,42 @@ namespace
     };
 
     EpeverPollState g_epeverPoll;
+
+    //-------------------------------------------------------------
+    // EPEVER Asynchronous Poll Type
+    //-------------------------------------------------------------
+    enum class EpeverAsyncPollType : uint8_t
+    {
+        None = 0,
+        Solar,
+        Battery,
+        Load,
+        Charging,
+        Temperature,
+        Soc,
+        Energy
+    };
+
+    //-------------------------------------------------------------
+    // EPEVER Asynchronous Poll Context
+    //-------------------------------------------------------------
+    struct EpeverAsyncPollContext
+    {
+        EpeverAsyncPollType activePoll =
+            EpeverAsyncPollType::None;
+
+        EpeverAsyncPollType nextPoll =
+            EpeverAsyncPollType::Solar;
+
+        uint32_t lastTransaction = 0;
+    };
+    static EpeverAsyncPollContext g_epeverAsyncPoll;
 }
+
+//-------------------------------------------------------------
+// EPEVER Solar Async Test Mode
+//-------------------------------------------------------------
+static constexpr bool EPEVER_SOLAR_BATTERY_ASYNC_TEST = true;
 
 // ---------------------------------------------------------
 // Reverse Charge
@@ -461,6 +496,20 @@ void Scheduler::Run()
     }
 
     ChargeProtection::Update();
+
+    //---------------------------------------------------------
+    // Asynchronous Modbus Processing
+    //---------------------------------------------------------
+    if constexpr (ENABLE_EPEVER_POLLING)
+    {
+        if constexpr (EPEVER_SOLAR_BATTERY_ASYNC_TEST)
+        {
+            ModbusRTU::UpdateAsync();
+
+            PollSolarAsync();
+            PollBatteryAsync();
+        }
+    }
     
     uint32_t now = millis();
 
@@ -794,9 +843,68 @@ void Scheduler::Run1Sec()
 
     if constexpr (ENABLE_EPEVER_POLLING)
     {
-        PollEpeverDistributed();
-    }
+        if constexpr (EPEVER_SOLAR_BATTERY_ASYNC_TEST)
+        {
+            if (g_epeverAsyncPoll.activePoll ==
+                EpeverAsyncPollType::None)
+            {
+                if (g_epeverAsyncPoll.nextPoll ==
+                    EpeverAsyncPollType::Solar)
+                {
+                    StartSolarAsyncPoll();
 
+                    if (g_epeverAsyncPoll.activePoll ==
+                        EpeverAsyncPollType::Solar)
+                    {
+                        g_epeverAsyncPoll.nextPoll =
+                            EpeverAsyncPollType::Battery;
+                    }
+                    else
+                    {
+                        // Solar가 아직 실행할 시점이 아니라면
+                        // Battery 요청도 확인
+                        StartBatteryAsyncPoll();
+
+                        if (g_epeverAsyncPoll.activePoll ==
+                            EpeverAsyncPollType::Battery)
+                        {
+                            g_epeverAsyncPoll.nextPoll =
+                                EpeverAsyncPollType::Solar;
+                        }
+                    }
+                }
+                else if (g_epeverAsyncPoll.nextPoll ==
+                        EpeverAsyncPollType::Battery)
+                {
+                    StartBatteryAsyncPoll();
+
+                    if (g_epeverAsyncPoll.activePoll ==
+                        EpeverAsyncPollType::Battery)
+                    {
+                        g_epeverAsyncPoll.nextPoll =
+                            EpeverAsyncPollType::Solar;
+                    }
+                    else
+                    {
+                        // Battery가 아직 실행할 시점이 아니라면
+                        // Solar 요청도 확인
+                        StartSolarAsyncPoll();
+
+                        if (g_epeverAsyncPoll.activePoll ==
+                            EpeverAsyncPollType::Solar)
+                        {
+                            g_epeverAsyncPoll.nextPoll =
+                                EpeverAsyncPollType::Battery;
+                        }
+                    }
+                }
+            }
+        }
+        else
+        {
+            PollEpeverDistributed();
+        }
+    }
     VehicleBatteryCoordinator::Update();
 }
 
@@ -821,6 +929,267 @@ void Scheduler::Run60Sec()
 bool Scheduler::PollSolar()
 {
     return Epever::ReadSolar();
+}
+
+//-------------------------------------------------------------
+// Scheduler - Asynchronous Solar Polling
+//-------------------------------------------------------------
+void Scheduler::PollSolarAsync()
+{
+    //---------------------------------------------------------
+    // Only handle an active Solar transaction
+    //---------------------------------------------------------
+    if (g_epeverAsyncPoll.activePoll !=
+        EpeverAsyncPollType::Solar)
+    {
+        return;
+    }
+
+    const ModbusRTU::AsyncState state =
+        ModbusRTU::GetAsyncState();
+
+    //---------------------------------------------------------
+    // Waiting - Transaction in progress
+    //---------------------------------------------------------
+    if (state == ModbusRTU::AsyncState::Waiting)
+    {
+        return;
+    }
+
+    //---------------------------------------------------------
+    // Success - Process received Solar data
+    //---------------------------------------------------------
+    if (state == ModbusRTU::AsyncState::Success)
+    {
+        if (!Epever::ProcessAsyncSolarResponse())
+        {
+            Epever::HandleAsyncSolarFailure();
+        }
+
+        ModbusRTU::ResetAsync();
+
+        g_epeverAsyncPoll.activePoll =
+            EpeverAsyncPollType::None;
+
+        return;
+    }
+
+    //---------------------------------------------------------
+    // Failed - Communication failure
+    //---------------------------------------------------------
+    if (state == ModbusRTU::AsyncState::Failed)
+    {
+        Epever::HandleAsyncSolarFailure();
+
+        ModbusRTU::ResetAsync();
+
+        g_epeverAsyncPoll.activePoll =
+            EpeverAsyncPollType::None;
+
+        return;
+    }
+
+    //---------------------------------------------------------
+    // Idle - Request start handled in a later step
+    //---------------------------------------------------------
+}
+
+//-------------------------------------------------------------
+// Scheduler - Start Asynchronous Solar Poll
+//-------------------------------------------------------------
+void Scheduler::StartSolarAsyncPoll()
+{
+    //---------------------------------------------------------
+    // Check MPPT availability
+    //---------------------------------------------------------
+    if (!DeviceManager::IsRs485Required())
+    {
+        return;
+    }
+
+    //---------------------------------------------------------
+    // Prevent overlapping transactions
+    //---------------------------------------------------------
+    if (g_epeverAsyncPoll.activePoll !=
+        EpeverAsyncPollType::None)
+    {
+        return;
+    }
+
+    if (ModbusRTU::GetAsyncState() !=
+        ModbusRTU::AsyncState::Idle)
+    {
+        return;
+    }
+
+    //---------------------------------------------------------
+    // Check polling intervals
+    //---------------------------------------------------------
+    const uint32_t now = millis();
+
+    if (now - g_epeverAsyncPoll.lastTransaction <
+        EPEVER_MIN_GAP_MS)
+    {
+        return;
+    }
+
+    if (now - g_epeverPoll.solar <
+        EPEVER_SOLAR_INTERVAL_MS)
+    {
+        return;
+    }
+
+    //---------------------------------------------------------
+    // Start Solar transaction
+    //---------------------------------------------------------
+    if (Epever::StartAsyncSolar())
+    {
+        g_epeverAsyncPoll.activePoll =
+            EpeverAsyncPollType::Solar;
+
+        g_epeverAsyncPoll.lastTransaction = now;
+        g_epeverPoll.solar = now;
+    }
+
+    if (Epever::StartAsyncSolar())
+    {
+        Logger::Info("EPEVER ASYNC", "START SOLAR");
+
+        g_epeverAsyncPoll.activePoll =
+            EpeverAsyncPollType::Solar;
+
+        g_epeverAsyncPoll.lastTransaction = now;
+        g_epeverPoll.solar = now;
+    }
+}
+
+//-------------------------------------------------------------
+// Process asynchronous EPEVER Battery polling result
+//-------------------------------------------------------------
+void Scheduler::PollBatteryAsync()
+{
+    //---------------------------------------------------------
+    // Only handle active Battery transaction
+    //---------------------------------------------------------
+    if (g_epeverAsyncPoll.activePoll !=
+        EpeverAsyncPollType::Battery)
+    {
+        return;
+    }
+
+    const auto state = ModbusRTU::GetAsyncState();
+
+    //---------------------------------------------------------
+    // Response still pending
+    //---------------------------------------------------------
+    if (state == ModbusRTU::AsyncState::Waiting)
+    {
+        return;
+    }
+
+    //---------------------------------------------------------
+    // Response received successfully
+    //---------------------------------------------------------
+    if (state == ModbusRTU::AsyncState::Success)
+    {
+        if (!Epever::ProcessAsyncBatteryResponse())
+        {
+            Epever::HandleAsyncBatteryFailure();
+        }
+
+        ModbusRTU::ResetAsync();
+
+        g_epeverAsyncPoll.activePoll =
+            EpeverAsyncPollType::None;
+
+        return;
+    }
+
+    //---------------------------------------------------------
+    // Transaction failed
+    //---------------------------------------------------------
+    if (state == ModbusRTU::AsyncState::Failed)
+    {
+        Epever::HandleAsyncBatteryFailure();
+
+        ModbusRTU::ResetAsync();
+
+        g_epeverAsyncPoll.activePoll =
+            EpeverAsyncPollType::None;
+
+        return;
+    }
+
+    //---------------------------------------------------------
+    // Unexpected Idle state
+    //---------------------------------------------------------
+    if (state == ModbusRTU::AsyncState::Idle)
+    {
+        Logger::Warning(
+            "EPEVER ASYNC",
+            "Battery transaction unexpectedly idle"
+        );
+
+        Epever::HandleAsyncBatteryFailure();
+
+        ModbusRTU::ResetAsync();
+
+        g_epeverAsyncPoll.activePoll =
+            EpeverAsyncPollType::None;
+    }
+}
+
+//-------------------------------------------------------------
+// Start asynchronous EPEVER Battery polling
+//-------------------------------------------------------------
+void Scheduler::StartBatteryAsyncPoll()
+{
+    //---------------------------------------------------------
+    // RS485 communication required
+    //---------------------------------------------------------
+    if (!DeviceManager::IsRs485Required())
+        return;
+
+    //---------------------------------------------------------
+    // Another asynchronous transaction is active
+    //---------------------------------------------------------
+    if (g_epeverAsyncPoll.activePoll !=
+        EpeverAsyncPollType::None)
+        return;
+
+    if (ModbusRTU::GetAsyncState() !=
+        ModbusRTU::AsyncState::Idle)
+        return;
+
+    const uint32_t now = millis();
+
+    //---------------------------------------------------------
+    // Minimum interval between Modbus requests
+    //---------------------------------------------------------
+    if (now - g_epeverAsyncPoll.lastTransaction <
+        EPEVER_MIN_GAP_MS)
+        return;
+
+    //---------------------------------------------------------
+    // Battery polling interval
+    //---------------------------------------------------------
+    if (now - g_epeverPoll.battery <
+        EPEVER_BATTERY_INTERVAL_MS)
+        return;
+
+    //---------------------------------------------------------
+    // Start non-blocking Battery request
+    //---------------------------------------------------------
+    if (Epever::StartAsyncBattery())
+    {
+        Logger::Info("EPEVER ASYNC", "START BATTERY");
+
+        g_epeverAsyncPoll.activePoll =
+            EpeverAsyncPollType::Battery;
+
+        g_epeverAsyncPoll.lastTransaction = now;
+        g_epeverPoll.battery = now;
+    }
 }
 
 // Poll Energy Information

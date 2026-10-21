@@ -64,11 +64,13 @@ void RS485::RxMode()
 }
 
 void RS485::Send(
-    const uint8_t* data, 
+    const uint8_t* data,
     size_t length)
 {
-    Logger::Info("RS485","SEND");
-    
+    const uint32_t startUs = micros();
+
+    Logger::Info("RS485", "SEND");
+
     // RX 버퍼 비우기
     while (RS485Serial.available() > 0)
     {
@@ -77,10 +79,46 @@ void RS485::Send(
 
     TxMode();
     delayMicroseconds(300);
+
     RS485Serial.write(data, length);
     RS485Serial.flush();
+
     delayMicroseconds(300);
     RxMode();
+
+    const uint32_t elapsedUs =
+        static_cast<uint32_t>(micros() - startUs);
+
+    Logger::Info(
+        "RS485",
+        "Send Time=" + String(elapsedUs) + " us"
+    );
+}
+
+//-------------------------------------------------------------
+// Non-Blocking UART - Available
+//-------------------------------------------------------------
+int RS485::Available()
+{
+    if (!Ready)
+    {
+        return 0;
+    }
+
+    return RS485Serial.available();
+}
+
+//-------------------------------------------------------------
+// Non-Blocking UART - Read Byte
+//-------------------------------------------------------------
+int RS485::ReadByte()
+{
+    if (!Ready)
+    {
+        return -1;
+    }
+
+    return RS485Serial.read();
 }
 
 // ReceiveFrame
@@ -337,4 +375,50 @@ bool RS485::IsCommunicationError()
 uint32_t RS485::GetConsecutiveNoRxCount()
 {
     return ConsecutiveNoRxCount;
+}
+
+//-------------------------------------------------------------
+// Non-Blocking UART RX Buffer Clear
+//-------------------------------------------------------------
+void RS485::ClearReceiveBufferNonBlocking()
+{
+    if (!Ready)
+    {
+        return;
+    }
+
+    constexpr uint8_t MAX_DRAIN_BYTES = 64U;
+
+    uint8_t drained = 0U;
+
+    while (RS485Serial.available() > 0 &&
+           drained < MAX_DRAIN_BYTES)
+    {
+        if (RS485Serial.read() < 0)
+        {
+            break;
+        }
+
+        ++drained;
+    }
+}
+
+//-------------------------------------------------------------
+// RS485 - Report Asynchronous Receive Result
+//-------------------------------------------------------------
+void RS485::ReportAsyncReceiveResult(bool receivedAnyByte)
+{
+    if (!Ready)
+    {
+        return;
+    }
+
+    if (receivedAnyByte)
+    {
+        ConsecutiveNoRxCount = 0U;
+    }
+    else
+    {
+        ++ConsecutiveNoRxCount;
+    }
 }

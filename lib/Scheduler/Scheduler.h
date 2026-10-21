@@ -44,6 +44,20 @@ private:
     static bool PollChargingStatus();
 
     static void PollEpeverDistributed();
+
+    //---------------------------------------------------------
+    // Asynchronous EPEVER Solar Polling
+    //---------------------------------------------------------
+    static void PollSolarAsync();
+
+    static void PollBatteryAsync();
+
+    //---------------------------------------------------------
+    // Start asynchronous Solar polling
+    //---------------------------------------------------------
+    static void StartSolarAsyncPoll();
+
+    static void StartBatteryAsyncPoll();
 };
 
 #endif

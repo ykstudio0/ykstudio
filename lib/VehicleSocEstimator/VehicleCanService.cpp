@@ -40,10 +40,45 @@ void VehicleCanService::Update()
 
     twai_message_t message;
 
+    //-------------------------------------------------------------
+    // CAN Update Interval Diagnostic
+    //-------------------------------------------------------------
+    static uint32_t lastUpdateMillis = 0;
+    static uint32_t maxIntervalMillis = 0;
+    static uint32_t lastReportMillis = 0;
+
+    const uint32_t currentMillis = millis();
+
+    if (lastUpdateMillis != 0)
+    {
+        const uint32_t interval =
+            currentMillis - lastUpdateMillis;
+
+        if (interval > maxIntervalMillis)
+        {
+            maxIntervalMillis = interval;
+        }
+    }
+
+    lastUpdateMillis = currentMillis;
+
+    if (currentMillis - lastReportMillis >= 5000)
+    {
+        lastReportMillis = currentMillis;
+
+        Logger::Info(
+            "VEH CAN",
+            "Max Update Interval=" +
+            String(maxIntervalMillis) +
+            " ms");
+
+        maxIntervalMillis = 0;
+    }
+
     uint8_t processed = 0;
 
-    while (processed < 16 &&
-           Receiver.ReceiveRaw(message))
+    while (processed < 64 &&
+       Receiver.ReceiveRaw(message))
     {
         ++processed;
         ++RxCount;

@@ -22,6 +22,13 @@ public:
         const uint8_t* data,
         size_t length);
 
+    //---------------------------------------------------------
+    // Non-Blocking UART Receive Interface
+    //---------------------------------------------------------
+    static int Available();
+
+    static int ReadByte();
+
     static bool ReceiveFrame(
         uint8_t* buffer,
         size_t& length,
@@ -30,11 +37,18 @@ public:
 
     static void ClearReceiveBuffer();
 
+    static void ClearReceiveBufferNonBlocking();
+
     static bool IsCommunicationError();
 
     static uint32_t GetConsecutiveNoRxCount();
 
     static void ResetCommunicationState();
+
+    //---------------------------------------------------------
+    // Asynchronous Receive Result
+    //---------------------------------------------------------
+    static void ReportAsyncReceiveResult(bool receivedAnyByte);
 
 private:
     static bool Ready;

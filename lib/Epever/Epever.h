@@ -11,6 +11,7 @@
 #define EPEVER_H
 
 #include <Arduino.h>
+#include "EpeverMaps.h"
 
 struct EpeverUpdateFlags
 {
@@ -69,11 +70,53 @@ public:
     static bool ReadChargingStatus();
     static bool ReadEnergy();
 
+    //---------------------------------------------------------
+    // Process completed asynchronous Solar response
+    //---------------------------------------------------------
+    static bool ProcessAsyncSolarResponse();
+
+    //---------------------------------------------------------
+    // Start asynchronous Solar polling
+    //---------------------------------------------------------
+    static bool StartAsyncSolar();
+
+    //---------------------------------------------------------
+    // Handle asynchronous Solar communication failure
+    //---------------------------------------------------------
+    static void HandleAsyncSolarFailure();
+
+    static bool StartAsyncBattery();
+    static bool ProcessAsyncBatteryResponse();
+    static void HandleAsyncBatteryFailure();
+
 private:
     static bool ReadRegisters(
         uint16_t address,
         uint16_t count,
         uint16_t* values);
+
+    //---------------------------------------------------------
+    // Apply decoded Solar registers to DataManager
+    //---------------------------------------------------------
+    static void ApplySolarData(
+        const EpeverMap::Solar& solar);
+
+    static void ApplyBatteryData(
+        const EpeverMap::Battery& battery);
+
+    //---------------------------------------------------------
+    // Decode asynchronous Solar response
+    //---------------------------------------------------------
+    static bool DecodeSolarResponse(
+        const uint8_t* response,
+        size_t length,
+        EpeverMap::Solar& solar);
+
+    static bool DecodeBatteryResponse(
+        const uint8_t* response,
+        size_t length,
+        EpeverMap::Battery& battery
+    );
 };
 
 #endif

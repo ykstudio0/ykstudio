@@ -26,6 +26,38 @@ public:
         InvalidByteCount
     };
 
+    //---------------------------------------------------------
+    // Asynchronous Modbus State
+    //---------------------------------------------------------
+    enum class AsyncState : uint8_t
+    {
+        Idle,
+        Waiting,
+        Success,
+        Failed
+    };
+
+    //---------------------------------------------------------
+    // Asynchronous Modbus Transaction
+    //---------------------------------------------------------
+    struct AsyncTransaction
+    {
+        AsyncState state = AsyncState::Idle;
+
+        uint8_t slave = 0U;
+        uint16_t address = 0U;
+        uint16_t count = 0U;
+
+        uint32_t startMillis = 0U;
+
+        uint8_t retryCount = 0U;
+        bool recoveryAttempted = false;
+
+        uint8_t response[64] = {};
+        size_t responseLength = 0U;
+        size_t expectedLength = 0U;
+    };
+
     static bool Begin();
     static bool IsReady();
 
@@ -35,6 +67,25 @@ public:
         uint16_t count,
         uint8_t* response,
         size_t responseSize);
+
+    //---------------------------------------------------------
+    // Asynchronous Modbus Interface
+    //---------------------------------------------------------
+    static bool StartReadInputRegisters(
+        uint8_t slave,
+        uint16_t address,
+        uint16_t count);
+
+    static void UpdateAsync();
+
+    static AsyncState GetAsyncState();
+
+    static bool CopyAsyncResponse(
+        uint8_t* buffer,
+        size_t bufferSize,
+        size_t& length);
+
+    static void ResetAsync();
 
     static ErrorReason GetLastErrorReason();
 
@@ -52,11 +103,21 @@ private:
 
     static uint32_t ConsecutiveFrameErrorCount;
 
+    //---------------------------------------------------------
+    // Asynchronous Modbus Transaction
+    //---------------------------------------------------------
+    static AsyncTransaction Transaction;
+
     static constexpr uint32_t
         FRAME_ERROR_THRESHOLD =
             3U;
 
     static void RecordFrameError();
+
+    //---------------------------------------------------------
+    // Asynchronous Modbus - Request Transmission
+    //---------------------------------------------------------
+    static void SendAsyncRequest();
 };
 
 #endif

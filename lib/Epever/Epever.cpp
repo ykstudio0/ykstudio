@@ -74,6 +74,9 @@ bool Epever::Update()
     return ok;
 }
 
+//-------------------------------------------------------------
+// Epever - Read Solar
+//-------------------------------------------------------------
 bool Epever::ReadSolar()
 {
     EpeverMap::Solar solar;
@@ -81,7 +84,7 @@ bool Epever::ReadSolar()
     if (!ReadRegisters(
         EpeverRegister::PV_ARRAY_VOLTAGE,
         sizeof(solar) / sizeof(uint16_t),
-        (uint16_t*)&solar))
+        reinterpret_cast<uint16_t*>(&solar)))
     {
         ++DataManager::CommStats.solarTimeoutCount;
         CountModbusError();
@@ -90,17 +93,124 @@ bool Epever::ReadSolar()
         return false;
     }
 
+    ApplySolarData(solar);
+
+    return true;
+}
+
+//-------------------------------------------------------------
+// Epever - Decode Solar Response
+//-------------------------------------------------------------
+bool Epever::DecodeSolarResponse(
+    const uint8_t* response,
+    size_t length,
+    EpeverMap::Solar& solar)
+{
+    constexpr size_t REGISTER_COUNT =
+        sizeof(EpeverMap::Solar) / sizeof(uint16_t);
+
+    constexpr size_t EXPECTED_LENGTH =
+        5U + REGISTER_COUNT * 2U;
+
+    //---------------------------------------------------------
+    // Validate response
+    //---------------------------------------------------------
+    if (response == nullptr ||
+        length != EXPECTED_LENGTH)
+    {
+        return false;
+    }
+
+    if (response[0] != MODBUS_SLAVE_ID ||
+        response[1] != MODBUS_READ_INPUT_REGISTERS ||
+        response[2] != REGISTER_COUNT * 2U)
+    {
+        return false;
+    }
+
+    //---------------------------------------------------------
+    // Decode Modbus registers (Big Endian)
+    //---------------------------------------------------------
+    solar.voltage =
+        (static_cast<uint16_t>(response[3]) << 8) |
+        response[4];
+
+    solar.current =
+        (static_cast<uint16_t>(response[5]) << 8) |
+        response[6];
+
+    solar.powerLow =
+        (static_cast<uint16_t>(response[7]) << 8) |
+        response[8];
+
+    solar.powerHigh =
+        (static_cast<uint16_t>(response[9]) << 8) |
+        response[10];
+
+    return true;
+}
+
+//-------------------------------------------------------------
+// Epever - Process Asynchronous Solar Response
+//-------------------------------------------------------------
+bool Epever::ProcessAsyncSolarResponse()
+{
+    uint8_t response[64] = {};
+    size_t responseLength = 0U;
+
+    //---------------------------------------------------------
+    // Copy validated Modbus response
+    //---------------------------------------------------------
+    if (!ModbusRTU::CopyAsyncResponse(
+            response,
+            sizeof(response),
+            responseLength))
+    {
+        return false;
+    }
+
+    //---------------------------------------------------------
+    // Decode Solar registers
+    //---------------------------------------------------------
+    EpeverMap::Solar solar = {};
+
+    if (!DecodeSolarResponse(
+            response,
+            responseLength,
+            solar))
+    {
+        return false;
+    }
+
+    //---------------------------------------------------------
+    // Update DataManager
+    //---------------------------------------------------------
+    ApplySolarData(solar);
+
+    return true;
+}
+
+//-------------------------------------------------------------
+// Epever - Apply Solar Data
+// Description:
+//   Convert decoded Solar registers and update DataManager.
+//-------------------------------------------------------------
+void Epever::ApplySolarData(
+    const EpeverMap::Solar& solar)
+{
     // PV Voltage
-    DataManager::Solar.voltage = ToVoltage(solar.voltage);
+    DataManager::Solar.voltage =
+        ToVoltage(solar.voltage);
 
     // PV Current
-    DataManager::Solar.current = ToCurrent(solar.current);
+    DataManager::Solar.current =
+        ToCurrent(solar.current);
 
     // PV Power (32bit)
     uint32_t rawPower =
-        ((uint32_t)solar.powerHigh << 16) |
+        (static_cast<uint32_t>(solar.powerHigh) << 16) |
         solar.powerLow;
-    
+
     DataManager::Solar.power = ToPower(rawPower);
 
     // Solar Status
@@ -111,14 +221,158 @@ bool Epever::ReadSolar()
     DataManager::Solar.status.lastUpdate = millis();
 
     Logger::Info("SOLAR", "Read OK");
+}
+
+//-------------------------------------------------------------
+// Epever - Start Asynchronous Solar Polling
+//-------------------------------------------------------------
+bool Epever::StartAsyncSolar()
+{
+    constexpr uint16_t REGISTER_COUNT =
+        sizeof(EpeverMap::Solar) / sizeof(uint16_t);
+
+    return ModbusRTU::StartReadInputRegisters(
+        MODBUS_SLAVE_ID,
+        EpeverRegister::PV_ARRAY_VOLTAGE,
+        REGISTER_COUNT
+    );
+}
+
+//-------------------------------------------------------------
+// Epever - Handle Asynchronous Solar Failure
+//-------------------------------------------------------------
+void Epever::HandleAsyncSolarFailure()
+{
+    ++DataManager::CommStats.solarTimeoutCount;
+
+    CountModbusError();
+
+    DataManager::Solar.status.updated = false;
+
+    Logger::Warning(
+        "EPEVER ASYNC",
+        "Solar communication failed"
+    );
+}
+
+bool Epever::DecodeBatteryResponse(
+    const uint8_t* response,
+    size_t length,
+    EpeverMap::Battery& battery)
+{
+    //-----------------------------------------------------
+    // Battery: 4 registers
+    // Modbus RTU: Slave + Function + ByteCount
+    //             + Data(8) + CRC(2) = 13 bytes
+    //-----------------------------------------------------
+    constexpr size_t REGISTER_COUNT = 4U;
+    constexpr size_t EXPECTED_LENGTH =
+        5U + REGISTER_COUNT * 2U;
+
+    if (response == nullptr ||
+        length != EXPECTED_LENGTH)
+    {
+        return false;
+    }
+
+    if (response[0] != MODBUS_SLAVE_ID ||
+        response[1] != 0x04U ||
+        response[2] != REGISTER_COUNT * 2U)
+    {
+        return false;
+    }
+
+    //-----------------------------------------------------
+    // Modbus register data: High byte first
+    //-----------------------------------------------------
+    const auto readRegister =
+        [response](size_t offset) -> uint16_t
+    {
+        return
+            (static_cast<uint16_t>(
+                response[offset]) << 8) |
+            static_cast<uint16_t>(
+                response[offset + 1U]);
+    };
+
+    battery.voltage   = readRegister(3U);
+    battery.current   = readRegister(5U);
+    battery.powerLow  = readRegister(7U);
+    battery.powerHigh = readRegister(9U);
 
     return true;
+}
+
+//-------------------------------------------------------------
+// Start asynchronous Battery register request
+//-------------------------------------------------------------
+bool Epever::StartAsyncBattery()
+{
+    return ModbusRTU::StartReadInputRegisters(
+        MODBUS_SLAVE_ID,
+        EpeverRegister::EPEVER_BATTERY_VOLTAGE,
+        4U
+    );
+}
+
+//-------------------------------------------------------------
+// Process asynchronous Battery response
+//-------------------------------------------------------------
+bool Epever::ProcessAsyncBatteryResponse()
+{
+    uint8_t response[64] = {};
+    size_t responseLength = 0U;
+
+    if (!ModbusRTU::CopyAsyncResponse(
+            response,
+            sizeof(response),
+            responseLength))
+    {
+        return false;
+    }
+
+    EpeverMap::Battery battery{};
+
+    if (!DecodeBatteryResponse(
+            response,
+            responseLength,
+            battery))
+    {
+        return false;
+    }
+
+    ApplyBatteryData(battery);
+
+    Logger::Info(
+        "BATTERY",
+        "Async Read OK"
+    );
+
+    return true;
+}
+
+//-------------------------------------------------------------
+// Handle asynchronous Battery communication failure
+//-------------------------------------------------------------
+void Epever::HandleAsyncBatteryFailure()
+{
+    DataManager::ControllerBattery
+        .status.updated = false;
+
+    const auto reason =
+        ModbusRTU::GetLastErrorReason();
+
+    Logger::Warning(
+        "EPEVER ASYNC",
+        "Battery Failed, Reason=" +
+        String(static_cast<uint8_t>(reason))
+    );
 }
 
 // Read Battery Information
 bool Epever::ReadBattery()
 {
-    EpeverMap::Battery battery;
+    EpeverMap::Battery battery{};
 
     if (!ReadRegisters(
             EpeverRegister::EPEVER_BATTERY_VOLTAGE,
@@ -131,6 +385,14 @@ bool Epever::ReadBattery()
         return false;
     }
 
+    ApplyBatteryData(battery);
+
+    return true;
+}
+
+void Epever::ApplyBatteryData(
+    const EpeverMap::Battery& battery)
+{
     DataManager::ControllerBattery.voltage =
         ToVoltage(battery.voltage);
 
@@ -153,8 +415,6 @@ bool Epever::ReadBattery()
 
     DataManager::ControllerBattery
         .status.lastUpdate = millis();
-
-    return true;
 }
 
 bool Epever::ReadLoad()
