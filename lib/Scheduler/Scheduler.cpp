@@ -492,7 +492,37 @@ void Scheduler::Run()
 
     if constexpr (ENABLE_BMS_SERVICE)
     {
+        const uint32_t bmsStartUs = micros();
+
         SVEMS::Service::BMSService::Update();
+
+        const uint32_t bmsElapsedUs =
+            micros() - bmsStartUs;
+
+        static uint32_t bmsMaxElapsedUs = 0;
+
+        if (bmsElapsedUs > bmsMaxElapsedUs)
+        {
+            bmsMaxElapsedUs = bmsElapsedUs;
+        }
+
+        static uint32_t bmsLastReportMs = 0;
+
+        const uint32_t now = millis();
+
+        if (now - bmsLastReportMs >= 5000U)
+        {
+            bmsLastReportMs = now;
+
+            Logger::Info(
+                "BMS PERF",
+                "Max Update Time=" +
+                String(bmsMaxElapsedUs) +
+                " us"
+            );
+
+            bmsMaxElapsedUs = 0;
+        }
     }
 
     ChargeProtection::Update();

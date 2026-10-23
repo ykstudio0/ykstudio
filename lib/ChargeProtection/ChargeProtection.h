@@ -17,4 +17,5 @@ public:
 
 private:
     static bool s_inhibit;
+    static bool s_overVoltageLatched;
 };
