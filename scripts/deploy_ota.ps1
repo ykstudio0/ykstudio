@@ -178,21 +178,6 @@ if ($LASTEXITCODE -ne 0)
 {
     throw "latest.json upload failed."
 }
-
-# ---------------------------------------------------------
-# 3. Remote Activation
-# ---------------------------------------------------------
-
-ssh -o BatchMode=yes `
-    "$ServerHost" `
-    $RemoteCommand
-
-if ($LASTEXITCODE -ne 0)
-{
-    throw "Remote activation failed."
-}
-
-
 #---------------------------------------------------------
 # Activate Files
 #---------------------------------------------------------
