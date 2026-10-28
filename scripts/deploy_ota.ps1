@@ -52,8 +52,7 @@ $LatestJsonPath =
 # Server Settings
 #---------------------------------------------------------
 
-$ServerUser = "svems"
-$ServerHost = "192.168.0.15"
+$ServerHost = "svems-server"
 
 $ServerBase =
     "/home/svems/svems-server/firmware/$Target"
@@ -153,23 +152,46 @@ Write-Host ""
 
 Write-Host "Uploading temporary files..."
 
-scp `
+
+# ---------------------------------------------------------
+# 1. Firmware Upload
+# ---------------------------------------------------------
+
+scp -o BatchMode=yes `
     $FirmwarePath `
-    "${ServerUser}@${ServerHost}:${ServerBase}/firmware.bin.tmp"
+    "${ServerHost}:${ServerBase}/firmware.bin.tmp"
 
 if ($LASTEXITCODE -ne 0)
 {
     throw "Firmware upload failed."
 }
 
-scp `
+# ---------------------------------------------------------
+# 2. latest.json Upload
+# ---------------------------------------------------------
+
+scp -o BatchMode=yes `
     $LatestJsonPath `
-    "${ServerUser}@${ServerHost}:${ServerBase}/latest.json.tmp"
+    "${ServerHost}:${ServerBase}/latest.json.tmp"
 
 if ($LASTEXITCODE -ne 0)
 {
     throw "latest.json upload failed."
 }
+
+# ---------------------------------------------------------
+# 3. Remote Activation
+# ---------------------------------------------------------
+
+ssh -o BatchMode=yes `
+    "$ServerHost" `
+    $RemoteCommand
+
+if ($LASTEXITCODE -ne 0)
+{
+    throw "Remote activation failed."
+}
+
 
 #---------------------------------------------------------
 # Activate Files
@@ -182,9 +204,13 @@ $RemoteCommand =
     "mv '$ServerBase/firmware.bin.tmp' '$ServerBase/firmware.bin' && " +
     "mv '$ServerBase/latest.json.tmp' '$ServerBase/latest.json'"
 
-ssh `
-    "${ServerUser}@${ServerHost}" `
-    $RemoteCommand
+# ---------------------------------------------------------
+# 3. Remote Activation
+# ---------------------------------------------------------
+
+ssh -T -n -o BatchMode=yes `
+    "$ServerHost" `
+    "$RemoteCommand"
 
 if ($LASTEXITCODE -ne 0)
 {
