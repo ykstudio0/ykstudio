@@ -416,6 +416,14 @@ namespace SVEMS::Telemetry
         vehicle["reverseChargeSafety"] =
             data.vehicle.reverseChargeSafety;
 
+        // Vehicle SOC telemetry concept
+        vehicle["soc"] =
+            data.vehicle.soc;
+
+        vehicle["socValid"] =
+            data.vehicle.socValid;
+        
+
         //---------------------------------------------------------
         // Serialize
         //---------------------------------------------------------

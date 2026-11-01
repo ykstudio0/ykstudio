@@ -26,6 +26,7 @@ public:
         static void RunParkingInvalidateFailureTest();
     #endif
 
+    static bool GetCurrentSoc(float& soc);
 private:
     static VehicleBatteryService BatteryService;
 

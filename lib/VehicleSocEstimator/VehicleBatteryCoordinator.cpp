@@ -43,6 +43,39 @@ bool VehicleBatteryCoordinator::ParkingSavePending = false;
 uint32_t VehicleBatteryCoordinator::LastParkingSaveAttemptMillis = 0;
 
 //-------------------------------------------------------------
+// GetCurrentSoc
+// Description : Returns current vehicle battery SOC
+//               EngineOn = IBS SOC
+//               Parking  = Estimated SOC
+//-------------------------------------------------------------
+bool VehicleBatteryCoordinator::GetCurrentSoc(float& soc)
+{
+    soc = 0.0f;
+
+    if (!BatteryService.HasIbsSoc())
+    {
+        return false;
+    }
+
+    VehiclePowerState state =
+        BatteryService.GetPowerState();
+
+    if (state == VehiclePowerState::EngineOn)
+    {
+        soc = BatteryService.GetIbsSoc();
+        return true;
+    }
+
+    if (state == VehiclePowerState::Parking)
+    {
+        soc = BatteryService.GetEstimatedSoc();
+        return true;
+    }
+
+    return false;
+}
+
+//-------------------------------------------------------------
 // Begin
 //-------------------------------------------------------------
 void VehicleBatteryCoordinator::Begin()

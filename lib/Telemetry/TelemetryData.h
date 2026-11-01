@@ -197,6 +197,10 @@ namespace SVEMS::Telemetry
 
         const char* reverseChargeSafety =
             "None";
+
+        // Vehicle Battery SOC
+        float soc = 0.0f;
+        bool socValid = false;
     };
 
     struct DeviceConfigData

@@ -17,6 +17,7 @@
 #include "ChargeRelayDriver.h"
 #include "BuildConfig.h"
 #include "ReverseChargeTypes.h"
+#include "VehicleBatteryCoordinator.h"
 
 namespace SVEMS::Telemetry
 {
@@ -320,6 +321,17 @@ namespace SVEMS::Telemetry
         data.vehicle.reverseChargeSafety =
             ReverseCharge::ToString(
                 DataManager::ReverseCharge.safety
+            );
+    
+        // Vehicle Battery SOC
+        // EngineOn : IBS SOC
+        // Parking  : Estimated SOC
+
+        data.vehicle.soc = 0.0f;
+
+        data.vehicle.socValid =
+            VehicleBatteryCoordinator::GetCurrentSoc(
+                data.vehicle.soc
             );
     }
 }
