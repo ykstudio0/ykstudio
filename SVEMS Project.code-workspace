@@ -1,0 +1,23 @@
+{
+    "folders": [
+        {
+            "name": "SVEMS Project",
+            "path": "."
+        },
+        {
+            "name": "SVEMS-RemoteDisplay",
+            "path": "../SVEMS-RemoteDisplay"
+        },
+        {
+            "path": "../Test Project"
+        }
+    ],
+    "settings": {
+        "search.exclude": {
+            "**/.pio": true,
+            "**/node_modules": true,
+            "**/.git": true
+        },
+        "search.followSymlinks": false
+    }
+}
