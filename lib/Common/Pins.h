@@ -80,9 +80,9 @@ constexpr uint8_t PIN_CAN_RX = 39;
 // ===========================
 constexpr uint8_t PIN_CHARGE_INHIBIT = 42;
 
-// ===========================
-// GNSS / GPS Configuration
-// ===========================
+//---------------------------------------------------------
+// GNSS UART
+//---------------------------------------------------------
 constexpr uint8_t PIN_GNSS_RX = 44;
 constexpr uint8_t PIN_GNSS_TX = 43;
 

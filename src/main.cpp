@@ -39,6 +39,7 @@
 #include "ChargeProtection.h"
 #include "VehicleCanService.h"
 #include "VehicleBatteryCoordinator.h"
+#include "GNSSService.h"
 
 namespace
 {
@@ -123,6 +124,10 @@ void setup()
     RS485::Begin();
     ModbusRTU::Begin();
     DeviceManager::Begin();
+
+    // GNSS UART initialization
+    SVEMS::Service::GNSSService::Begin();
+    
     const bool vehicleCanReady =
         VehicleCanService::Begin();
 
