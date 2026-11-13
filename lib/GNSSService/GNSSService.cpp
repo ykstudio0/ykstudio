@@ -13,12 +13,15 @@
 #include "DFRobot_GNSS.h"
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
-
+#include <freertos/semphr.h>
 
 namespace
 {
     constexpr uint32_t GNSS_BAUD = 9600U;
     constexpr size_t NMEA_BUFFER_SIZE = 128U;
+
+    // Protect the shared GNSSData snapshot.
+    SemaphoreHandle_t gnssDataMutex = nullptr;
 
     HardwareSerial GNSSSerial(1);
 
@@ -514,6 +517,93 @@ namespace
     }
 
     //---------------------------------------------------------
+    // RMC UTC -> Unix Timestamp (seconds)
+    // Supported years: 2000 - 2099
+    //---------------------------------------------------------
+
+    bool ConvertRmcUtcToUnix(
+        const RMCResult& rmc,
+        uint64_t& timestamp)
+    {
+        timestamp = 0ULL;
+
+        if (!rmc.parsed)
+            return false;
+
+        const char* d = rmc.utcDate;
+        const char* t = rmc.utcTime;
+
+        const int year = 2000 +
+            (d[4] - '0') * 10 + (d[5] - '0');
+
+        const int month =
+            (d[2] - '0') * 10 + (d[3] - '0');
+
+        const int day =
+            (d[0] - '0') * 10 + (d[1] - '0');
+
+        const int hour =
+            (t[0] - '0') * 10 + (t[1] - '0');
+
+        const int minute =
+            (t[2] - '0') * 10 + (t[3] - '0');
+
+        const int second =
+            (t[4] - '0') * 10 + (t[5] - '0');
+
+        if (month < 1 || month > 12 ||
+            hour > 23 || minute > 59 || second > 59)
+        {
+            return false;
+        }
+
+        const auto isLeapYear = [](int y) -> bool
+        {
+            return (y % 4 == 0) &&
+                   ((y % 100 != 0) || (y % 400 == 0));
+        };
+
+        const int daysInMonth[12] = {
+            31, 28, 31, 30, 31, 30,
+            31, 31, 30, 31, 30, 31
+        };
+
+        int maxDay = daysInMonth[month - 1];
+
+        if (month == 2 && isLeapYear(year))
+            maxDay = 29;
+
+        if (day < 1 || day > maxDay)
+            return false;
+
+        // Days from 1970-01-01 to 2000-01-01.
+        uint64_t days = 10957ULL;
+
+        for (int y = 2000; y < year; ++y)
+            days += isLeapYear(y) ? 366ULL : 365ULL;
+
+        for (int m = 1; m < month; ++m)
+        {
+            days += static_cast<uint64_t>(
+                daysInMonth[m - 1]
+            );
+
+            if (m == 2 && isLeapYear(year))
+                ++days;
+        }
+
+        days += static_cast<uint64_t>(day - 1);
+
+        timestamp =
+            days * 86400ULL +
+            static_cast<uint64_t>(hour) * 3600ULL +
+            static_cast<uint64_t>(minute) * 60ULL +
+            static_cast<uint64_t>(second);
+
+        return true;
+    }
+
+    //---------------------------------------------------------
     // GNSS Fix Validation
     //---------------------------------------------------------
 
@@ -719,6 +809,22 @@ namespace SVEMS::Service
 
         Serial.println("[GNSS] Initializing...");
 
+        // Create the GNSS data mutex before starting the worker.
+        if (gnssDataMutex == nullptr)
+        {
+            gnssDataMutex = xSemaphoreCreateMutex();
+
+            if (gnssDataMutex == nullptr)
+            {
+                Serial.println("[GNSS] Mutex Create Failed");
+                return false;
+            }
+        }
+
+        Serial.println("[GNSS] Mutex Ready");
+
+        GNSSSerial.setRxBufferSize(8192);
+        
         if (!gnss.begin())
         {
             Serial.println("[GNSS] Device NOT detected!");
@@ -766,7 +872,33 @@ namespace SVEMS::Service
 
     GNSSData GNSSService::GetData()
     {
-        return Data;
+        GNSSData snapshot{};
+
+        if (gnssDataMutex == nullptr)
+            return snapshot;
+
+        if (xSemaphoreTake(
+                gnssDataMutex,
+                pdMS_TO_TICKS(20)) == pdTRUE)
+        {
+            snapshot = Data;
+            xSemaphoreGive(gnssDataMutex);
+        }
+        else
+        {
+            return snapshot;
+        }
+
+        // Reject stale published data.
+        constexpr uint32_t DATA_MAX_AGE_MS = 15000U;
+
+        if (snapshot.valid &&
+            (millis() - snapshot.lastUpdateMs) > DATA_MAX_AGE_MS)
+        {
+            snapshot = GNSSData{};
+        }
+
+        return snapshot;
     }
 
     //---------------------------------------------------------
@@ -784,7 +916,7 @@ namespace SVEMS::Service
 
     bool GNSSService::HasValidData()
     {
-        return Data.valid;
+        return GetData().valid;
     }
 
     //---------------------------------------------------------
@@ -867,6 +999,78 @@ namespace SVEMS::Service
 
             const bool fixValid = IsGnssFixValid(nowMs);
 
+            //---------------------------------------------------------
+            // GNSSData Snapshot
+            //---------------------------------------------------------
+
+            GNSSData snapshot{};
+
+            uint64_t unixTimestamp = 0ULL;
+
+            if (fixValid &&
+                ConvertRmcUtcToUnix(latestRMC, unixTimestamp))
+            {
+                // Position and speed from RMC
+                snapshot.latitude = latestRMC.latitude;
+                snapshot.longitude = latestRMC.longitude;
+                snapshot.speedKmh = latestRMC.speedKmh;
+
+                // Altitude and fix information from GGA
+                snapshot.altitude = latestGGA.altitude;
+                snapshot.satellites = latestGGA.satellites;
+                snapshot.fixQuality = latestGGA.fixQuality;
+                snapshot.hdop = latestGGA.hdop;
+
+                // UTC conversion will be added in Step 9-2D-3.
+                snapshot.utcTimestamp = unixTimestamp;
+
+                snapshot.lastUpdateMs = nowMs;
+                snapshot.valid = true;
+            }
+
+            // Publish a complete snapshot under the mutex.
+            bool published = false;
+
+            if (gnssDataMutex != nullptr &&
+                xSemaphoreTake(
+                    gnssDataMutex,
+                    pdMS_TO_TICKS(20)) == pdTRUE)
+            {
+                Data = snapshot;
+
+                xSemaphoreGive(gnssDataMutex);
+                published = true;
+            }
+
+            if (!published)
+            {
+                Serial.println("[GNSS] Data Publish Failed");
+            }
+
+            if (published)
+            {
+                Serial.printf(
+                    "[GNSS] DATA Valid=%s Lat=%.7f Lon=%.7f\n",
+                    snapshot.valid ? "YES" : "NO",
+                    snapshot.latitude,
+                    snapshot.longitude
+                );
+
+                Serial.printf(
+                    "[GNSS] DATA Speed=%.2f ALT=%.1f SAT=%u\n",
+                    snapshot.speedKmh,
+                    snapshot.altitude,
+                    static_cast<unsigned>(snapshot.satellites)
+                );
+
+                Serial.printf(
+                    "[GNSS] DATA UTC=%llu\n",
+                    static_cast<unsigned long long>(
+                        snapshot.utcTimestamp
+                    )
+                );
+            }
+
             const uint32_t ggaAge =
                 latestGGA.parsed
                     ? (nowMs - latestGGA.receivedMs)
@@ -890,9 +1094,50 @@ namespace SVEMS::Service
 
             if (nmeaChecksumErrorCount != lastChecksumErrorCount)
             {
+                const char* sentence = nmeaLastChecksumError;
+                const size_t length = strlen(sentence);
+
+                uint8_t calculated = 0U;
+                size_t starPos = length;
+                unsigned starCount = 0U;
+
+                for (size_t i = 1U; i < length; ++i)
+                {
+                    if (sentence[i] == '*')
+                    {
+                        ++starCount;
+
+                        if (starPos == length)
+                            starPos = i;
+                    }
+
+                    if (starPos == length)
+                    {
+                        calculated ^=
+                            static_cast<uint8_t>(sentence[i]);
+                    }
+                }
+
+                int received = -1;
+
+                if (starPos + 3U == length)
+                {
+                    const int high = HexValue(sentence[starPos + 1U]);
+                    const int low  = HexValue(sentence[starPos + 2U]);
+
+                    if (high >= 0 && low >= 0)
+                        received = (high << 4) | low;
+                }
+
                 Serial.printf(
-                    "[GNSS] CHECKSUM ERROR: %s\n",
-                    nmeaLastChecksumError
+                    "[GNSS CRC] Len=%u Calc=%02X Rx=%02X Stars=%u Raw=%s\n",
+                    static_cast<unsigned>(length),
+                    static_cast<unsigned>(calculated),
+                    static_cast<unsigned>(
+                        received >= 0 ? received : 0xFFFF
+                    ),
+                    starCount,
+                    sentence
                 );
 
                 lastChecksumErrorCount = nmeaChecksumErrorCount;
