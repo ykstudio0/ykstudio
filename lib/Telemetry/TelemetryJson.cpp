@@ -423,6 +423,45 @@ namespace SVEMS::Telemetry
         vehicle["socValid"] =
             data.vehicle.socValid;
         
+        //---------------------------------------------------------
+        // GNSS
+        //---------------------------------------------------------
+
+        JsonObject gnss =
+            doc["gnss"].to<JsonObject>();
+
+        gnss["state"] =
+            data.gnss.state;
+
+        gnss["valid"] =
+            data.gnss.valid;
+
+        gnss["latitude"] =
+            data.gnss.latitude;
+
+        gnss["longitude"] =
+            data.gnss.longitude;
+
+        gnss["altitude"] =
+            data.gnss.altitude;
+
+        gnss["speedKmh"] =
+            data.gnss.speedKmh;
+
+        gnss["satellites"] =
+            data.gnss.satellites;
+
+        gnss["fixQuality"] =
+            data.gnss.fixQuality;
+
+        gnss["hdop"] =
+            data.gnss.hdop;
+
+        gnss["utcTimestamp"] =
+            data.gnss.utcTimestamp;
+
+        gnss["lastUpdateMs"] =
+            data.gnss.lastUpdateMs;
 
         //---------------------------------------------------------
         // Serialize

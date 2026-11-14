@@ -14,9 +14,19 @@
 
 namespace SVEMS::Service
 {
+    enum class GNSSDataState : uint8_t
+    {
+        Invalid = 0,
+        Valid,
+        Stale
+    };
+
     struct GNSSData
     {
         bool valid = false;
+
+        // Step 9-3B: GNSS data freshness state
+        GNSSDataState state = GNSSDataState::Invalid;
 
         double latitude = 0.0;
         double longitude = 0.0;
@@ -51,5 +61,7 @@ namespace SVEMS::Service
 
         static bool Ready;
         static GNSSData Data;
+        static GNSSData lastValidData;
+        static bool hasLastValidData;
     };
 }

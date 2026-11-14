@@ -18,6 +18,7 @@
 #include "BuildConfig.h"
 #include "ReverseChargeTypes.h"
 #include "VehicleBatteryCoordinator.h"
+#include "GNSSService.h"
 
 namespace SVEMS::Telemetry
 {
@@ -333,5 +334,59 @@ namespace SVEMS::Telemetry
             VehicleBatteryCoordinator::GetCurrentSoc(
                 data.vehicle.soc
             );
+
+        //---------------------------------------------------------
+        // GNSS
+        //---------------------------------------------------------
+
+        const auto gnss =
+            SVEMS::Service::GNSSService::GetData();
+
+        // GNSS State
+        switch (gnss.state)
+        {
+            case SVEMS::Service::GNSSDataState::Valid:
+                data.gnss.state = "Valid";
+                break;
+
+            case SVEMS::Service::GNSSDataState::Stale:
+                data.gnss.state = "Stale";
+                break;
+
+            default:
+                data.gnss.state = "Invalid";
+                break;
+        }
+
+        // GNSS Data
+        data.gnss.valid =
+            gnss.valid;
+
+        data.gnss.latitude =
+            gnss.latitude;
+
+        data.gnss.longitude =
+            gnss.longitude;
+
+        data.gnss.altitude =
+            gnss.altitude;
+
+        data.gnss.speedKmh =
+            gnss.speedKmh;
+
+        data.gnss.satellites =
+            gnss.satellites;
+
+        data.gnss.fixQuality =
+            gnss.fixQuality;
+
+        data.gnss.hdop =
+            gnss.hdop;
+
+        data.gnss.utcTimestamp =
+            gnss.utcTimestamp;
+
+        data.gnss.lastUpdateMs =
+            gnss.lastUpdateMs;
     }
 }

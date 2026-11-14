@@ -219,6 +219,29 @@ namespace SVEMS::Telemetry
         bool rtc = false;
     };
 
+    //---------------------------------------------------------
+    // GNSS Telemetry
+    //---------------------------------------------------------
+    struct TelemetryGnssData
+    {
+        String state = "Invalid";
+        bool valid = false;
+
+        double latitude = 0.0;
+        double longitude = 0.0;
+
+        float altitude = 0.0f;
+        float speedKmh = 0.0f;
+
+        uint8_t satellites = 0U;
+        uint8_t fixQuality = 0U;
+
+        float hdop = 0.0f;
+
+        uint64_t utcTimestamp = 0ULL;
+        uint32_t lastUpdateMs = 0U;
+    };
+
     struct TelemetryData
     {
         TimestampData timestamp;
@@ -233,5 +256,8 @@ namespace SVEMS::Telemetry
         DeviceConfigData deviceConfig;
         DeviceStatusData deviceStatus;
         VehicleData vehicle;
+
+        // Step 9-3C: GNSS Telemetry
+        TelemetryGnssData gnss;
     };
 }

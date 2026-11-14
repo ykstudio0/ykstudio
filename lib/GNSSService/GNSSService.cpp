@@ -609,6 +609,7 @@ namespace
 
     constexpr uint32_t GNSS_DATA_TIMEOUT_MS = 15000U;
     constexpr uint32_t GNSS_PAIR_MAX_DIFF_MS = 3000U;
+    constexpr uint32_t GNSS_STALE_TIMEOUT_MS = 30000U;
 
     bool IsGnssFixValid(uint32_t nowMs)
     {
@@ -796,6 +797,10 @@ namespace SVEMS::Service
 
     GNSSData GNSSService::Data{};
 
+    // Step 9-3B: Last validated GNSS position
+    GNSSData GNSSService::lastValidData{};
+    bool GNSSService::hasLastValidData = false;
+
     //---------------------------------------------------------
     // Begin
     //---------------------------------------------------------
@@ -889,13 +894,28 @@ namespace SVEMS::Service
             return snapshot;
         }
 
-        // Reject stale published data.
+        // Step 9-3B-2B: Validate published data freshness.
         constexpr uint32_t DATA_MAX_AGE_MS = 15000U;
+        constexpr uint32_t STALE_MAX_AGE_MS = 30000U;
 
-        if (snapshot.valid &&
-            (millis() - snapshot.lastUpdateMs) > DATA_MAX_AGE_MS)
+        if (snapshot.state != GNSSDataState::Invalid)
         {
-            snapshot = GNSSData{};
+            const uint32_t dataAge =
+                millis() - snapshot.lastUpdateMs;
+
+            if (dataAge > STALE_MAX_AGE_MS)
+            {
+                // Last validated position has expired.
+                snapshot = GNSSData{};
+            }
+            else if (snapshot.state == GNSSDataState::Valid &&
+                    dataAge > DATA_MAX_AGE_MS)
+            {
+                // Worker has not refreshed the published data.
+                // Preserve the old position, but mark it as stale.
+                snapshot.valid = false;
+                snapshot.state = GNSSDataState::Stale;
+            }
         }
 
         return snapshot;
@@ -1036,6 +1056,32 @@ namespace SVEMS::Service
                     gnssDataMutex,
                     pdMS_TO_TICKS(20)) == pdTRUE)
             {
+                if (snapshot.valid)
+                {
+                    snapshot.state = GNSSDataState::Valid;
+
+                    // Preserve the last validated GNSS position.
+                    lastValidData = snapshot;
+                    hasLastValidData = true;
+                }
+                else if (hasLastValidData &&
+                        (nowMs - lastValidData.lastUpdateMs) <=
+                            GNSS_STALE_TIMEOUT_MS)
+                {
+                    // Preserve the last known position.
+                    snapshot = lastValidData;
+
+                    snapshot.valid = false;
+                    snapshot.state = GNSSDataState::Stale;
+                }
+                else
+                {
+                    // No usable GNSS position.
+                    snapshot = GNSSData{};
+                    snapshot.state = GNSSDataState::Invalid;
+                }
+
+                // Publish GNSS data.
                 Data = snapshot;
 
                 xSemaphoreGive(gnssDataMutex);
@@ -1045,6 +1091,46 @@ namespace SVEMS::Service
             if (!published)
             {
                 Serial.println("[GNSS] Data Publish Failed");
+            }
+
+            if (published)
+            {
+                GNSSData stateSnapshot{};
+
+                if (gnssDataMutex != nullptr &&
+                    xSemaphoreTake(gnssDataMutex, pdMS_TO_TICKS(20)) == pdTRUE)
+                {
+                    stateSnapshot = Data;
+                    xSemaphoreGive(gnssDataMutex);
+
+                    const char* stateName = "Invalid";
+
+                    switch (stateSnapshot.state)
+                    {
+                        case GNSSDataState::Valid:
+                            stateName = "Valid";
+                            break;
+
+                        case GNSSDataState::Stale:
+                            stateName = "Stale";
+                            break;
+
+                        default:
+                            break;
+                    }
+
+                    const uint32_t dataAge =
+                        stateSnapshot.state == GNSSDataState::Invalid
+                            ? 0U
+                            : (nowMs - stateSnapshot.lastUpdateMs);
+
+                    Serial.printf(
+                        "[GNSS STATE] %s Valid=%s Age=%lu ms\n",
+                        stateName,
+                        stateSnapshot.valid ? "YES" : "NO",
+                        static_cast<unsigned long>(dataAge)
+                    );
+                }
             }
 
             if (published)
