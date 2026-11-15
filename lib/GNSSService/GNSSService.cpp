@@ -14,6 +14,7 @@
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
 #include <freertos/semphr.h>
+#include <cmath>
 
 namespace
 {
@@ -230,6 +231,58 @@ namespace
 
         if (!ParseNumber(sentence, valueIndex, raw))
             return false;
+
+        // NMEA coordinate format validation
+        // Latitude  : ddmm.mmmm
+        // Longitude : dddmm.mmmm
+
+        char coordinateField[24] = {};
+
+        if (!GetNmeaField(
+                sentence,
+                valueIndex,
+                coordinateField,
+                sizeof(coordinateField)))
+        {
+            return false;
+        }
+
+        const size_t degreeDigits =
+            isLatitude ? 2U : 3U;
+
+        const size_t length = strlen(coordinateField);
+
+        // Degrees + 2 minute digits + decimal point
+        if (length < degreeDigits + 3U)
+            return false;
+
+        // Validate degrees and minutes digits
+        for (size_t i = 0U;
+            i < degreeDigits + 2U;
+            ++i)
+        {
+            if (coordinateField[i] < '0' ||
+                coordinateField[i] > '9')
+            {
+                return false;
+            }
+        }
+
+        // Validate decimal point position
+        if (coordinateField[degreeDigits + 2U] != '.')
+            return false;
+
+        // Validate fractional minute digits
+        for (size_t i = degreeDigits + 3U;
+            i < length;
+            ++i)
+        {
+            if (coordinateField[i] < '0' ||
+                coordinateField[i] > '9')
+            {
+                return false;
+            }
+        }
 
         char hemisphere[4] = {};
 
@@ -786,7 +839,6 @@ namespace
     }
 }
 
-
 namespace SVEMS::Service
 {
     //---------------------------------------------------------
@@ -939,6 +991,184 @@ namespace SVEMS::Service
         return GetData().valid;
     }
 
+    double CalculateGnssDistanceMeters(
+        double lat1,
+        double lon1,
+        double lat2,
+        double lon2
+    )
+    {
+        constexpr double EARTH_RADIUS_M = 6371000.0;
+        constexpr double GNSS_DEG_TO_RAD = 0.017453292519943295;
+
+        const double lat1Rad = lat1 * GNSS_DEG_TO_RAD;
+        const double lat2Rad = lat2 * GNSS_DEG_TO_RAD;
+
+        const double deltaLat =
+            (lat2 - lat1) * GNSS_DEG_TO_RAD;
+
+        const double deltaLon =
+            (lon2 - lon1) * GNSS_DEG_TO_RAD;
+
+        const double sinLat = sin(deltaLat / 2.0);
+        const double sinLon = sin(deltaLon / 2.0);
+
+        double a =
+            sinLat * sinLat +
+            cos(lat1Rad) * cos(lat2Rad) *
+            sinLon * sinLon;
+
+        // Protect against floating-point rounding.
+        if (a < 0.0)
+            a = 0.0;
+        else if (a > 1.0)
+            a = 1.0;
+
+        const double c =
+            2.0 * atan2(
+                sqrt(a),
+                sqrt(1.0 - a)
+            );
+
+        return EARTH_RADIUS_M * c;
+    }
+
+    bool IsGnssPositionPlausible(
+        const GNSSData& previous,
+        const GNSSData& current
+    )
+    {
+        constexpr double MAX_SPEED_KMH = 250.0;
+        constexpr double MIN_DISTANCE_M = 100.0;
+        constexpr uint64_t MAX_COMPARE_SEC = 60ULL;
+
+        if (!previous.valid || !current.valid)
+            return false;
+
+        if (current.utcTimestamp < previous.utcTimestamp)
+            return false;
+
+        const uint64_t elapsedSec =
+            current.utcTimestamp - previous.utcTimestamp;
+
+        // Preserve the current reacquisition policy.
+        if (elapsedSec > MAX_COMPARE_SEC)
+            return true;
+
+        const double distanceM =
+            CalculateGnssDistanceMeters(
+                previous.latitude,
+                previous.longitude,
+                current.latitude,
+                current.longitude
+            );
+
+        const double allowedDistanceM =
+            fmax(
+                MIN_DISTANCE_M,
+                (MAX_SPEED_KMH / 3.6) *
+                    static_cast<double>(elapsedSec)
+            );
+
+        return isfinite(distanceM) &&
+            distanceM <= allowedDistanceM;
+    }
+
+    void TestGnssPositionValidation()
+    {
+        Serial.println();
+        Serial.println("========== GNSS POSITION TEST ==========");
+
+        GNSSData previous{};
+        previous.valid = true;
+        previous.latitude = 35.83847867;
+        previous.longitude = 128.70634180;
+        previous.utcTimestamp = 100000ULL;
+
+        GNSSData current = previous;
+
+        int passed = 0;
+        int total = 0;
+
+        auto check = [&](const char* name, bool actual, bool expected)
+        {
+            ++total;
+
+            const bool success = (actual == expected);
+
+            if (success)
+                ++passed;
+
+            Serial.printf(
+                "[GNSS TEST] %s : %s\n",
+                name,
+                success ? "PASS" : "FAIL"
+            );
+        };
+
+        // Test 1: Normal small movement
+        current = previous;
+        current.latitude = 35.83874867;
+        current.utcTimestamp += 10ULL;
+
+        check(
+            "Normal movement",
+            IsGnssPositionPlausible(previous, current),
+            true
+        );
+
+        // Test 2: Abnormal position jump
+        current = previous;
+        current.latitude = 0.50514550;
+        current.utcTimestamp += 20ULL;
+
+        check(
+            "3900km jump rejected",
+            IsGnssPositionPlausible(previous, current),
+            false
+        );
+
+        // Test 3: Recovery after rejected jump
+        // Previous must remain the last accepted position.
+        current = previous;
+        current.latitude = 35.83847900;
+        current.utcTimestamp += 26ULL;
+
+        check(
+            "Recovery after jump",
+            IsGnssPositionPlausible(previous, current),
+            true
+        );
+
+        // Test 4: UTC regression
+        current = previous;
+        current.utcTimestamp -= 1ULL;
+
+        check(
+            "UTC regression rejected",
+            IsGnssPositionPlausible(previous, current),
+            false
+        );
+
+        // Test 5: Reacquisition after 60 seconds
+        current = previous;
+        current.utcTimestamp += 61ULL;
+
+        check(
+            "Reacquisition policy",
+            IsGnssPositionPlausible(previous, current),
+            true
+        );
+
+        Serial.printf(
+            "[GNSS TEST] RESULT: %d/%d PASS\n",
+            passed,
+            total
+        );
+
+        Serial.println("========================================");
+    }
+
     //---------------------------------------------------------
     // WorkerTask
     //---------------------------------------------------------
@@ -1056,6 +1286,24 @@ namespace SVEMS::Service
                     gnssDataMutex,
                     pdMS_TO_TICKS(20)) == pdTRUE)
             {
+                //-------------------------------------------------
+                // GNSS Position Jump Validation
+                //-------------------------------------------------
+                if (snapshot.valid && hasLastValidData)
+                {
+                    if (!IsGnssPositionPlausible(
+                            lastValidData,
+                            snapshot))
+                    {
+                        Serial.println(
+                            "[GNSS JUMP] Position rejected"
+                        );
+
+                        // Do not overwrite lastValidData.
+                        snapshot.valid = false;
+                    }
+                }
+
                 if (snapshot.valid)
                 {
                     snapshot.state = GNSSDataState::Valid;
