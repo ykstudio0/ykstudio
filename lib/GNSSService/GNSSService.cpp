@@ -23,7 +23,7 @@ namespace
     // Protect the shared GNSSData snapshot.
     SemaphoreHandle_t gnssDataMutex = nullptr;
 
-    HardwareSerial GNSSSerial(1);
+    HardwareSerial GNSSSerial(0);
 
     DFRobot_GNSS_UART gnss(
         &GNSSSerial,
