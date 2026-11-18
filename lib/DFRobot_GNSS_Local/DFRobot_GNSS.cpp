@@ -9,6 +9,7 @@
  * @url https://github.com/DFRobot/DFRobot_GNSS
  */
 #include "DFRobot_GNSS.h"
+#include "Logger.h"
 
 DFRobot_GNSS::DFRobot_GNSS(){}
 DFRobot_GNSS::~DFRobot_GNSS(){}
@@ -383,14 +384,28 @@ int16_t DFRobot_GNSS_UART::readReg(
         pendingAfter > 0 ||
         received != len)
     {
-        Serial.printf(
-            "[GNSS UART] Reg=0x%02X Req=%u Rx=%u Before=%d After=%d\n",
+        // Serial.printf(
+        //     "[GNSS UART] Reg=0x%02X Req=%u Rx=%u Before=%d After=%d\n",
+        //     static_cast<unsigned>(reg),
+        //     static_cast<unsigned>(len),
+        //     static_cast<unsigned>(received),
+        //     pendingBefore,
+        //     pendingAfter
+        // );
+
+        char buffer[32];
+
+        snprintf(
+          buffer,
+          sizeof(buffer),
+          "UART Reg=0x%02X Req=%u Rx=%u Before=%d After=%d\n",
             static_cast<unsigned>(reg),
             static_cast<unsigned>(len),
             static_cast<unsigned>(received),
             pendingBefore,
-            pendingAfter
-        );
+            pendingAfter);
+
+        Logger::Info("GNSS", buffer);
     }
 
     return (received == len) ? 0 : -1;

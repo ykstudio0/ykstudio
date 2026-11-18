@@ -52,5 +52,11 @@ constexpr bool ENABLE_DISPLAY = true;
 constexpr bool ENABLE_BMS_SERVICE = true;
 // BMS 로그 관리
 constexpr bool ENABLE_BMS_TRACE = true;  
+
+//-------------------------------------------------------------
+// TEST thresholds
+//-------------------------------------------------------------
+static constexpr float INHIBIT_ON_CELL  = 3.585f;
+static constexpr float INHIBIT_OFF_CELL = 3.45f;
    
 #endif

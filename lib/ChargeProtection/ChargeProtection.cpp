@@ -11,7 +11,7 @@
 
 #include <Arduino.h>
 #include <cmath>
-
+#include "Config.h"
 #include "Pins.h"
 #include "DataManager.h"
 #include "Logger.h"
@@ -19,14 +19,6 @@
 
 bool ChargeProtection::s_inhibit = false;
 bool ChargeProtection::s_overVoltageLatched = false;
-
-
-//-------------------------------------------------------------
-// TEST thresholds
-//-------------------------------------------------------------
-static constexpr float INHIBIT_ON_CELL  = 3.585f;
-static constexpr float INHIBIT_OFF_CELL = 3.45f;
-
 
 //-------------------------------------------------------------
 // Begin

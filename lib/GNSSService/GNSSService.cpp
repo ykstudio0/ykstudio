@@ -15,6 +15,7 @@
 #include <freertos/task.h>
 #include <freertos/semphr.h>
 #include <cmath>
+#include "Logger.h"
 
 namespace
 {
@@ -864,7 +865,8 @@ namespace SVEMS::Service
             return true;
         }
 
-        Serial.println("[GNSS] Initializing...");
+        // Serial.println("[GNSS] Initializing...");
+        Logger::Info("GNSS", "Initializing...");
 
         // Create the GNSS data mutex before starting the worker.
         if (gnssDataMutex == nullptr)
@@ -873,18 +875,21 @@ namespace SVEMS::Service
 
             if (gnssDataMutex == nullptr)
             {
-                Serial.println("[GNSS] Mutex Create Failed");
+                // Serial.println("[GNSS] Mutex Create Failed");
+                Logger::Error("GNSS", "Mutex Create Failed");
                 return false;
             }
         }
 
-        Serial.println("[GNSS] Mutex Ready");
+        // Serial.println("[GNSS] Mutex Ready");
+        Logger::Info("GNSS", "Mutex Ready");
 
         GNSSSerial.setRxBufferSize(8192);
         
         if (!gnss.begin())
         {
-            Serial.println("[GNSS] Device NOT detected!");
+            // Serial.println("[GNSS] Device NOT detected!");
+            Logger::Info("GNSS", "Device NOT detected!");
 
             return false;
         }
@@ -894,8 +899,10 @@ namespace SVEMS::Service
 
         gnss.setCallback(GnssRawCallback);
 
-        Serial.println("[GNSS] Device detected!");
-        Serial.println("[GNSS] Power enabled");
+        // Serial.println("[GNSS] Device detected!");
+        // Serial.println("[GNSS] Power enabled");
+        Logger::Info("GNSS", "Device detected!");
+        Logger::Info("GNSS", "Power enabled");
 
         TaskHandle_t taskHandle = nullptr;
 
@@ -912,13 +919,15 @@ namespace SVEMS::Service
 
         if (result != pdPASS)
         {
-            Serial.println("[GNSS] Task Create Failed");
+            // Serial.println("[GNSS] Task Create Failed");
+            Logger::Error("GNSS", "Task Create Failed");
             return false;
         }
 
         Ready = true;
 
-        Serial.println("[GNSS] Task Created");
+        // Serial.println("[GNSS] Task Created");
+        Logger::Info("GNSS", "Task Created");
 
         return true;
     }
@@ -1076,8 +1085,9 @@ namespace SVEMS::Service
 
     void TestGnssPositionValidation()
     {
-        Serial.println();
-        Serial.println("========== GNSS POSITION TEST ==========");
+        // Serial.println();
+        // Serial.println("========== GNSS POSITION TEST ==========");
+        Logger::Info("GNSS", "========== GNSS POSITION TEST ==========");
 
         GNSSData previous{};
         previous.valid = true;
@@ -1086,6 +1096,8 @@ namespace SVEMS::Service
         previous.utcTimestamp = 100000ULL;
 
         GNSSData current = previous;
+
+        char buffer[32];
 
         int passed = 0;
         int total = 0;
@@ -1099,11 +1111,20 @@ namespace SVEMS::Service
             if (success)
                 ++passed;
 
-            Serial.printf(
-                "[GNSS TEST] %s : %s\n",
+            // Serial.printf(
+            //     "[GNSS TEST] %s : %s\n",
+            //     name,
+            //     success ? "PASS" : "FAIL"
+            // );
+
+            snprintf(
+                buffer,
+                sizeof(buffer),
+                "TEST] %s : %s\n",
                 name,
-                success ? "PASS" : "FAIL"
-            );
+                success ? "PASS" : "FAIL");
+
+            Logger::Info("GNSS", buffer);
         };
 
         // Test 1: Normal small movement
@@ -1160,13 +1181,23 @@ namespace SVEMS::Service
             true
         );
 
-        Serial.printf(
-            "[GNSS TEST] RESULT: %d/%d PASS\n",
-            passed,
-            total
-        );
+        // Serial.printf(
+        //     "[GNSS TEST] RESULT: %d/%d PASS\n",
+        //     passed,
+        //     total
+        // );
 
-        Serial.println("========================================");
+        snprintf(
+            buffer,
+            sizeof(buffer),
+            "TEST] RESULT: %d/%d PASS\n",
+            passed,
+            total);
+
+        Logger::Info("GNSS", buffer);
+
+        // Serial.println("========================================");
+        Logger::Info("GNSS", "========================================");
     }
 
     //---------------------------------------------------------
@@ -1179,69 +1210,145 @@ namespace SVEMS::Service
     {
         (void)parameter;
 
-        Serial.printf(
-            "[GNSS] Worker Started (Core %d)\n",
-            xPortGetCoreID()
-        );
+        char buffer[32];
+
+        // Serial.printf(
+        //     "[GNSS] Worker Started (Core %d)\n",
+        //     xPortGetCoreID()
+        // );
+
+        snprintf(
+            buffer,
+            sizeof(buffer),
+            "Worker Started (Core %d)\n",
+            xPortGetCoreID());
+
+        Logger::Info("GNSS", buffer);
 
         for (;;)
         {
             const uint32_t startMs = millis();
 
-            Serial.println("[GNSS] NMEA Request");
+            // Serial.println("[GNSS] NMEA Request");
+            Logger::Info("GNSS", "NMEA Request");
 
             gnss.getAllGnss();
 
-            Serial.printf(
-                "[GNSS] GGA Parsed=%lu Error=%lu\n",
+            // Serial.printf(
+            //     "[GNSS] GGA Parsed=%lu Error=%lu\n",
+            //     static_cast<unsigned long>(ggaParseCount),
+            //     static_cast<unsigned long>(ggaErrorCount)
+            // );
+
+            snprintf(
+                buffer,
+                sizeof(buffer),
+                "GGA Parsed=%lu Error=%lu\n",
                 static_cast<unsigned long>(ggaParseCount),
-                static_cast<unsigned long>(ggaErrorCount)
-            );
+                static_cast<unsigned long>(ggaErrorCount));
+
+            Logger::Info("GNSS", buffer);
 
             if (latestGGA.parsed)
             {
-                Serial.printf(
-                    "[GNSS] GGA Lat=%.7f Lon=%.7f\n",
-                    latestGGA.latitude,
-                    latestGGA.longitude
-                );
+                // Serial.printf(
+                //     "[GNSS] GGA Lat=%.7f Lon=%.7f\n",
+                //     latestGGA.latitude,
+                //     latestGGA.longitude
+                // );
 
-                Serial.printf(
-                    "[GNSS] GGA Fix=%u SAT=%u HDOP=%.2f ALT=%.1fm\n",
+                snprintf(
+                    buffer,
+                    sizeof(buffer),
+                    "GGA Lat=%.7f Lon=%.7f\n",
+                    latestGGA.latitude,
+                    latestGGA.longitude);
+
+                Logger::Info("GNSS", buffer);
+
+                // Serial.printf(
+                //     "[GNSS] GGA Fix=%u SAT=%u HDOP=%.2f ALT=%.1fm\n",
+                //     static_cast<unsigned>(latestGGA.fixQuality),
+                //     static_cast<unsigned>(latestGGA.satellites),
+                //     latestGGA.hdop,
+                //     latestGGA.altitude
+                // );
+
+                snprintf(
+                    buffer,
+                    sizeof(buffer),
+                    "GGA Fix=%u SAT=%u HDOP=%.2f ALT=%.1fm\n",
                     static_cast<unsigned>(latestGGA.fixQuality),
                     static_cast<unsigned>(latestGGA.satellites),
                     latestGGA.hdop,
-                    latestGGA.altitude
-                );
+                    latestGGA.altitude);
+
+                Logger::Info("GNSS", buffer);
             }
 
-            Serial.printf(
-                "[GNSS] RMC Parsed=%lu Error=%lu\n",
+            // Serial.printf(
+            //     "[GNSS] RMC Parsed=%lu Error=%lu\n",
+            //     static_cast<unsigned long>(rmcParseCount),
+            //     static_cast<unsigned long>(rmcErrorCount)
+            // );
+
+            snprintf(
+                buffer,
+                sizeof(buffer),
+                "RMC Parsed=%lu Error=%lu\n",
                 static_cast<unsigned long>(rmcParseCount),
-                static_cast<unsigned long>(rmcErrorCount)
-            );
+                static_cast<unsigned long>(rmcErrorCount));
+
+                Logger::Info("GNSS", buffer);
 
             if (latestRMC.parsed)
             {
-                Serial.printf(
-                    "[GNSS] RMC Valid=%s Speed=%.2f km/h\n",
-                    latestRMC.valid ? "YES" : "NO",
-                    latestRMC.speedKmh
-                );
+                // Serial.printf(
+                //     "[GNSS] RMC Valid=%s Speed=%.2f km/h\n",
+                //     latestRMC.valid ? "YES" : "NO",
+                //     latestRMC.speedKmh
+                // );
 
-                Serial.printf(
-                    "[GNSS] RMC UTC Date=%s Time=%s\n",
+                snprintf(
+                    buffer,
+                    sizeof(buffer),
+                    "RMC Valid=%s Speed=%.2f km/h\n",
+                    latestRMC.valid ? "YES" : "NO",
+                    latestRMC.speedKmh);
+
+                Logger::Info("GNSS", buffer);
+
+                // Serial.printf(
+                //     "[GNSS] RMC UTC Date=%s Time=%s\n",
+                //     latestRMC.utcDate,
+                //     latestRMC.utcTime
+                // );
+
+                snprintf(
+                    buffer,
+                    sizeof(buffer),
+                    "RMC UTC Date=%s Time=%s\n",
                     latestRMC.utcDate,
-                    latestRMC.utcTime
-                );
+                    latestRMC.utcTime);
+
+                Logger::Info("GNSS", buffer);
 
                 if (latestRMC.valid)
                 {
-                    Serial.printf(
-                        "[GNSS] RMC Lat=%.7f Lon=%.7f\n",
+                    // Serial.printf(
+                    //     "[GNSS] RMC Lat=%.7f Lon=%.7f\n",
+                    //     latestRMC.latitude,
+                    //     latestRMC.longitude
+                    // );
+
+                    snprintf(
+                        buffer,
+                        sizeof(buffer),
+                        "RMC Lat=%.7f Lon=%.7f\n",
                         latestRMC.latitude,
-                        latestRMC.longitude
-                    );
+                        latestRMC.longitude);
+
+                    Logger::Info("GNSS", buffer);
                 }
             }
 
@@ -1295,9 +1402,11 @@ namespace SVEMS::Service
                             lastValidData,
                             snapshot))
                     {
-                        Serial.println(
-                            "[GNSS JUMP] Position rejected"
-                        );
+                        // Serial.println(
+                        //     "[GNSS JUMP] Position rejected"
+                        // );
+
+                        Logger::Info("GNSS", "Jump Position rejected");
 
                         // Do not overwrite lastValidData.
                         snapshot.valid = false;
@@ -1338,7 +1447,8 @@ namespace SVEMS::Service
 
             if (!published)
             {
-                Serial.println("[GNSS] Data Publish Failed");
+                // Serial.println("[GNSS] Data Publish Failed");
+                Logger::Error("GNSS", "Data Publish Failed");
             }
 
             if (published)
@@ -1372,37 +1482,77 @@ namespace SVEMS::Service
                             ? 0U
                             : (nowMs - stateSnapshot.lastUpdateMs);
 
-                    Serial.printf(
-                        "[GNSS STATE] %s Valid=%s Age=%lu ms\n",
+                    // Serial.printf(
+                    //     "[GNSS STATE] %s Valid=%s Age=%lu ms\n",
+                    //     stateName,
+                    //     stateSnapshot.valid ? "YES" : "NO",
+                    //     static_cast<unsigned long>(dataAge)
+                    // );
+
+                    snprintf(
+                        buffer,
+                        sizeof(buffer),
+                        "STATE %s Valid=%s Age=%lu ms\n",
                         stateName,
                         stateSnapshot.valid ? "YES" : "NO",
-                        static_cast<unsigned long>(dataAge)
-                    );
+                        static_cast<unsigned long>(dataAge));
+
+                    Logger::Info("GNSS", buffer);
                 }
             }
 
             if (published)
             {
-                Serial.printf(
-                    "[GNSS] DATA Valid=%s Lat=%.7f Lon=%.7f\n",
+                // Serial.printf(
+                //     "[GNSS] DATA Valid=%s Lat=%.7f Lon=%.7f\n",
+                //     snapshot.valid ? "YES" : "NO",
+                //     snapshot.latitude,
+                //     snapshot.longitude
+                // );
+
+                snprintf(
+                    buffer,
+                    sizeof(buffer),
+                    "DATA Valid=%s Lat=%.7f Lon=%.7f\n",
                     snapshot.valid ? "YES" : "NO",
                     snapshot.latitude,
-                    snapshot.longitude
-                );
+                    snapshot.longitude);
 
-                Serial.printf(
-                    "[GNSS] DATA Speed=%.2f ALT=%.1f SAT=%u\n",
+                Logger::Info("GNSS", buffer);
+
+                // Serial.printf(
+                //     "[GNSS] DATA Speed=%.2f ALT=%.1f SAT=%u\n",
+                //     snapshot.speedKmh,
+                //     snapshot.altitude,
+                //     static_cast<unsigned>(snapshot.satellites)
+                // );
+
+                snprintf(
+                    buffer,
+                    sizeof(buffer),
+                    "DATA Speed=%.2f ALT=%.1f SAT=%u\n",
                     snapshot.speedKmh,
                     snapshot.altitude,
-                    static_cast<unsigned>(snapshot.satellites)
-                );
+                    static_cast<unsigned>(snapshot.satellites));
 
-                Serial.printf(
-                    "[GNSS] DATA UTC=%llu\n",
+                Logger::Info("GNSS", buffer);
+
+                // Serial.printf(
+                //     "[GNSS] DATA UTC=%llu\n",
+                //     static_cast<unsigned long long>(
+                //         snapshot.utcTimestamp
+                //     )
+                // );
+
+                snprintf(
+                    buffer,
+                    sizeof(buffer),
+                    "DATA UTC=%llu\n",
                     static_cast<unsigned long long>(
                         snapshot.utcTimestamp
-                    )
-                );
+                    ));
+
+                Logger::Info("GNSS", buffer);
             }
 
             const uint32_t ggaAge =
@@ -1415,12 +1565,22 @@ namespace SVEMS::Service
                     ? (nowMs - latestRMC.receivedMs)
                     : 0U;
 
-            Serial.printf(
-                "[GNSS] FIX Valid=%s GGA_Age=%lu RMC_Age=%lu\n",
+            // Serial.printf(
+            //     "[GNSS] FIX Valid=%s GGA_Age=%lu RMC_Age=%lu\n",
+            //     fixValid ? "YES" : "NO",
+            //     static_cast<unsigned long>(ggaAge),
+            //     static_cast<unsigned long>(rmcAge)
+            // );
+
+            snprintf(
+                buffer,
+                sizeof(buffer),
+                "FIX Valid=%s GGA_Age=%lu RMC_Age=%lu\n",
                 fixValid ? "YES" : "NO",
                 static_cast<unsigned long>(ggaAge),
-                static_cast<unsigned long>(rmcAge)
-            );
+                static_cast<unsigned long>(rmcAge));
+
+            Logger::Info("GNSS", buffer);
 
             // Print NMEA error diagnostics
             static uint32_t lastChecksumErrorCount = 0U;
@@ -1463,45 +1623,89 @@ namespace SVEMS::Service
                         received = (high << 4) | low;
                 }
 
-                Serial.printf(
-                    "[GNSS CRC] Len=%u Calc=%02X Rx=%02X Stars=%u Raw=%s\n",
+                // Serial.printf(
+                //     "[GNSS CRC] Len=%u Calc=%02X Rx=%02X Stars=%u Raw=%s\n",
+                //     static_cast<unsigned>(length),
+                //     static_cast<unsigned>(calculated),
+                //     static_cast<unsigned>(
+                //         received >= 0 ? received : 0xFFFF
+                //     ),
+                //     starCount,
+                //     sentence
+                // );
+
+                snprintf(
+                    buffer,
+                    sizeof(buffer),
+                    "CRC Len=%u Calc=%02X Rx=%02X Stars=%u Raw=%s\n",
                     static_cast<unsigned>(length),
                     static_cast<unsigned>(calculated),
                     static_cast<unsigned>(
                         received >= 0 ? received : 0xFFFF
                     ),
                     starCount,
-                    sentence
-                );
+                    sentence);
+
+                Logger::Info("GNSS", buffer);
 
                 lastChecksumErrorCount = nmeaChecksumErrorCount;
             }
 
             if (nmeaIncompleteCount != lastIncompleteCount)
             {
-                Serial.printf(
-                    "[GNSS] INCOMPLETE: %s\n",
-                    nmeaLastIncomplete
-                );
+                // Serial.printf(
+                //     "[GNSS] INCOMPLETE: %s\n",
+                //     nmeaLastIncomplete
+                // );
+
+                snprintf(
+                    buffer,
+                    sizeof(buffer),
+                    "INCOMPLETE: %s\n",
+                    nmeaLastIncomplete);
+
+                Logger::Info("GNSS", buffer);
 
                 lastIncompleteCount = nmeaIncompleteCount;
             }
 
-            Serial.printf(
-                "[GNSS] NMEA Valid=%lu Invalid=%lu ChecksumError=%lu Incomplete=%lu Overflow=%lu\n",
+            // Serial.printf(
+            //     "[GNSS] NMEA Valid=%lu Invalid=%lu ChecksumError=%lu Incomplete=%lu Overflow=%lu\n",
+            //     static_cast<unsigned long>(nmeaValidCount),
+            //     static_cast<unsigned long>(nmeaInvalidCount),
+            //     static_cast<unsigned long>(nmeaChecksumErrorCount),
+            //     static_cast<unsigned long>(nmeaIncompleteCount),
+            //     static_cast<unsigned long>(nmeaOverflowCount)
+            // );
+
+            snprintf(
+                buffer,
+                sizeof(buffer),
+                "NMEA Valid=%lu Invalid=%lu ChecksumError=%lu Incomplete=%lu Overflow=%lu\n",
                 static_cast<unsigned long>(nmeaValidCount),
                 static_cast<unsigned long>(nmeaInvalidCount),
                 static_cast<unsigned long>(nmeaChecksumErrorCount),
                 static_cast<unsigned long>(nmeaIncompleteCount),
-                static_cast<unsigned long>(nmeaOverflowCount)
-            );
+                static_cast<unsigned long>(nmeaOverflowCount));
 
-            Serial.printf(
-                "[GNSS] NMEA Processing=%lu ms\n",
+            Logger::Info("GNSS", buffer);
+
+            // Serial.printf(
+            //     "[GNSS] NMEA Processing=%lu ms\n",
+            //     static_cast<unsigned long>(
+            //         millis() - startMs
+            //     )
+            // );
+
+            snprintf(
+                buffer,
+                sizeof(buffer),
+                "NMEA Processing=%lu ms\n",
                 static_cast<unsigned long>(
                     millis() - startMs
-                )
-            );
+                ));
+
+            Logger::Info("GNSS", buffer);
 
             vTaskDelay(
                 pdMS_TO_TICKS(5000)
