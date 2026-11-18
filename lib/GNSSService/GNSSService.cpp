@@ -1120,11 +1120,11 @@ namespace SVEMS::Service
             snprintf(
                 buffer,
                 sizeof(buffer),
-                "TEST] %s : %s\n",
+                "%s : %s",
                 name,
                 success ? "PASS" : "FAIL");
 
-            Logger::Info("GNSS", buffer);
+            Logger::Info("GNSS TEST", buffer);
         };
 
         // Test 1: Normal small movement
@@ -1190,11 +1190,11 @@ namespace SVEMS::Service
         snprintf(
             buffer,
             sizeof(buffer),
-            "TEST] RESULT: %d/%d PASS\n",
+            "RESULT: %d/%d PASS",
             passed,
             total);
 
-        Logger::Info("GNSS", buffer);
+        Logger::Info("GNSS TEST", buffer);
 
         // Serial.println("========================================");
         Logger::Info("GNSS", "========================================");
@@ -1220,7 +1220,7 @@ namespace SVEMS::Service
         snprintf(
             buffer,
             sizeof(buffer),
-            "Worker Started (Core %d)\n",
+            "Worker Started (Core %d)",
             xPortGetCoreID());
 
         Logger::Info("GNSS", buffer);
@@ -1243,11 +1243,11 @@ namespace SVEMS::Service
             snprintf(
                 buffer,
                 sizeof(buffer),
-                "GGA Parsed=%lu Error=%lu\n",
+                "Parsed=%lu Error=%lu",
                 static_cast<unsigned long>(ggaParseCount),
                 static_cast<unsigned long>(ggaErrorCount));
 
-            Logger::Info("GNSS", buffer);
+            Logger::Info("GNSS GGA", buffer);
 
             if (latestGGA.parsed)
             {
@@ -1260,11 +1260,11 @@ namespace SVEMS::Service
                 snprintf(
                     buffer,
                     sizeof(buffer),
-                    "GGA Lat=%.7f Lon=%.7f\n",
+                    "Lat=%.7f Lon=%.7f",
                     latestGGA.latitude,
                     latestGGA.longitude);
 
-                Logger::Info("GNSS", buffer);
+                Logger::Info("GNSS GGA", buffer);
 
                 // Serial.printf(
                 //     "[GNSS] GGA Fix=%u SAT=%u HDOP=%.2f ALT=%.1fm\n",
@@ -1277,13 +1277,13 @@ namespace SVEMS::Service
                 snprintf(
                     buffer,
                     sizeof(buffer),
-                    "GGA Fix=%u SAT=%u HDOP=%.2f ALT=%.1fm\n",
+                    "Fix=%u SAT=%u HDOP=%.2f ALT=%.1fm",
                     static_cast<unsigned>(latestGGA.fixQuality),
                     static_cast<unsigned>(latestGGA.satellites),
                     latestGGA.hdop,
                     latestGGA.altitude);
 
-                Logger::Info("GNSS", buffer);
+                Logger::Info("GNSS GGA", buffer);
             }
 
             // Serial.printf(
@@ -1295,11 +1295,11 @@ namespace SVEMS::Service
             snprintf(
                 buffer,
                 sizeof(buffer),
-                "RMC Parsed=%lu Error=%lu\n",
+                "Parsed=%lu Error=%lu",
                 static_cast<unsigned long>(rmcParseCount),
                 static_cast<unsigned long>(rmcErrorCount));
 
-                Logger::Info("GNSS", buffer);
+                Logger::Info("GNSS RMC", buffer);
 
             if (latestRMC.parsed)
             {
@@ -1312,11 +1312,11 @@ namespace SVEMS::Service
                 snprintf(
                     buffer,
                     sizeof(buffer),
-                    "RMC Valid=%s Speed=%.2f km/h\n",
+                    "Valid=%s Speed=%.2f km/h",
                     latestRMC.valid ? "YES" : "NO",
                     latestRMC.speedKmh);
 
-                Logger::Info("GNSS", buffer);
+                Logger::Info("GNSS RMC", buffer);
 
                 // Serial.printf(
                 //     "[GNSS] RMC UTC Date=%s Time=%s\n",
@@ -1327,11 +1327,11 @@ namespace SVEMS::Service
                 snprintf(
                     buffer,
                     sizeof(buffer),
-                    "RMC UTC Date=%s Time=%s\n",
+                    "UTC Date=%s Time=%s",
                     latestRMC.utcDate,
                     latestRMC.utcTime);
 
-                Logger::Info("GNSS", buffer);
+                Logger::Info("GNSS RMC", buffer);
 
                 if (latestRMC.valid)
                 {
@@ -1344,11 +1344,11 @@ namespace SVEMS::Service
                     snprintf(
                         buffer,
                         sizeof(buffer),
-                        "RMC Lat=%.7f Lon=%.7f\n",
+                        "Lat=%.7f Lon=%.7f",
                         latestRMC.latitude,
                         latestRMC.longitude);
 
-                    Logger::Info("GNSS", buffer);
+                    Logger::Info("GNSS RMC", buffer);
                 }
             }
 
@@ -1406,7 +1406,7 @@ namespace SVEMS::Service
                         //     "[GNSS JUMP] Position rejected"
                         // );
 
-                        Logger::Info("GNSS", "Jump Position rejected");
+                        Logger::Info("GNSS JUMP", "Position rejected");
 
                         // Do not overwrite lastValidData.
                         snapshot.valid = false;
@@ -1492,12 +1492,12 @@ namespace SVEMS::Service
                     snprintf(
                         buffer,
                         sizeof(buffer),
-                        "STATE %s Valid=%s Age=%lu ms\n",
+                        "%s Valid=%s Age=%lu ms",
                         stateName,
                         stateSnapshot.valid ? "YES" : "NO",
                         static_cast<unsigned long>(dataAge));
 
-                    Logger::Info("GNSS", buffer);
+                    Logger::Info("GNSS STATE", buffer);
                 }
             }
 
@@ -1513,12 +1513,12 @@ namespace SVEMS::Service
                 snprintf(
                     buffer,
                     sizeof(buffer),
-                    "DATA Valid=%s Lat=%.7f Lon=%.7f\n",
+                    "Valid=%s Lat=%.7f Lon=%.7f",
                     snapshot.valid ? "YES" : "NO",
                     snapshot.latitude,
                     snapshot.longitude);
 
-                Logger::Info("GNSS", buffer);
+                Logger::Info("GNSS DATA", buffer);
 
                 // Serial.printf(
                 //     "[GNSS] DATA Speed=%.2f ALT=%.1f SAT=%u\n",
@@ -1530,12 +1530,12 @@ namespace SVEMS::Service
                 snprintf(
                     buffer,
                     sizeof(buffer),
-                    "DATA Speed=%.2f ALT=%.1f SAT=%u\n",
+                    "Speed=%.2f ALT=%.1f SAT=%u",
                     snapshot.speedKmh,
                     snapshot.altitude,
                     static_cast<unsigned>(snapshot.satellites));
 
-                Logger::Info("GNSS", buffer);
+                Logger::Info("GNSS DATA", buffer);
 
                 // Serial.printf(
                 //     "[GNSS] DATA UTC=%llu\n",
@@ -1547,12 +1547,12 @@ namespace SVEMS::Service
                 snprintf(
                     buffer,
                     sizeof(buffer),
-                    "DATA UTC=%llu\n",
+                    "UTC=%llu",
                     static_cast<unsigned long long>(
                         snapshot.utcTimestamp
                     ));
 
-                Logger::Info("GNSS", buffer);
+                Logger::Info("GNSS DATA", buffer);
             }
 
             const uint32_t ggaAge =
@@ -1575,12 +1575,12 @@ namespace SVEMS::Service
             snprintf(
                 buffer,
                 sizeof(buffer),
-                "FIX Valid=%s GGA_Age=%lu RMC_Age=%lu\n",
+                "Valid=%s GGA_Age=%lu RMC_Age=%lu",
                 fixValid ? "YES" : "NO",
                 static_cast<unsigned long>(ggaAge),
                 static_cast<unsigned long>(rmcAge));
 
-            Logger::Info("GNSS", buffer);
+            Logger::Info("GNSS FIX", buffer);
 
             // Print NMEA error diagnostics
             static uint32_t lastChecksumErrorCount = 0U;
@@ -1637,7 +1637,7 @@ namespace SVEMS::Service
                 snprintf(
                     buffer,
                     sizeof(buffer),
-                    "CRC Len=%u Calc=%02X Rx=%02X Stars=%u Raw=%s\n",
+                    "Len=%u Calc=%02X Rx=%02X Stars=%u Raw=%s",
                     static_cast<unsigned>(length),
                     static_cast<unsigned>(calculated),
                     static_cast<unsigned>(
@@ -1646,7 +1646,7 @@ namespace SVEMS::Service
                     starCount,
                     sentence);
 
-                Logger::Info("GNSS", buffer);
+                Logger::Info("GNSS CRC", buffer);
 
                 lastChecksumErrorCount = nmeaChecksumErrorCount;
             }
@@ -1661,10 +1661,10 @@ namespace SVEMS::Service
                 snprintf(
                     buffer,
                     sizeof(buffer),
-                    "INCOMPLETE: %s\n",
+                    "%s",
                     nmeaLastIncomplete);
 
-                Logger::Info("GNSS", buffer);
+                Logger::Info("GNSS INCOMPLETE", buffer);
 
                 lastIncompleteCount = nmeaIncompleteCount;
             }
@@ -1681,14 +1681,14 @@ namespace SVEMS::Service
             snprintf(
                 buffer,
                 sizeof(buffer),
-                "NMEA Valid=%lu Invalid=%lu ChecksumError=%lu Incomplete=%lu Overflow=%lu\n",
+                "Valid=%lu Invalid=%lu ChecksumError=%lu Incomplete=%lu Overflow=%lu",
                 static_cast<unsigned long>(nmeaValidCount),
                 static_cast<unsigned long>(nmeaInvalidCount),
                 static_cast<unsigned long>(nmeaChecksumErrorCount),
                 static_cast<unsigned long>(nmeaIncompleteCount),
                 static_cast<unsigned long>(nmeaOverflowCount));
 
-            Logger::Info("GNSS", buffer);
+            Logger::Info("GNSS NMEA", buffer);
 
             // Serial.printf(
             //     "[GNSS] NMEA Processing=%lu ms\n",
@@ -1700,12 +1700,12 @@ namespace SVEMS::Service
             snprintf(
                 buffer,
                 sizeof(buffer),
-                "NMEA Processing=%lu ms\n",
+                "Processing=%lu ms",
                 static_cast<unsigned long>(
                     millis() - startMs
                 ));
 
-            Logger::Info("GNSS", buffer);
+            Logger::Info("GNSS NMEA", buffer);
 
             vTaskDelay(
                 pdMS_TO_TICKS(5000)
